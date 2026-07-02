@@ -28,3 +28,19 @@ chuseok22:
     enabled: true
     entries-to-show: 10
     date-format: "yyyy-MM-dd"
+
+springdoc:
+  servers:
+    - url: https://api.eodaego.chuseok22.com
+      description: main-server
+    - url: http://localhost:8080
+      description: local-server
+
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /docs/swagger
+
+server:
+  forward-headers-strategy: framework
+
