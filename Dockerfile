@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache curl
 
 # 빌드된 JAR 파일을 복사
-COPY build/libs/{project-name}-*.jar /app.jar
+COPY build/libs/eodaego-server-*.jar /app.jar
 
 # 애플리케이션 실행 (기본 Spring Boot 설정)
 ENTRYPOINT ["java", "-jar", "/app.jar"]
