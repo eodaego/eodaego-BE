@@ -37,3 +37,8 @@ out/
 .vscode/
 
 application-*.yml
+/.issue
+/docs
+/superpowers
+/.docs
+firebase-adminsdk.json
