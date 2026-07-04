@@ -1,4 +1,4 @@
-package com.chuseok22.eodaegoserver.common.global.exception;
+package com.chuseok22.eodaegoserver.global.exception;
 
 import lombok.Getter;
 

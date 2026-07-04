@@ -1,0 +1,37 @@
+package com.chuseok22.eodaegoserver.global.exception;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@AllArgsConstructor
+public enum ErrorCode {
+
+  // GLOBAL
+
+  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 발생했습니다."),
+
+  INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+
+  ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
+
+  // AUTH
+
+  UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
+
+  INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+
+  REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "리프레시 토큰을 찾을 수 없습니다."),
+
+  REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 일치하지 않거나 만료되었습니다."),
+
+  FIREBASE_TOKEN_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "소셜 로그인 토큰 검증에 실패했습니다."),
+
+  MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
+
+  ;
+
+  private final HttpStatus status;
+  private final String message;
+}
