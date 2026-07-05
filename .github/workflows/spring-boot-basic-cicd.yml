@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  PROJECT_NAME: edaogo # 프로젝트 명
+  PROJECT_NAME: eodaego # 프로젝트 명
   DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_USERNAME }}
   APP_IMAGE_SUFFIX: "-server"
   MAIN_PORT: "8083"
