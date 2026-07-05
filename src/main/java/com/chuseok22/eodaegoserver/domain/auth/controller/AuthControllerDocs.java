@@ -1,9 +1,15 @@
 package com.chuseok22.eodaegoserver.domain.auth.controller;
 
+import com.chuseok22.apichangelog.annotation.ApiChangeLog;
+import com.chuseok22.apichangelog.annotation.ApiChangeLogs;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
+import com.chuseok22.eodaegoserver.global.exception.ErrorResponse;
+import com.chuseok22.eodaegoserver.global.swagger.ChangeLogAuthor;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -14,6 +20,14 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "Auth", description = "회원 소셜 로그인 및 토큰 관리 API")
 public interface AuthControllerDocs {
 
+  @ApiChangeLogs({
+      @ApiChangeLog(
+          date = "2026-07-05",
+          author = ChangeLogAuthor.BAEK_JIHOON,
+          description = "Swagger 문서 상세화 — idToken/socialType 필드 설명 및 example 추가, 에러 응답(ErrorResponse) 스키마 연결",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/10"
+      )
+  })
   @Operation(
       summary = "소셜 로그인",
       description = """
@@ -28,11 +42,25 @@ public interface AuthControllerDocs {
   )
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "로그인 성공, accessToken/refreshToken 발급"),
-      @ApiResponse(responseCode = "400", description = "요청 바디 검증 실패(idToken 누락, socialType 값 오류 등)"),
-      @ApiResponse(responseCode = "401", description = "Firebase ID Token 검증 실패")
+      @ApiResponse(responseCode = "400", description = """
+          요청 바디 검증 실패. errorCode: INVALID_REQUEST
+
+          - idToken 누락(공백)
+          - socialType 누락 또는 GOOGLE/APPLE 외의 값
+          """, content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Firebase ID Token 검증 실패(위변조, 만료, 발급자 불일치 등). errorCode: FIREBASE_TOKEN_VERIFICATION_FAILED",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<TokenResponse> login(LoginRequest request);
 
+  @ApiChangeLogs({
+      @ApiChangeLog(
+          date = "2026-07-05",
+          author = ChangeLogAuthor.BAEK_JIHOON,
+          description = "Swagger 문서 상세화 — refreshToken 필드 설명 및 example 추가, errorCode별 에러 원인 명시",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/10"
+      )
+  })
   @Operation(
       summary = "토큰 재발급",
       description = """
@@ -46,11 +74,26 @@ public interface AuthControllerDocs {
   )
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "재발급 성공, 새 accessToken/refreshToken 발급"),
-      @ApiResponse(responseCode = "400", description = "요청 바디 검증 실패(refreshToken 누락)"),
-      @ApiResponse(responseCode = "401", description = "refreshToken이 유효하지 않거나(위변조/서명오류), 저장된 값과 일치하지 않거나, 만료됨")
+      @ApiResponse(responseCode = "400", description = "요청 바디 검증 실패(refreshToken 누락). errorCode: INVALID_REQUEST",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = """
+          refreshToken 검증 실패. 아래 세 가지 중 하나이며 errorCode로 구분한다.
+
+          - errorCode: INVALID_TOKEN — refreshToken 자체가 위변조되었거나 서명이 유효하지 않음(JWT 파싱 실패)
+          - errorCode: REFRESH_TOKEN_NOT_FOUND — 서버(DB)에 저장된 refreshToken이 없음(로그아웃되었거나 다른 기기 로그인으로 무효화됨)
+          - errorCode: REFRESH_TOKEN_MISMATCH — 저장된 값과 일치하지 않거나 만료됨
+          """, content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<TokenResponse> reissue(ReissueRequest request);
 
+  @ApiChangeLogs({
+      @ApiChangeLog(
+          date = "2026-07-05",
+          author = ChangeLogAuthor.BAEK_JIHOON,
+          description = "Swagger 문서 상세화 — 에러 응답(ErrorResponse) 스키마 연결 및 errorCode 명시",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/10"
+      )
+  })
   @Operation(
       summary = "로그아웃",
       description = """
@@ -63,7 +106,8 @@ public interface AuthControllerDocs {
   )
   @ApiResponses({
       @ApiResponse(responseCode = "204", description = "로그아웃 성공, 응답 바디 없음"),
-      @ApiResponse(responseCode = "401", description = "accessToken이 없거나 유효하지 않음")
+      @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<Void> logout(UUID memberId);
 }

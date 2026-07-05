@@ -31,6 +31,7 @@
 - `record`로 작성한다(Request/Response 공통).
 - Bean Validation(`@NotBlank`, `@NotNull` 등, Spring Validator)을 사용한다.
 - `dto` 패키지 내부에 `request`, `response` 하위 패키지를 만들어 요청/응답 클래스를 분리한다.
+- REST API(`controller`)에서 사용하는 모든 Request/Response DTO 필드에는 `@Schema(description = ..., example = ...)`를 붙인다(자세한 규칙은 아래 "Swagger 문서화" 참고).
 
 ## Repository
 
@@ -60,6 +61,24 @@
   - 응답은 `success`/`data` 같은 공통 래퍼(envelope) 없이 DTO를 그대로 반환한다.
 - `controller.web`(web MVC, 예: 관리자 Thymeleaf 페이지 — 현재 admin 도메인에만 존재): 뷰 이름(String)을 반환하는 순수 렌더링 담당. `ControllerDocs`/`@LogMonitoring`은 적용하지 않는다(REST API 전용 규칙).
 
+## Swagger 문서화
+
+목표는 "프론트 개발자가 Swagger 문서만 보고도 확실하게 개발이 가능한 수준"이다. `@Operation`/`@ApiResponse`의 설명 문장만으로는 부족하며, 아래를 전부 지킨다.
+
+- **DTO 필드 단위 `@Schema` 필수**: Request/Response record의 모든 필드에 `@Schema(description = "...", example = "...")`를 붙인다. `description`은 그 필드가 무엇이고 어떤 제약이 있는지, `example`은 실제로 넣어볼 수 있는 값을 적는다.
+- **Enum 필드는 가능한 값을 문장으로 명시**: Enum 타입 필드는 springdoc이 자동으로 `enum` 목록(예: `["GOOGLE", "APPLE"]`)을 스키마에 넣어주지만, 그 값들이 각각 무엇을 의미하는지는 자동으로 설명되지 않는다. `description`에 "GOOGLE 또는 APPLE만 허용된다"처럼 허용 값을 직접 문장으로 적는다.
+  - 예시(`LoginRequest.socialType`): `@Schema(description = "소셜 로그인 제공자. GOOGLE 또는 APPLE만 허용된다.", example = "GOOGLE")`
+- **에러 응답 스키마는 반드시 `content`로 연결**: `@ApiResponse`의 `description`에 에러 상황을 문장으로만 적으면 실제 응답 바디 구조(JSON 필드 구성)가 Swagger 문서에 전혀 나타나지 않는다(springdoc은 `content`가 연결된 스키마만 `components/schemas`에 포함시킨다). 에러 응답에는 항상 `content = @Content(schema = @Schema(implementation = ErrorResponse.class))`를 붙인다.
+- **`@ApiResponse` description에 실제 발생 가능한 `errorCode` 값을 명시**: "검증 실패", "인증 실패" 같은 추상적인 설명 대신, 그 엔드포인트에서 실제로 던져질 수 있는 `ErrorCode` enum 값을 전부 나열한다. 하나의 HTTP 상태 코드에서 여러 `errorCode`가 나올 수 있으면(예: 401 하나에 `INVALID_TOKEN`/`REFRESH_TOKEN_NOT_FOUND`/`REFRESH_TOKEN_MISMATCH` 세 가지 모두 가능) 각각을 목록으로 구분해 적는다. 어떤 서비스 로직에서 어떤 `ErrorCode`를 던지는지는 실제 코드(`AuthService`, `GlobalExceptionHandler` 등)를 확인해 정확하게 작성하고, 추측하지 않는다.
+  - 예시(`AuthControllerDocs.reissue`의 401 응답): `INVALID_TOKEN`(JWT 파싱 실패), `REFRESH_TOKEN_NOT_FOUND`(DB에 없음), `REFRESH_TOKEN_MISMATCH`(불일치/만료) 세 가지를 각각의 의미와 함께 명시.
+- 작업 완료 후 실제로 `/v3/api-docs`(또는 `/docs/swagger-ui`)를 호출/조회해 의도한 필드 설명·example·enum 목록·에러 스키마가 실제 생성된 문서에 반영됐는지 확인한다(어노테이션 오타나 스코프 실수로 반영이 안 되는 경우가 있음).
+- **API 변경 시 `@ApiChangeLogs`/`@ApiChangeLog`로 이력을 남긴다**: 엔드포인트의 요청/응답/문서 내용에 의미 있는 변경이 생길 때마다 해당 메서드에 항목을 추가한다(기존 항목은 지우지 않고 새 항목을 추가해 누적한다). Swagger 문서 하단에 날짜순 변경 이력 표로 자동 렌더링된다.
+  - `date`: `yyyy-MM-dd` 형식(`chuseok22.api-change-log.date-format` 설정값과 일치해야 하며, 형식이 다르면 정렬 시 파싱 예외가 발생한다).
+  - `author`: 문자열을 직접 쓰지 않고 `global/swagger/ChangeLogAuthor`에 정의된 상수를 참조한다(`author = ChangeLogAuthor.BAEK_JIHOON`). 새 작성자가 필요하면 이 클래스에 상수를 추가한다.
+    - 왜 `enum`이 아니라 상수 클래스인가: `@ApiChangeLog(author = ...)`는 어노테이션 속성이라 Java 언어 규칙(JLS 9.7.1)상 컴파일 타임 상수 리터럴만 허용되고, `SomeEnum.CONST.name()`처럼 어떤 메서드 호출도 허용되지 않는다(직접 컴파일 테스트로 확인됨). 그래서 `SecurityPathConstants`와 동일하게 `public static final String` 상수를 쓰는 `final` 클래스로 관리한다.
+  - `description`: 이번 변경으로 실제로 무엇이 바뀌었는지 한 줄로 적는다(무엇을 구현했는지가 아니라 "이번에 달라진 점" 위주).
+  - `issueUrl`: 이 변경과 연결된 실제 GitHub 이슈 URL을 확인해서 적는다(추측 금지 — `gh issue view`로 실제 이슈 내용을 확인하고 해당 엔드포인트/기능과 관련 있는 이슈인지 검증한 뒤 연결한다). 이슈 없이(예: main 브랜치에서 직접) 작업한 경우에만 생략한다(기본값 빈 문자열).
+
 ## Common
 
 - `Zone`처럼 전역적으로 설정할 값은 `global/config`에 Bean으로 등록해 재사용한다(`global/config/ClockConfig.java`의 `Clock` Bean, `Asia/Seoul` 고정). 각 파일 내부에서 `private static final ZoneId ...`처럼 개별 선언하지 않고, `Clock`을 생성자 주입받아 `LocalDateTime.now(clock)`으로 사용한다.
@@ -76,6 +95,6 @@
 
 ## Review expectations
 
-- 리뷰 시 반드시 확인할 항목: Entity가 Builder+Setter 패턴을 따르는지, Controller가 비즈니스 로직을 포함하지 않는지, `getReferenceById` 미사용, DTO 검증 어노테이션 존재 여부, `ControllerDocs` 구현 여부
+- 리뷰 시 반드시 확인할 항목: Entity가 Builder+Setter 패턴을 따르는지, Controller가 비즈니스 로직을 포함하지 않는지, `getReferenceById` 미사용, DTO 검증 어노테이션 존재 여부, `ControllerDocs` 구현 여부, DTO 필드 `@Schema` 작성 여부 및 에러 응답의 `content`/`errorCode` 명시 여부(자세한 기준은 "Swagger 문서화" 참고)
 - 성능 / 보안 / 유지보수 관점 체크리스트: N+1 쿼리 여부, 인증/인가 누락 여부(`@AuthenticationPrincipal` 또는 SecurityConfig 경로 설정), `application-*.yml` git 추적 여부
 - 리뷰에서 block 걸어야 하는 기준: 비회원 접근이 가능한 회원 전용 API, `application-*.yml` 커밋 시도, Entity에 비즈니스 로직(도메인 메서드) 추가
