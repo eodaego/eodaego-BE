@@ -23,6 +23,10 @@ public class ApiVersionConfig implements WebMvcConfigurer {
 
   @Override
   public void configureApiVersioning(ApiVersionConfigurer configurer) {
-    configurer.usePathSegment(1);
+    // 버전 파싱 대상을 /api/**로 한정하지 않으면 관리자·Swagger 등 다른 모든 요청의 두 번째 경로 조각까지
+    // API 버전으로 해석을 시도해 InvalidApiVersionException(400)을 유발한다. versionRequired를 false로 두어
+    // /api/** 외 요청은 버전 미해석 상태로 통과시키며, /api/** 요청은 predicate가 true이므로 영향받지 않는다.
+    configurer.usePathSegment(1, path -> path.pathWithinApplication().value().startsWith("/api/"))
+        .setVersionRequired(false);
   }
 }

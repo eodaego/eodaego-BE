@@ -15,8 +15,7 @@ public final class SecurityPathConstants {
   public static final String[] SWAGGER_PERMIT_ALL_PATHS = {
       "/docs/swagger",
       "/docs/swagger/**",
-      "/swagger-ui/**",
-      "/swagger-ui.html",
+      "/docs/swagger-ui/**",
       "/v3/api-docs",
       "/v3/api-docs/**",
       "/v3/api-docs.yaml"
