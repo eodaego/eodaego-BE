@@ -1,6 +1,6 @@
-package com.chuseok22.eodaegoserver.common.global.config;
+package com.chuseok22.eodaegoserver.global.config;
 
-import com.chuseok22.eodaegoserver.common.global.properties.SpringDocProperties;
+import com.chuseok22.eodaegoserver.global.properties.SpringDocProperties;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.models.Components;

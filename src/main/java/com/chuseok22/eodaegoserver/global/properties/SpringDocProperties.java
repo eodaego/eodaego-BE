@@ -1,4 +1,4 @@
-package com.chuseok22.eodaegoserver.common.global.properties;
+package com.chuseok22.eodaegoserver.global.properties;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

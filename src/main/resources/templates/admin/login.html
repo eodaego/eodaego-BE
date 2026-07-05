@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>어대고 관리자 로그인</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-base-200">
+<div class="card w-96 bg-base-100 shadow-xl">
+  <div class="card-body">
+    <h2 class="card-title">관리자 로그인</h2>
+    <form th:action="@{/admin/login}" method="post" class="flex flex-col gap-3">
+      <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <input type="text" name="username" placeholder="아이디" class="input input-bordered w-full" required/>
+      <input type="password" name="password" placeholder="비밀번호" class="input input-bordered w-full" required/>
+      <p th:if="${param.error}" class="text-error text-sm">아이디 또는 비밀번호가 올바르지 않습니다.</p>
+      <button type="submit" class="btn btn-primary w-full">로그인</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

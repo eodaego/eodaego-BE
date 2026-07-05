@@ -95,11 +95,9 @@
 ## Delivery constraints
 
 - 배포 전 확인 사항:
-  - `npm run lint` — 0 errors
-  - `npm run build` — TypeScript 에러 없음, 빌드 성공
-  - (테스트 도입 후) `npx vitest run` — 전체 PASS
-  - Capacitor 빌드: `npx cap sync` → 네이티브 프로젝트 동기화
-  - 환경변수 (`VITE_API_BASE_URL`, `VITE_IMAGE_BASE_URL`, 결제 URL) 설정 확인
+  - `./gradlew build` — BUILD SUCCESSFUL (컴파일 성공, 기존 `EodaegoServerApplicationTests.contextLoads()`는 `firebase-adminsdk.json` 존재 시에만 통과)
+  - `application-prod.yml`에 실제 운영 값(DB/Redis 접속 정보, JWT secret-key, Firebase 경로, admin 계정 등)이 채워져 있는지 확인 — 단, 해당 파일 자체는 git에 절대 커밋하지 않는다
+  - `firebase-adminsdk.json` 서비스 계정 키 파일이 배포 환경에 배치되어 있는지 확인(없으면 애플리케이션 기동 자체가 실패)
 
 - feature flag 정책:
   - 현재 미사용. 필요 시 도입 기준:
@@ -107,7 +105,7 @@
     - A/B 테스트가 필요한 경우
 
 - rollback 필요 시 기준:
-  - 결제 흐름 (PG, PAYCO, Voucher) 에서 오류 발생 시 즉시 롤백
-  - 인증(로그인, 토큰) 흐름 장애 시 즉시 롤백
-  - 앱 크래시 또는 빈 화면 발생 시 즉시 롤백
+  - 인증(소셜 로그인, JWT 발급/재발급) 흐름 장애 시 즉시 롤백
+  - 관리자 로그인 흐름 장애 시 즉시 롤백
+  - 애플리케이션 기동 실패(컨텍스트 로딩 실패) 시 즉시 롤백
   - 롤백 방법: 이전 커밋으로 revert PR 생성
