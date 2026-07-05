@@ -34,7 +34,7 @@
   - `global/properties/`: 모든 `@ConfigurationProperties` 클래스. 도메인 전용 데이터를 담더라도 예외 없이 여기 위치(`JwtProperties`, `FirebaseProperties`, `AdminAccountProperties`, `SpringDocProperties`)
   - `global/entity/`: `BaseEntity`(모든 Entity가 상속하는 공통 Auditing 필드)
   - `global/exception/`: `ErrorCode`, `CustomException`, `ErrorResponse`, `FieldErrorDetail`, `GlobalExceptionHandler`
-  - `global/security/`: `Role` 등 순수 Spring Security 로직(설정값이 아닌 것). JWT 발급/검증/필터/핸들러는 `global/security/jwt/` 하위(`JwtProvider`, `JwtAuthenticationFilter`, `JwtAuthenticationEntryPoint`, `JwtAccessDeniedHandler`) — 단, `JwtProperties`는 위 규칙에 따라 `global/properties/`에 위치
+  - `global/security/`: `Role`, `SecurityPathConstants` 등 순수 Spring Security 로직(설정값이 아닌 것). JWT 발급/검증/필터/핸들러는 `global/security/jwt/` 하위(`JwtProvider`, `JwtAuthenticationFilter`, `JwtAuthenticationEntryPoint`, `JwtAccessDeniedHandler`) — 단, `JwtProperties`는 위 규칙에 따라 `global/properties/`에 위치
 - 새 파일 생성 시 위치 기준: 특정 도메인에 속한 로직이면 `domain.<도메인>.<계층>` 하위에, 여러 도메인이 공유하거나 도메인에 속하지 않는 설정/공통 처리라면 `global.*` 하위에 둔다. 도메인 내부에서도 반드시 entity/repository/service/controller/dto 계층별 서브패키지에 위치시키며, 도메인 루트에 클래스를 직접 두지 않는다(Enum 등 계층에 속하지 않는 보조 타입 제외).
 - 공통 유틸 / 도메인 로직 / API 계층 분리 기준: 비즈니스 로직은 반드시 Service에 위치. Controller는 요청 바인딩과 응답 반환만 수행하며 분기/변환/조건문을 포함하지 않는다.
 
