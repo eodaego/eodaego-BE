@@ -63,6 +63,7 @@
 ## Common
 
 - `Zone`처럼 전역적으로 설정할 값은 `global/config`에 Bean으로 등록해 재사용한다(`global/config/ClockConfig.java`의 `Clock` Bean, `Asia/Seoul` 고정). 각 파일 내부에서 `private static final ZoneId ...`처럼 개별 선언하지 않고, `Clock`을 생성자 주입받아 `LocalDateTime.now(clock)`으로 사용한다.
+- Spring Security 경로 리터럴(permitAll 대상, securityMatcher 패턴, 로그인 페이지 등)은 `SecurityConfig` 내부에 직접 하드코딩하지 않고, `global/security/SecurityPathConstants`에 상수로 선언해 참조한다.
 - `application.yml`은 수정 가능하며 git 추적 대상이다.
 - `application-*.yml`(dev/prod)은 절대 수정 금지가 아니라 **git 추적 절대 금지**(내용 수정 자체는 필요 시 가능).
 - 코드 포맷팅은 별도 도구(google-java-format, Checkstyle 등)를 도입하지 않고 IDE 기본 포맷터를 사용한다.
