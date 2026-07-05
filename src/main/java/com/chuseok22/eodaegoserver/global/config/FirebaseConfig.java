@@ -5,12 +5,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -24,7 +25,8 @@ public class FirebaseConfig {
     if (!FirebaseApp.getApps().isEmpty()) {
       return FirebaseApp.getInstance();
     }
-    try (FileInputStream serviceAccount = new FileInputStream(firebaseProperties.serviceAccountKeyPath())) {
+    try (InputStream serviceAccount = new ClassPathResource(
+        firebaseProperties.serviceAccountKeyPath()).getInputStream()) {
       FirebaseOptions options = FirebaseOptions.builder()
           .setCredentials(GoogleCredentials.fromStream(serviceAccount))
           .build();
