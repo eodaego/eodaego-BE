@@ -41,4 +41,6 @@ application-*.yml
 /docs
 /superpowers
 /.docs
+.report
+.superpowers
 firebase-adminsdk.json
