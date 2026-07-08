@@ -153,8 +153,14 @@ jobs:
               echo "존재하는 컨테이너 ${CONTAINER_NAME} 이(가) 없습니다."
             fi
 
+            echo "AI 내부망(eodaego-internal) 확인/생성..."
+            if ! echo $PW | sudo -S docker network inspect eodaego-internal >/dev/null 2>&1; then
+              echo $PW | sudo -S docker network create eodaego-internal
+            fi
+
             echo "새로운 컨테이너 ${CONTAINER_NAME} 실행 중..."
             echo $PW | sudo -S docker run -d -p "${PORT}":"${APP_PORT}" --name "${CONTAINER_NAME}" \
+              --network eodaego-internal \
               -e TZ=Asia/Seoul \
               -e "SPRING_PROFILES_ACTIVE=${PROFILE}" \
               -v /etc/localtime:/etc/localtime:ro \
