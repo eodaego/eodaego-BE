@@ -12,6 +12,10 @@ public final class SecurityPathConstants {
 
   public static final String ADMIN_LOGIN_PATH = "/admin/login";
 
+  public static final String[] AI_PERMIT_ALL_PATHS = {
+      "/api/*/ai/health"
+  };
+
   public static final String[] SWAGGER_PERMIT_ALL_PATHS = {
       "/docs/swagger",
       "/docs/swagger/**",

@@ -45,6 +45,7 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.POST, SecurityPathConstants.AUTH_PERMIT_ALL_PATHS).permitAll()
+            .requestMatchers(HttpMethod.GET, SecurityPathConstants.AI_PERMIT_ALL_PATHS).permitAll()
             .anyRequest().authenticated())
         .exceptionHandling(eh -> eh
             .authenticationEntryPoint(jwtAuthenticationEntryPoint)
