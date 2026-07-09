@@ -30,6 +30,10 @@ public enum ErrorCode {
 
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 
+  // AI
+
+  AI_SERVER_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버에 연결할 수 없습니다."),
+
   ;
 
   private final HttpStatus status;
