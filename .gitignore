@@ -44,3 +44,4 @@ application-*.yml
 .report
 .superpowers
 firebase-adminsdk.json
+/.blog-drafts
