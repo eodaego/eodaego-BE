@@ -2,6 +2,7 @@ package com.chuseok22.eodaegoserver.domain.auth.service;
 
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
+import com.chuseok22.eodaegoserver.domain.auth.dto.response.LoginResponse;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
 import com.chuseok22.eodaegoserver.domain.auth.entity.RefreshToken;
 import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
@@ -37,31 +38,46 @@ public class AuthService {
   private final Clock clock;
 
   @Transactional
-  public TokenResponse login(LoginRequest request) {
+  public LoginResponse login(LoginRequest request) {
     FirebaseToken firebaseToken = firebaseTokenVerifier.verify(request.idToken());
 
     Member member = memberRepository
-      .findBySocialTypeAndProviderId(request.socialType(), firebaseToken.getUid())
-      .orElseGet(() -> {
-        Member newMember = Member.builder()
-          .email(firebaseToken.getEmail())
-          .nickname(resolveNickname(firebaseToken))
-          .socialType(request.socialType())
-          .providerId(firebaseToken.getUid())
-          .role(Role.USER)
-          .firstLogin(true)
-          .build();
-        return memberRepository.save(newMember);
-      });
+        .findBySocialTypeAndProviderId(request.socialType(), firebaseToken.getUid())
+        .orElseGet(() -> {
+          Member newMember = Member.builder()
+              .email(firebaseToken.getEmail())
+              .nickname(resolveNickname(firebaseToken))
+              .socialType(request.socialType())
+              .providerId(firebaseToken.getUid())
+              .role(Role.USER)
+              .firstLogin(true)
+              .build();
+          return memberRepository.save(newMember);
+        });
 
     boolean firstLogin = member.isFirstLogin();
     if (firstLogin) {
       member.setFirstLogin(false);
     }
 
+    member.setDeviceType(request.deviceType());
+    member.setDeviceId(request.deviceId());
+    member.setFcmToken(request.fcmToken());
+
+    boolean requiresAgreement = !hasAgreedRequiredTerms(member);
+
     TokenResponse tokenResponse = issueTokens(member, firstLogin);
-    log.info("로그인 성공: memberId={}, firstLogin={}", member.getId(), firstLogin);
-    return tokenResponse;
+    log.info("로그인 성공: memberId={}, firstLogin={}, requiresAgreement={}",
+        member.getId(), firstLogin, requiresAgreement);
+
+    return new LoginResponse(
+        tokenResponse.accessToken(),
+        tokenResponse.refreshToken(),
+        firstLogin,
+        requiresAgreement,
+        member.getNickname(),
+        member.getId()
+    );
   }
 
   @Transactional
@@ -69,10 +85,10 @@ public class AuthService {
     Claims claims = jwtProvider.parseExpiredClaims(request.refreshToken());
     UUID memberId = UUID.fromString(claims.getSubject());
     Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     RefreshToken savedToken = refreshTokenRepository.findByMember(member)
-      .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
     if (!savedToken.getToken().equals(request.refreshToken())
         || savedToken.getExpiryDate().isBefore(LocalDateTime.now(clock))) {
@@ -91,9 +107,15 @@ public class AuthService {
   @Transactional
   public void logout(UUID memberId) {
     Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     refreshTokenRepository.deleteByMember(member);
     log.info("로그아웃 성공: memberId={}", memberId);
+  }
+
+  private boolean hasAgreedRequiredTerms(Member member) {
+    return member.isPrivacyPolicyAgreed()
+           && member.isLocationInfoAgreed()
+           && member.isTermsOfServiceAgreed();
   }
 
   private TokenResponse issueTokens(Member member, boolean firstLogin) {
@@ -102,19 +124,19 @@ public class AuthService {
     LocalDateTime expiryDate = toExpiry(jwtProperties.refreshExpMillis());
 
     refreshTokenRepository.findByMember(member)
-      .ifPresentOrElse(
-        existing -> {
-          existing.setToken(refreshToken);
-          existing.setExpiryDate(expiryDate);
-        },
-        () -> refreshTokenRepository.save(
-          RefreshToken.builder()
-            .member(member)
-            .token(refreshToken)
-            .expiryDate(expiryDate)
-            .build()
-        )
-      );
+        .ifPresentOrElse(
+            existing -> {
+              existing.setToken(refreshToken);
+              existing.setExpiryDate(expiryDate);
+            },
+            () -> refreshTokenRepository.save(
+                RefreshToken.builder()
+                    .member(member)
+                    .token(refreshToken)
+                    .expiryDate(expiryDate)
+                    .build()
+            )
+        );
 
     return new TokenResponse(accessToken, refreshToken, firstLogin);
   }

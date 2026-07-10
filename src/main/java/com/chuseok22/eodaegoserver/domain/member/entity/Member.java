@@ -1,5 +1,6 @@
 package com.chuseok22.eodaegoserver.domain.member.entity;
 
+import com.chuseok22.eodaegoserver.domain.member.DeviceType;
 import com.chuseok22.eodaegoserver.domain.member.SocialType;
 import com.chuseok22.eodaegoserver.global.entity.BaseEntity;
 import com.chuseok22.eodaegoserver.global.security.Role;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -54,4 +56,31 @@ public class Member extends BaseEntity {
 
   @Column(nullable = false)
   private boolean firstLogin;
+
+  @Column(nullable = false)
+  private String deviceId;
+
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private DeviceType deviceType;
+
+  @Column
+  private String fcmToken;
+
+  @Column(nullable = false)
+  private boolean privacyPolicyAgreed;
+
+  @Column(nullable = false)
+  private boolean locationInfoAgreed;
+
+  @Column(nullable = false)
+  private boolean termsOfServiceAgreed;
+
+  @Column(nullable = false)
+  private boolean marketingAgreed;
+
+  private LocalDateTime termsAgreedAt;
+
+  private LocalDateTime marketingAgreedAt;
 }

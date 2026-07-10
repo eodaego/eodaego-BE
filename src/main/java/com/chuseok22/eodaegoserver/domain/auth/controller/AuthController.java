@@ -2,6 +2,7 @@ package com.chuseok22.eodaegoserver.domain.auth.controller;
 
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
+import com.chuseok22.eodaegoserver.domain.auth.dto.response.LoginResponse;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
 import com.chuseok22.eodaegoserver.domain.auth.service.AuthService;
 import com.chuseok22.logging.annotation.LogMonitoring;
@@ -25,7 +26,7 @@ public class AuthController implements AuthControllerDocs {
   @Override
   @LogMonitoring
   @PostMapping(path = "/login", version = "1")
-  public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
+  public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
     return ResponseEntity.ok(authService.login(request));
   }
 

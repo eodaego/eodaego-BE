@@ -4,6 +4,7 @@ import com.chuseok22.apichangelog.annotation.ApiChangeLog;
 import com.chuseok22.apichangelog.annotation.ApiChangeLogs;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
+import com.chuseok22.eodaegoserver.domain.auth.dto.response.LoginResponse;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
 import com.chuseok22.eodaegoserver.global.exception.ErrorResponse;
 import com.chuseok22.eodaegoserver.global.swagger.ChangeLogAuthor;
@@ -26,6 +27,12 @@ public interface AuthControllerDocs {
           author = ChangeLogAuthor.BAEK_JIHOON,
           description = "Swagger 문서 상세화 — idToken/socialType 필드 설명 및 example 추가, 에러 응답(ErrorResponse) 스키마 연결",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/10"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-10",
+          author = ChangeLogAuthor.KIM_JAEHYUN,
+          description = "요청에 deviceType/deviceId/fcmToken 필드 추가, 응답을 LoginResponse로 변경(nickname/userId/requiresAgreement 추가). 약관 동의는 더 이상 로그인 요청에서 처리하지 않으며, PATCH /members/me/agreements로 별도 처리한다.",
+          issueUrl = ""
       )
   })
   @Operation(
@@ -36,7 +43,10 @@ public interface AuthControllerDocs {
           - 백엔드는 전달받은 idToken을 Firebase Admin SDK로 검증한다(클라이언트 값을 그대로 신뢰하지 않음).
           - (socialType, providerId) 조합으로 기존 회원을 조회하며, 없으면 자동으로 신규 회원가입 처리한다.
           - 동일 이메일이라도 socialType이 다르면 별개 회원으로 취급한다(계정 자동 병합 없음).
+          - deviceType/deviceId/fcmToken은 로그인마다 최신 값으로 갱신된다(기존 회원도 동일).
           - 응답의 firstLogin이 true이면 이번 요청에서 신규 가입된 회원이라는 뜻이다.
+          - 응답의 requiresAgreement가 true이면 필수 약관(개인정보처리방침/위치정보/이용약관) 중 하나 이상 미동의 상태라는 뜻이며, 클라이언트는 약관 동의 화면을 띄운 뒤 PATCH /members/me/agreements를 호출해야 한다. 이 값은 신규 회원뿐 아니라 기존 회원이라도 약관 동의를 아직 완료하지 않았다면 매 로그인마다 다시 true로 내려간다.
+          - 로그인 자체는 약관 동의 여부와 무관하게 항상 성공한다(약관 미동의를 이유로 로그인이 거부되지 않음).
           - 인증 없이 호출 가능하다(permitAll).
           """
   )
@@ -47,11 +57,13 @@ public interface AuthControllerDocs {
 
           - idToken 누락(공백)
           - socialType 누락 또는 GOOGLE/APPLE 외의 값
+          - deviceType 누락 또는 IOS/ANDROID 외의 값
+          - deviceId 누락(공백)
           """, content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Firebase ID Token 검증 실패(위변조, 만료, 발급자 불일치 등). errorCode: FIREBASE_TOKEN_VERIFICATION_FAILED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
-  ResponseEntity<TokenResponse> login(LoginRequest request);
+  ResponseEntity<LoginResponse> login(LoginRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(
