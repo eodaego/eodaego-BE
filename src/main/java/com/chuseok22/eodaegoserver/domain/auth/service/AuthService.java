@@ -40,6 +40,7 @@ public class AuthService {
   @Transactional
   public LoginResponse login(LoginRequest request) {
     FirebaseToken firebaseToken = firebaseTokenVerifier.verify(request.idToken());
+    firebaseTokenVerifier.assertSocialTypeMatches(firebaseToken, request.socialType());
 
     Member member = memberRepository
         .findBySocialTypeAndProviderId(request.socialType(), firebaseToken.getUid())
