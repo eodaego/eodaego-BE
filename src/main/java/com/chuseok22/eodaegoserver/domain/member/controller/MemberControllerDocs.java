@@ -22,7 +22,7 @@ public interface MemberControllerDocs {
   @ApiChangeLogs({
       @ApiChangeLog(
           date = "2026-07-10",
-          author = ChangeLogAuthor.KIM_JAEHYUN,
+          author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "약관 동의 여부 조회 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/17"
       )
@@ -50,8 +50,14 @@ public interface MemberControllerDocs {
   @ApiChangeLogs({
       @ApiChangeLog(
           date = "2026-07-10",
-          author = ChangeLogAuthor.KIM_JAEHYUN,
+          author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "약관 동의 여부 수정 API 최초 작성",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/17"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-11",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "termsAgreedAt이 매 수정마다 갱신되던 버그 수정 — 필수 약관 최초 동의 시점만 기록하고 이후 호출에서는 보존한다. marketingAgreedAt은 동의 상태가 false→true로 바뀔 때만 갱신된다.",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/17"
       )
   })

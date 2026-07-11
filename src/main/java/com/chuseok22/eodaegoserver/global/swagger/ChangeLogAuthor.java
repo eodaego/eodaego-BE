@@ -7,5 +7,5 @@ public final class ChangeLogAuthor {
 
   public static final String BAEK_JIHOON = "Chuseok22";
   public static final String KANG_JIYUN = "Kang Jiyun";
-  public static final String KIM_JAEHYUN = "Kim Jaehyun";
+  public static final String KIM_JAEHYEON = "Kim Jaehyeon";
 }
