@@ -28,6 +28,8 @@ public enum ErrorCode {
 
   FIREBASE_TOKEN_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "소셜 로그인 토큰 검증에 실패했습니다."),
 
+  SOCIAL_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "요청한 소셜 로그인 제공자와 실제 인증된 제공자가 일치하지 않습니다."),
+
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 
   // AI
