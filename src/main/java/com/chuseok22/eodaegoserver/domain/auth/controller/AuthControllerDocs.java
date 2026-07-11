@@ -5,7 +5,7 @@ import com.chuseok22.apichangelog.annotation.ApiChangeLogs;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.LoginResponse;
-import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
+import com.chuseok22.eodaegoserver.domain.auth.dto.response.ReissueResponse;
 import com.chuseok22.eodaegoserver.global.exception.ErrorResponse;
 import com.chuseok22.eodaegoserver.global.swagger.ChangeLogAuthor;
 import io.swagger.v3.oas.annotations.Operation;
@@ -88,6 +88,12 @@ public interface AuthControllerDocs {
           author = ChangeLogAuthor.BAEK_JIHOON,
           description = "Swagger 문서 상세화 — refreshToken 필드 설명 및 example 추가, errorCode별 에러 원인 명시",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/10"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-11",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "재발급 응답을 TokenResponse에서 ReissueResponse로 변경 — 의미 없이 항상 false로 내려가던 firstLogin 필드 제거",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/17"
       )
   })
   @Operation(
@@ -113,7 +119,7 @@ public interface AuthControllerDocs {
           - errorCode: REFRESH_TOKEN_MISMATCH — 저장된 값과 일치하지 않거나 만료됨
           """, content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
-  ResponseEntity<TokenResponse> reissue(ReissueRequest request);
+  ResponseEntity<ReissueResponse> reissue(ReissueRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(

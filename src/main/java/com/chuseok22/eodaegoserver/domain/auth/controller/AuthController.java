@@ -3,7 +3,7 @@ package com.chuseok22.eodaegoserver.domain.auth.controller;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.LoginResponse;
-import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
+import com.chuseok22.eodaegoserver.domain.auth.dto.response.ReissueResponse;
 import com.chuseok22.eodaegoserver.domain.auth.service.AuthService;
 import com.chuseok22.logging.annotation.LogMonitoring;
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class AuthController implements AuthControllerDocs {
   @Override
   @LogMonitoring
   @PostMapping(path = "/reissue", version = "1")
-  public ResponseEntity<TokenResponse> reissue(@Valid @RequestBody ReissueRequest request) {
+  public ResponseEntity<ReissueResponse> reissue(@Valid @RequestBody ReissueRequest request) {
     return ResponseEntity.ok(authService.reissue(request));
   }
 

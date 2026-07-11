@@ -3,6 +3,7 @@ package com.chuseok22.eodaegoserver.domain.auth.service;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.LoginResponse;
+import com.chuseok22.eodaegoserver.domain.auth.dto.response.ReissueResponse;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
 import com.chuseok22.eodaegoserver.domain.auth.entity.RefreshToken;
 import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
@@ -80,7 +81,7 @@ public class AuthService {
   }
 
   @Transactional
-  public TokenResponse reissue(ReissueRequest request) {
+  public ReissueResponse reissue(ReissueRequest request) {
     Claims claims = jwtProvider.parseExpiredClaims(request.refreshToken());
     UUID memberId = UUID.fromString(claims.getSubject());
     Member member = memberRepository.findById(memberId)
@@ -100,7 +101,7 @@ public class AuthService {
     savedToken.setExpiryDate(toExpiry(jwtProperties.refreshExpMillis()));
 
     log.info("토큰 재발급 성공: memberId={}", member.getId());
-    return new TokenResponse(accessToken, newRefreshToken, false);
+    return new ReissueResponse(accessToken, newRefreshToken);
   }
 
   @Transactional
