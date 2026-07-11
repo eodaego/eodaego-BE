@@ -37,7 +37,7 @@ public class Member extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @Column(nullable = false)
+  @Column
   private String email;
 
   @Column(nullable = false)
@@ -59,7 +59,6 @@ public class Member extends BaseEntity {
 
   @Column(nullable = false)
   private String deviceId;
-
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)

@@ -51,6 +51,9 @@ public class AuthService {
               .providerId(firebaseToken.getUid())
               .role(Role.USER)
               .firstLogin(true)
+              .deviceType(request.deviceType())
+              .deviceId(request.deviceId())
+              .fcmToken(request.fcmToken())
               .build();
           return memberRepository.save(newMember);
         });
@@ -58,11 +61,13 @@ public class AuthService {
     boolean firstLogin = member.isFirstLogin();
     if (firstLogin) {
       member.setFirstLogin(false);
+    } else {
+      member.setDeviceType(request.deviceType());
+      member.setDeviceId(request.deviceId());
+      if (request.fcmToken() != null) {
+        member.setFcmToken(request.fcmToken());
+      }
     }
-
-    member.setDeviceType(request.deviceType());
-    member.setDeviceId(request.deviceId());
-    member.setFcmToken(request.fcmToken());
 
     boolean requiresAgreement = !hasAgreedRequiredTerms(member);
 
@@ -70,14 +75,7 @@ public class AuthService {
     log.info("로그인 성공: memberId={}, firstLogin={}, requiresAgreement={}",
         member.getId(), firstLogin, requiresAgreement);
 
-    return new LoginResponse(
-        tokenResponse.accessToken(),
-        tokenResponse.refreshToken(),
-        firstLogin,
-        requiresAgreement,
-        member.getNickname(),
-        member.getId()
-    );
+    return LoginResponse.of(tokenResponse, requiresAgreement, member);
   }
 
   @Transactional

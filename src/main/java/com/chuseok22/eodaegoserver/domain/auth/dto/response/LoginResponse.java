@@ -1,5 +1,6 @@
 package com.chuseok22.eodaegoserver.domain.auth.dto.response;
 
+import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 
@@ -24,4 +25,14 @@ public record LoginResponse(
     UUID userId
 ) {
 
+  public static LoginResponse of(TokenResponse tokenResponse, boolean requiresAgreement, Member member) {
+    return new LoginResponse(
+        tokenResponse.accessToken(),
+        tokenResponse.refreshToken(),
+        tokenResponse.firstLogin(),
+        requiresAgreement,
+        member.getNickname(),
+        member.getId()
+    );
+  }
 }
