@@ -1,5 +1,6 @@
 package com.chuseok22.eodaegoserver.domain.member.service;
 
+import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
@@ -22,6 +23,7 @@ public class MemberService {
 
   private final Clock clock;
   private final MemberRepository memberRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   public AgreementResponse getAgreement(UUID memberId) {
     Member member = memberRepository.findById(memberId)
@@ -55,4 +57,14 @@ public class MemberService {
 
   }
 
+  @Transactional
+  public void withdraw(UUID memberId) {
+    Member member = memberRepository.findById(memberId)
+      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    refreshTokenRepository.deleteByMember(member);
+    memberRepository.delete(member);
+
+    log.info("회원탈퇴 완료: memberId={}", memberId);
+  }
 }

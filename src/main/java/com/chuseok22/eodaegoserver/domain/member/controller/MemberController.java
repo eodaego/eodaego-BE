@@ -9,6 +9,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,4 +43,13 @@ public class MemberController implements MemberControllerDocs {
     return ResponseEntity.noContent().build();
   }
 
+  @Override
+  @LogMonitoring
+  @DeleteMapping(path = "/me", version = "1")
+  public ResponseEntity<Void> withdraw(
+    @AuthenticationPrincipal UUID memberId
+  ) {
+    memberService.withdraw(memberId);
+    return ResponseEntity.noContent().build();
+  }
 }
