@@ -32,6 +32,14 @@ public enum ErrorCode {
 
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 
+  // CATALOG
+
+  CATALOG_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 도감 항목입니다."),
+
+  CATALOG_ITEM_NOT_COLLECTED(HttpStatus.FORBIDDEN, "아직 수집하지 않은 도감 항목입니다."),
+
+  CATALOG_ITEM_ALREADY_COLLECTED(HttpStatus.CONFLICT, "이미 수집한 도감 항목입니다."),
+
   // AI
 
   AI_SERVER_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버에 연결할 수 없습니다."),
