@@ -84,5 +84,12 @@ public class CatalogItem extends BaseEntity {
     this.status = status;
   }
 
+  public void updateSyncedFields(String name, String imageUrl, Double latitude, Double longitude) {
+    this.name = name;
+    this.imageUrl = imageUrl;
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
+
 }
 

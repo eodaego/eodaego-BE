@@ -13,9 +13,10 @@ import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class CatalogItemService {
   private final CatalogAiClient catalogAiClient;
 
   @Transactional
-  public List<CatalogItem> syncFromAiServer() {
+  public CatalogSyncResult syncFromAiServer() {
     List<AiAnimalResponse> animals = catalogAiClient.fetchAnimals();
     List<AiPlantResponse> plants = catalogAiClient.fetchPlants();
     List<AiFacilityResponse> facilities = catalogAiClient.fetchFacilities();
@@ -47,13 +48,22 @@ public class CatalogItemService {
 
     List<CatalogItem> existingItems = catalogItemRepository.findByExternalIdIn(fetchedExternalIds);
 
-    List<CatalogItem> createdItems = new ArrayList<>();
-    createdItems.addAll(syncAnimals(animals, extractExternalIds(existingItems, CatalogCategory.ANIMAL)));
-    createdItems.addAll(syncPlants(plants, extractExternalIds(existingItems, CatalogCategory.PLANT)));
-    createdItems.addAll(syncFacilities(facilities, extractExternalIds(existingItems, CatalogCategory.PLACE)));
+    CatalogSyncResult animalResult = syncAnimals(animals, extractExternalId(existingItems, CatalogCategory.ANIMAL));
+    CatalogSyncResult plantResult = syncPlants(plants, extractExternalId(existingItems, CatalogCategory.PLANT));
+    CatalogSyncResult facilityResult = syncFacilities(facilities, extractExternalId(existingItems, CatalogCategory.PLACE));
 
-    log.info("도감 항목 외부 동기화 완료. 신규 등록 {}건", createdItems.size());
-    return createdItems;
+    List<CatalogItem> createdItems = new ArrayList<>();
+    createdItems.addAll(animalResult.created());
+    createdItems.addAll(plantResult.created());
+    createdItems.addAll(facilityResult.created());
+
+    List<CatalogItem> updatedItems = new ArrayList<>();
+    updatedItems.addAll(animalResult.updated());
+    updatedItems.addAll(plantResult.updated());
+    updatedItems.addAll(facilityResult.updated());
+
+    log.info("도감 항목 외부 동기화 완료. 신규 등록 {}건, 갱신 {}건", createdItems.size(), updatedItems.size());
+    return new CatalogSyncResult(createdItems, updatedItems);
   }
 
   public List<CatalogItem> getAllCatalogItems() {
@@ -101,14 +111,26 @@ public class CatalogItemService {
     log.info("도감 항목 삭제 완료. catalogItemId={}", catalogItemId);
   }
 
-  private List<CatalogItem> syncAnimals(List<AiAnimalResponse> externalAnimals, Set<Long> existingExternalIds) {
+  private CatalogSyncResult syncAnimals(List<AiAnimalResponse> externalAnimals, Map<Long, CatalogItem> existingByExternalId) {
     int sequenceNumber = nextSequenceNumber(CatalogCategory.ANIMAL);
-    List<CatalogItem> createdItems = new ArrayList<>();
+    List<CatalogItem> created = new ArrayList<>();
+    List<CatalogItem> updated = new ArrayList<>();
+
     for (AiAnimalResponse external : externalAnimals) {
-      if (existingExternalIds.contains(external.id())) {
+
+      CatalogItem existing = existingByExternalId.get(external.id());
+
+      if (existing != null) {
+        boolean changed = !Objects.equals(existing.getName(), external.name())
+                          || !Objects.equals(existing.getImageUrl(), external.thumbnailUrl());
+        if (changed) {
+          existing.updateSyncedFields(external.name(), external.thumbnailUrl(), existing.getLatitude(), existing.getLongitude());
+          updated.add(existing);
+        }
         continue;
       }
-      createdItems.add(catalogItemRepository.save(CatalogItem.builder()
+
+      created.add(catalogItemRepository.save(CatalogItem.builder()
           .sequenceNumber(sequenceNumber++)
           .category(CatalogCategory.ANIMAL)
           .name(external.name())
@@ -119,17 +141,30 @@ public class CatalogItemService {
           .externalId(external.id())
           .build()));
     }
-    return createdItems;
+    return new CatalogSyncResult(created, updated);
   }
 
-  private List<CatalogItem> syncPlants(List<AiPlantResponse> externalPlants, Set<Long> existingExternalIds) {
+  private CatalogSyncResult syncPlants(List<AiPlantResponse> externalPlants, Map<Long, CatalogItem> existingByExternalId) {
     int sequenceNumber = nextSequenceNumber(CatalogCategory.PLANT);
-    List<CatalogItem> createdItems = new ArrayList<>();
+    List<CatalogItem> created = new ArrayList<>();
+    List<CatalogItem> updated = new ArrayList<>();
+
     for (AiPlantResponse external : externalPlants) {
-      if (existingExternalIds.contains(external.id())) {
+
+      CatalogItem existing = existingByExternalId.get(external.id());
+
+      if (existing != null) {
+
+        boolean changed = !Objects.equals(existing.getName(), external.name())
+                          || !Objects.equals(existing.getImageUrl(), external.thumbnailUrl());
+        if (changed) {
+          existing.updateSyncedFields(external.name(), external.thumbnailUrl(), existing.getLatitude(), existing.getLongitude());
+          updated.add(existing);
+        }
         continue;
       }
-      createdItems.add(catalogItemRepository.save(CatalogItem.builder()
+
+      created.add(catalogItemRepository.save(CatalogItem.builder()
           .sequenceNumber(sequenceNumber++)
           .category(CatalogCategory.PLANT)
           .name(external.name())
@@ -140,17 +175,29 @@ public class CatalogItemService {
           .externalId(external.id())
           .build()));
     }
-    return createdItems;
+    return new CatalogSyncResult(created, updated);
   }
 
-  private List<CatalogItem> syncFacilities(List<AiFacilityResponse> externalFacilities, Set<Long> existingExternalIds) {
+  private CatalogSyncResult syncFacilities(List<AiFacilityResponse> externalFacilities, Map<Long, CatalogItem> existingByExternalId) {
     int sequenceNumber = nextSequenceNumber(CatalogCategory.PLACE);
-    List<CatalogItem> createdItems = new ArrayList<>();
+    List<CatalogItem> created = new ArrayList<>();
+    List<CatalogItem> updated = new ArrayList<>();
+
     for (AiFacilityResponse external : externalFacilities) {
-      if (existingExternalIds.contains(external.id())) {
+
+      CatalogItem existing = existingByExternalId.get(external.id());
+      if (existing != null) {
+        boolean changed = !Objects.equals(existing.getName(), external.name())
+                          || !Objects.equals(existing.getLatitude(), external.latitude())
+                          || !Objects.equals(existing.getLongitude(), external.longitude());
+        if (changed) {
+          existing.updateSyncedFields(external.name(), existing.getImageUrl(), external.latitude(), external.longitude());
+          updated.add(existing);
+        }
         continue;
       }
-      createdItems.add(catalogItemRepository.save(CatalogItem.builder()
+
+      created.add(catalogItemRepository.save(CatalogItem.builder()
           .sequenceNumber(sequenceNumber++)
           .category(CatalogCategory.PLACE)
           .name(external.name())
@@ -162,7 +209,7 @@ public class CatalogItemService {
           .externalId(external.id())
           .build()));
     }
-    return createdItems;
+    return new CatalogSyncResult(created, updated);
   }
 
   private int nextSequenceNumber(CatalogCategory category) {
@@ -171,11 +218,9 @@ public class CatalogItemService {
                .orElse(0) + 1;
   }
 
-  private Set<Long> extractExternalIds(List<CatalogItem> catalogItems, CatalogCategory category) {
+  private Map<Long, CatalogItem> extractExternalId(List<CatalogItem> catalogItems, CatalogCategory category) {
     return catalogItems.stream()
         .filter(catalogItem -> catalogItem.getCategory() == category)
-        .map(CatalogItem::getExternalId)
-        .collect(Collectors.toSet());
+        .collect(Collectors.toMap(CatalogItem::getExternalId, Function.identity()));
   }
-
 }

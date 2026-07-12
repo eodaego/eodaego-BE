@@ -3,7 +3,9 @@ package com.chuseok22.eodaegoserver.domain.catalog.controller;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemStatusUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemResponse;
+import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogSyncResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogItemService;
+import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogSyncResult;
 import com.chuseok22.logging.annotation.LogMonitoring;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -46,11 +48,17 @@ public class CatalogItemController implements CatalogItemControllerDocs {
   @Override
   @LogMonitoring
   @PostMapping(path = "/sync", version = "1")
-  public ResponseEntity<List<CatalogItemResponse>> syncCatalogItems() {
-    List<CatalogItemResponse> response = catalogItemService.syncFromAiServer().stream()
+  public ResponseEntity<CatalogSyncResponse> syncCatalogItems() {
+
+    CatalogSyncResult result = catalogItemService.syncFromAiServer();
+
+    List<CatalogItemResponse> created = result.created().stream()
         .map(CatalogItemResponse::from)
         .toList();
-    return ResponseEntity.ok(response);
+    List<CatalogItemResponse> updated = result.updated().stream()
+        .map(CatalogItemResponse::from)
+        .toList();
+    return ResponseEntity.ok(new CatalogSyncResponse(created, updated));
   }
 
   @Override
