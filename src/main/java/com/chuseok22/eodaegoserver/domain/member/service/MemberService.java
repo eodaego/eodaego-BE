@@ -62,9 +62,14 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
       .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    refreshTokenRepository.deleteByMember(member);
+    deleteRelatedMemberData(member);
+
     memberRepository.delete(member);
 
     log.info("회원탈퇴 완료: memberId={}", memberId);
+  }
+
+  private void deleteRelatedMemberData(Member member) {
+    refreshTokenRepository.deleteByMember(member);
   }
 }
