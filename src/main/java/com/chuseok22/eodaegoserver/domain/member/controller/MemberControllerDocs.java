@@ -86,4 +86,31 @@ public interface MemberControllerDocs {
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<Void> updateAgreement(UUID memberId, AgreementRequest request);
+
+  @ApiChangeLogs({
+    @ApiChangeLog(
+      date = "2026-07-12",
+      author = ChangeLogAuthor.KANG_JIYUN,
+      description = "회원탈퇴 API 추가",
+      issueUrl = "https://github.com/eodaego/eodaego-BE/issues/19"
+    )
+  })
+  @Operation(
+    summary = "회원탈퇴",
+    description = """
+        현재 인증된 회원을 탈퇴 처리한다.
+
+        - Authorization: Bearer {accessToken} 헤더가 필요하다.
+        - 현재 저장된 refreshToken을 삭제한다.
+        - 회원 정보를 DB에서 삭제한다.
+        - 성공 시 응답 바디는 없다(204).
+        """,
+    security = @SecurityRequirement(name = "Bearer Token")
+  )
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "회원탈퇴 성공, 응답 바디 없음"),
+    @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음"),
+    @ApiResponse(responseCode = "404", description = "존재하지 않는 회원")
+  })
+  ResponseEntity<Void> withdraw(UUID memberId);
 }
