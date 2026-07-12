@@ -36,6 +36,10 @@ public enum ErrorCode {
 
   AI_SERVER_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버에 연결할 수 없습니다."),
 
+  // Member
+
+  NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
+
   ;
 
   private final HttpStatus status;
