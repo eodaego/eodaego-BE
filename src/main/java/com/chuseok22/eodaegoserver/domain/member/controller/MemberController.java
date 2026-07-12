@@ -1,7 +1,9 @@
 package com.chuseok22.eodaegoserver.domain.member.controller;
 
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
+import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
+import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameResponse;
 import com.chuseok22.eodaegoserver.domain.member.service.MemberService;
 import com.chuseok22.logging.annotation.LogMonitoring;
 import jakarta.validation.Valid;
@@ -41,6 +43,16 @@ public class MemberController implements MemberControllerDocs {
   ) {
     memberService.updateAgreement(memberId, request);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  @LogMonitoring
+  @PatchMapping(path = "/me/nickname", version = "1")
+  public ResponseEntity<NicknameResponse> updateNickname(
+    @AuthenticationPrincipal UUID memberId,
+    @Valid @RequestBody NicknameUpdateRequest request
+  ) {
+    return ResponseEntity.ok(memberService.updateNickname(memberId, request));
   }
 
   @Override
