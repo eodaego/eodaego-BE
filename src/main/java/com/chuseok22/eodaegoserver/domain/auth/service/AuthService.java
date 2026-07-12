@@ -142,10 +142,16 @@ public class AuthService {
   }
 
   private String resolveNickname(FirebaseToken firebaseToken) {
-    if (firebaseToken.getName() != null && !firebaseToken.getName().isBlank()) {
-      return firebaseToken.getName();
+    String firebaseName = firebaseToken.getName();
+
+    if (firebaseName != null
+        && !firebaseName.isBlank()
+        && !memberRepository.existsByNickname(firebaseName)) {
+      return firebaseName;
     }
-    return "회원" + firebaseToken.getUid().substring(0, Math.min(8, firebaseToken.getUid().length()));
+
+    String uid = firebaseToken.getUid();
+    return "회원" + uid.substring(0, Math.min(8, uid.length()));
   }
 
   private LocalDateTime toExpiry(long expMillis) {
