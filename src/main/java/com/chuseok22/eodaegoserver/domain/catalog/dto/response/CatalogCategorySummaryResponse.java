@@ -9,10 +9,10 @@ public record CatalogCategorySummaryResponse(
     CatalogCategory category,
 
     @Schema(description = "이 카테고리의 전체 도감 항목 개수", example = "48")
-    int totalCount,
+    long totalCount,
 
     @Schema(description = "이 카테고리에서 현재 회원이 수집한 개수", example = "12")
-    int collectedCount,
+    long collectedCount,
 
     @Schema(description = "이 카테고리의 수집률(정수 퍼센트, 0~100)", example = "25")
     int collectionRate

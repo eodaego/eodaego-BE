@@ -127,12 +127,12 @@ public class CatalogService {
           long total = totalCountByCategory.getOrDefault(category, 0L);
           long collected = collectedCountByCategory.getOrDefault(category, 0L);
           return new CatalogCategorySummaryResponse(
-              category, (int) total, (int) collected, calculateCollectionRate(total, collected));
+              category, total, collected, calculateCollectionRate(total, collected));
         })
         .toList();
 
-    int totalCount = byCategory.stream().mapToInt(CatalogCategorySummaryResponse::totalCount).sum();
-    int collectedCount = byCategory.stream().mapToInt(CatalogCategorySummaryResponse::collectedCount).sum();
+    long totalCount = byCategory.stream().mapToLong(CatalogCategorySummaryResponse::totalCount).sum();
+    long collectedCount = byCategory.stream().mapToLong(CatalogCategorySummaryResponse::collectedCount).sum();
 
     return new CatalogSummaryResponse(totalCount, collectedCount, calculateCollectionRate(totalCount, collectedCount), byCategory);
 
