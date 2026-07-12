@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> {
 
@@ -14,4 +15,7 @@ public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> 
   List<CatalogItem> findByCategory(CatalogCategory category);
 
   List<CatalogItem> findByExternalIdIn(List<Long> externalIds);
+
+  @Query(value = "SELECT category AS category, COUNT(*) AS count FROM catalog_item GROUP BY category", nativeQuery = true)
+  List<CategoryCountProjection> countGroupByCategory();
 }

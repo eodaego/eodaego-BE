@@ -5,6 +5,7 @@ import com.chuseok22.apichangelog.annotation.ApiChangeLogs;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemDetailResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemListResponse;
+import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogSummaryResponse;
 import com.chuseok22.eodaegoserver.global.exception.ErrorResponse;
 import com.chuseok22.eodaegoserver.global.swagger.ChangeLogAuthor;
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,4 +113,31 @@ public interface CatalogControllerDocs {
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<Void> collectCatalogItem(UUID memberId, UUID catalogItemId);
+
+  @ApiChangeLogs({
+      @ApiChangeLog(
+          date = "2026-07-13",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "도감 수집 현황 요약 API 최초 작성"
+      )
+  })
+  @Operation(
+      summary = "도감 수집 현황 요약",
+      description = """
+          전체 및 카테고리별(ANIMAL/PLANT/PLACE) 도감 항목 총 개수, 현재 회원의 수집 개수,
+          수집률(정수 퍼센트, 0~100, 서버가 계산해 그대로 내려줌)을 반환한다.
+
+          - 홈 화면의 진행률 카드, 내 정보의 통계 카드 등 개수만 필요한 화면에서 사용한다.
+          - collectionRate는 반올림된 정수 퍼센트다(앱에서 별도로 계산하지 않고 그대로 표시).
+          - 아직 동기화된 항목이 전혀 없는 카테고리(totalCount=0)는 collectionRate도 0으로 내려간다.
+          - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
+          """,
+      security = @SecurityRequirement(name = "Bearer Token")
+  )
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "조회 성공"),
+      @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+  })
+  ResponseEntity<CatalogSummaryResponse> getCatalogSummary(UUID memberId);
 }

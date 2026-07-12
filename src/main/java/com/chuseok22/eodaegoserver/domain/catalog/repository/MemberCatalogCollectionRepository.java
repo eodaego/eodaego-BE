@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface MemberCatalogCollectionRepository extends JpaRepository<MemberCatalogCollection, UUID> {
 
@@ -21,5 +23,15 @@ public interface MemberCatalogCollectionRepository extends JpaRepository<MemberC
   long countByMemberId(UUID memberId);
 
   long countByMemberIdAndCatalogItem_Category(UUID memberId, CatalogCategory category);
+
+  @Query(value = """
+      SELECT ci.category AS category, COUNT(*) AS count
+      FROM member_catalog_collection mcc
+      JOIN catalog_item ci ON ci.id = mcc.catalog_item_id
+      WHERE mcc.member_id = :memberId
+      GROUP BY ci.category
+      """, nativeQuery = true)
+  List<CategoryCountProjection> countCollectedGroupByCategory(@Param("memberId") UUID memberId);
+
 
 }

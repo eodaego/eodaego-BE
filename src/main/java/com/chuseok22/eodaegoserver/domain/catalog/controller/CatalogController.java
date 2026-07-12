@@ -3,6 +3,7 @@ package com.chuseok22.eodaegoserver.domain.catalog.controller;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemDetailResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemListResponse;
+import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogSummaryResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogService;
 import com.chuseok22.logging.annotation.LogMonitoring;
 import java.util.UUID;
@@ -50,6 +51,13 @@ public class CatalogController implements CatalogControllerDocs {
       @PathVariable UUID catalogItemId) {
     catalogService.collectCatalogItem(memberId, catalogItemId);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  @LogMonitoring
+  @GetMapping(path = "/summary", version = "1")
+  public ResponseEntity<CatalogSummaryResponse> getCatalogSummary(@AuthenticationPrincipal UUID memberId) {
+    return ResponseEntity.ok(catalogService.getCatalogSummary(memberId));
   }
 
 }

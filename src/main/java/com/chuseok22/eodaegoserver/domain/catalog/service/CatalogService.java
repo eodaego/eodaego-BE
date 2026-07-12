@@ -1,12 +1,15 @@
 package com.chuseok22.eodaegoserver.domain.catalog.service;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
+import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogCategorySummaryResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemDetailResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemListResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemSummaryResponse;
+import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogSummaryResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.MemberCatalogCollection;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
+import com.chuseok22.eodaegoserver.domain.catalog.repository.CategoryCountProjection;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.MemberCatalogCollectionRepository;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
@@ -14,7 +17,9 @@ import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -103,6 +108,36 @@ public class CatalogService {
     log.info("도감 항목 수집 완료. memberId={}, catalogItemId={}", memberId, catalogItemId);
   }
 
+  public CatalogSummaryResponse getCatalogSummary(UUID memberId) {
+
+    Map<CatalogCategory, Long> totalCountByCategory = catalogItemRepository.countGroupByCategory().stream()
+        .collect(Collectors.toMap(
+            projection -> CatalogCategory.valueOf(projection.getCategory()),
+            CategoryCountProjection::getCount
+        ));
+
+    Map<CatalogCategory, Long> collectedCountByCategory = memberCatalogCollectionRepository.countCollectedGroupByCategory(memberId).stream()
+        .collect(Collectors.toMap(
+            projection -> CatalogCategory.valueOf(projection.getCategory()),
+            CategoryCountProjection::getCount
+        ));
+
+    List<CatalogCategorySummaryResponse> byCategory = Arrays.stream(CatalogCategory.values())
+        .map(category -> {
+          long total = totalCountByCategory.getOrDefault(category, 0L);
+          long collected = collectedCountByCategory.getOrDefault(category, 0L);
+          return new CatalogCategorySummaryResponse(
+              category, (int) total, (int) collected, calculateCollectionRate(total, collected));
+        })
+        .toList();
+
+    int totalCount = byCategory.stream().mapToInt(CatalogCategorySummaryResponse::totalCount).sum();
+    int collectedCount = byCategory.stream().mapToInt(CatalogCategorySummaryResponse::collectedCount).sum();
+
+    return new CatalogSummaryResponse(totalCount, collectedCount, calculateCollectionRate(totalCount, collectedCount), byCategory);
+
+  }
+
   private List<CatalogItem> findItemsByFilter(UUID memberId, CatalogCategory category, String name) {
     if (name != null) {
       return findCollectedItemsByFilter(memberId, category, name);
@@ -136,4 +171,10 @@ public class CatalogService {
     return prefix + String.format("%03d", catalogItem.getSequenceNumber());
   }
 
+  private int calculateCollectionRate(long total, long collected){
+    if(total==0){
+      return 0;
+    }
+    return (int) Math.round(collected * 100.0 / total);
+  }
 }
