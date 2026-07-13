@@ -17,7 +17,8 @@
 
 ## Entity
 
-- `@Getter @Setter` 사용(Lombok). 별도 도메인 메서드(예: `rotate()`, `updatePassword()`, 정적 팩토리 메서드 `create()`/`register()` 등)는 만들지 않는다 — 생성은 `@Builder`, 변경은 Setter로 통일.
+- `@Getter @Setter` 사용(Lombok). 생성은 `@Builder`로 통일한다 — 정적 팩토리 메서드(`create()`/`register()` 등)는 만들지 않는다.
+- 변경(update)은 Setter를 직접 호출하거나, 여러 필드를 묶어 한 번에 바꾸는 도메인 메서드(예: `update(...)`, `updateStatus(...)`, `updateSyncedFields(...)`)를 만들어도 된다 — 단, 도메인 메서드는 필드 대입만 수행해야 하며 조건 분기, 검증, 외부 시스템 호출 등 실질적인 비즈니스 로직을 포함해서는 안 된다(그런 로직은 Service에 둔다).
 - `@Builder` 패턴 사용. `@AllArgsConstructor` + `@NoArgsConstructor(access = AccessLevel.PROTECTED)`를 함께 사용해 Builder가 동작하도록 한다.
 - `@Table`, `@Column`의 `name` 속성은 명시하지 않는다(Hibernate 기본 네이밍 전략에 위임). 단, `uniqueConstraints`처럼 이름 지정이 아닌 제약조건 자체를 위한 설정은 예외적으로 사용 가능.
 - 모든 Entity는 `BaseEntity`(`global/entity/BaseEntity.java` — `createdAt`/`updatedAt` Auditing)를 상속한다.
@@ -90,11 +91,11 @@
 ## Responsibility separation
 
 - service / repository / controller 역할 기준: Controller(요청/응답) → Service(비즈니스 로직 전부) → Repository(데이터 접근만, 쿼리 메서드 외 로직 없음).
-- 비즈니스 로직 위치 기준: 예외 없이 Service. Entity에는 로직을 두지 않는다(순수 데이터 홀더 + Builder/Setter).
+- 비즈니스 로직 위치 기준: 조건 분기, 검증, 외부 시스템 호출 등 실질적인 비즈니스 로직은 예외 없이 Service에 둔다. Entity는 단순 필드 대입 수준의 도메인 메서드(생성은 Builder, 변경은 Setter 또는 필드 대입만 하는 도메인 메서드)까지만 허용한다.
 - 화면 로직과 데이터 로직 분리 기준: 관리자 Thymeleaf 화면(`domain/admin`)의 뷰 렌더링 로직은 Controller에 최소한으로 두고, 실제 데이터 처리는 Service에 위임한다.
 
 ## Review expectations
 
-- 리뷰 시 반드시 확인할 항목: Entity가 Builder+Setter 패턴을 따르는지, Controller가 비즈니스 로직을 포함하지 않는지, `getReferenceById` 미사용, DTO 검증 어노테이션 존재 여부, `ControllerDocs` 구현 여부, DTO 필드 `@Schema` 작성 여부 및 에러 응답의 `content`/`errorCode` 명시 여부(자세한 기준은 "Swagger 문서화" 참고)
+- 리뷰 시 반드시 확인할 항목: Entity가 생성은 Builder로 하는지(정적 팩토리 메서드 없이), 변경 도메인 메서드가 필드 대입 이상의 로직(조건 분기·검증·외부 호출)을 포함하지 않는지, Controller가 비즈니스 로직을 포함하지 않는지, `getReferenceById` 미사용, DTO 검증 어노테이션 존재 여부, `ControllerDocs` 구현 여부, DTO 필드 `@Schema` 작성 여부 및 에러 응답의 `content`/`errorCode` 명시 여부(자세한 기준은 "Swagger 문서화" 참고)
 - 성능 / 보안 / 유지보수 관점 체크리스트: N+1 쿼리 여부, 인증/인가 누락 여부(`@AuthenticationPrincipal` 또는 SecurityConfig 경로 설정), `application-*.yml` git 추적 여부
-- 리뷰에서 block 걸어야 하는 기준: 비회원 접근이 가능한 회원 전용 API, `application-*.yml` 커밋 시도, Entity에 비즈니스 로직(도메인 메서드) 추가
+- 리뷰에서 block 걸어야 하는 기준: 비회원 접근이 가능한 회원 전용 API, `application-*.yml` 커밋 시도, Entity에 정적 팩토리 메서드나 조건 분기·외부 호출이 섞인 비즈니스 로직 추가
