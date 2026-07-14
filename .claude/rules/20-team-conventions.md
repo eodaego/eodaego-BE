@@ -93,9 +93,10 @@
 - service / repository / controller 역할 기준: Controller(요청/응답) → Service(비즈니스 로직 전부) → Repository(데이터 접근만, 쿼리 메서드 외 로직 없음).
 - 비즈니스 로직 위치 기준: 조건 분기, 검증, 외부 시스템 호출 등 실질적인 비즈니스 로직은 예외 없이 Service에 둔다. Entity는 단순 필드 대입 수준의 도메인 메서드(생성은 Builder, 변경은 Setter 또는 필드 대입만 하는 도메인 메서드)까지만 허용한다.
 - 화면 로직과 데이터 로직 분리 기준: 관리자 Thymeleaf 화면(`domain/admin`)의 뷰 렌더링 로직은 Controller에 최소한으로 두고, 실제 데이터 처리는 Service에 위임한다.
+- 관리자(`domain/admin`)의 외부 도메인 로직 재사용 기준: 다른 도메인의 Entity/Repository는 필요시 가져다 써도 되지만, 다른 도메인의 Service 메서드는 그대로 재사용하지 않는다. 일반 사용자용 Service는 status/활성화 여부로 조회 결과를 제한하는 경우가 많은데, 관리자는 상태와 무관하게 전체 데이터를 조회·관리할 수 있어야 하므로 그 필터링 로직을 그대로 물려받으면 안 된다. 관리자 전용 조회/변경 로직은 `domain.admin.service`에 별도로 작성한다.
 
 ## Review expectations
 
-- 리뷰 시 반드시 확인할 항목: Entity가 생성은 Builder로 하는지(정적 팩토리 메서드 없이), 변경 도메인 메서드가 필드 대입 이상의 로직(조건 분기·검증·외부 호출)을 포함하지 않는지, Controller가 비즈니스 로직을 포함하지 않는지, `getReferenceById` 미사용, DTO 검증 어노테이션 존재 여부, `ControllerDocs` 구현 여부, DTO 필드 `@Schema` 작성 여부 및 에러 응답의 `content`/`errorCode` 명시 여부(자세한 기준은 "Swagger 문서화" 참고)
+- 리뷰 시 반드시 확인할 항목: Entity가 생성은 Builder로 하는지(정적 팩토리 메서드 없이), 변경 도메인 메서드가 필드 대입 이상의 로직(조건 분기·검증·외부 호출)을 포함하지 않는지, Controller가 비즈니스 로직을 포함하지 않는지, `getReferenceById` 미사용, DTO 검증 어노테이션 존재 여부, `ControllerDocs` 구현 여부, DTO 필드 `@Schema` 작성 여부 및 에러 응답의 `content`/`errorCode` 명시 여부(자세한 기준은 "Swagger 문서화" 참고), `domain/admin`이 다른 도메인의 Service 메서드를 재사용하지 않고 상태와 무관하게 전체 데이터를 다루는지
 - 성능 / 보안 / 유지보수 관점 체크리스트: N+1 쿼리 여부, 인증/인가 누락 여부(`@AuthenticationPrincipal` 또는 SecurityConfig 경로 설정), `application-*.yml` git 추적 여부
 - 리뷰에서 block 걸어야 하는 기준: 비회원 접근이 가능한 회원 전용 API, `application-*.yml` 커밋 시도, Entity에 정적 팩토리 메서드나 조건 분기·외부 호출이 섞인 비즈니스 로직 추가
