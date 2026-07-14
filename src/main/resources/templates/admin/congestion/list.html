@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>혼잡도 조회 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='congestion')}"></div>
+<div class="p-8">
+  <h2 class="text-xl font-bold mb-4">혼잡도 조회</h2>
+  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>장소 키</th>
+        <th>혼잡도</th>
+        <th>메시지</th>
+        <th>최소 인원</th>
+        <th>최대 인원</th>
+        <th>수집일시</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="snapshot : ${congestionSnapshots}">
+        <td th:text="${snapshot.placeRefKey()}"></td>
+        <td th:text="${snapshot.congestionLevel()}"></td>
+        <td th:text="${snapshot.congestionMessage()}"></td>
+        <td th:text="${snapshot.populationMin()}"></td>
+        <td th:text="${snapshot.populationMax()}"></td>
+        <td th:text="${snapshot.collectedAt()}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

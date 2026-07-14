@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>시설 조회 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='facility')}"></div>
+<div class="p-8">
+  <h2 class="text-xl font-bold mb-4">시설 조회</h2>
+  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>이름</th>
+        <th>카테고리</th>
+        <th>유형</th>
+        <th>소개</th>
+        <th>위도</th>
+        <th>경도</th>
+        <th>수정일시</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="facility : ${facilities}">
+        <td th:text="${facility.name()}"></td>
+        <td th:text="${facility.category()}"></td>
+        <td th:text="${facility.facilityType()}"></td>
+        <td th:text="${facility.intro()}"></td>
+        <td th:text="${facility.latitude()}"></td>
+        <td th:text="${facility.longitude()}"></td>
+        <td th:text="${facility.updatedAt()}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

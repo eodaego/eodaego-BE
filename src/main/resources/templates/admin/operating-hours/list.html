@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>운영시간 조회 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='operating-hours')}"></div>
+<div class="p-8">
+  <h2 class="text-xl font-bold mb-4">운영시간 조회</h2>
+  <div class="flex flex-col gap-4">
+    <div class="card bg-base-100 shadow" th:each="section : ${operatingHoursSections}">
+      <div class="card-body">
+        <h3 class="card-title" th:text="${section.sectionTitle()}"></h3>
+        <div th:utext="${section.contentHtml()}"></div>
+        <p class="text-sm text-base-content/60" th:text="'수집일시: ' + ${section.collectedAt()}"></p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
