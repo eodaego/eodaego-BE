@@ -1,6 +1,7 @@
 package com.chuseok22.eodaegoserver.domain.catalog.service;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
+import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogCategorySummaryResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemDetailResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemListResponse;
@@ -53,6 +54,8 @@ public class CatalogService {
         .collect(Collectors.toSet());
 
     List<CatalogItemSummaryResponse> items = catalogItems.stream()
+        .filter(catalogItem -> catalogItem.getStatus() == CatalogItemStatus.AVAILABLE
+            || collectedCatalogItemIds.contains(catalogItem.getId()))
         .map(catalogItem -> toSummaryResponse(catalogItem, collectedCatalogItemIds.contains(catalogItem.getId())))
         .toList();
 
@@ -171,10 +174,10 @@ public class CatalogService {
     return prefix + String.format("%03d", catalogItem.getSequenceNumber());
   }
 
-  private int calculateCollectionRate(long total, long collected){
-    if(total==0){
-      return 0;
+  private double calculateCollectionRate(long total, long collected) {
+    if (total == 0) {
+      return 0.0;
     }
-    return (int) Math.round(collected * 100.0 / total);
+    return Math.round(collected * 1000.0 / total) / 10.0;
   }
 }

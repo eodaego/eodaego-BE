@@ -28,6 +28,12 @@ public interface CatalogControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "도감 목록 조회 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/12"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-14",
+          author = ChangeLogAuthor.BAEK_JIHOON,
+          description = "미수집 상태의 SUSPENDED/RETIRED 항목이 목록에서 필터링되지 않던 누락 로직 수정. 이미 수집한 항목은 상태와 무관하게 계속 노출",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/12"
       )
   })
   @Operation(
@@ -39,6 +45,7 @@ public interface CatalogControllerDocs {
           - name은 부분 일치(대소문자 구분)로 검색된다.
           - 미수집 항목은 name/imageUrl이 null로 내려간다(프론트에서 '?'로 표시).
           - collectedCount는 현재 필터(category) 기준 회원의 수집 개수, items의 개수가 곧 현재 필터 기준 전체 개수다.
+          - status가 SUSPENDED/RETIRED인 미수집 항목은 목록에서 제외된다. 단, 이미 수집한 항목은 이후 상태가 SUSPENDED/RETIRED로 바뀌어도 계속 노출된다(수집 기록 보존). 이 때문에 동일 항목이라도 회원의 수집 이력에 따라 totalCount/목록 구성이 달라질 수 있다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
@@ -119,17 +126,22 @@ public interface CatalogControllerDocs {
           date = "2026-07-13",
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "도감 수집 현황 요약 API 최초 작성"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-14",
+          author = ChangeLogAuthor.BAEK_JIHOON,
+          description = "collectionRate 응답 타입을 int(정수 퍼센트)에서 double(소수점 첫째자리까지)로 변경"
       )
   })
   @Operation(
       summary = "도감 수집 현황 요약",
       description = """
           전체 및 카테고리별(ANIMAL/PLANT/PLACE) 도감 항목 총 개수, 현재 회원의 수집 개수,
-          수집률(정수 퍼센트, 0~100, 서버가 계산해 그대로 내려줌)을 반환한다.
+          수집률(백분율, 소수점 첫째자리까지 반올림, 0~100, 서버가 계산해 그대로 내려줌)을 반환한다.
 
           - 홈 화면의 진행률 카드, 내 정보의 통계 카드 등 개수만 필요한 화면에서 사용한다.
-          - collectionRate는 반올림된 정수 퍼센트다(앱에서 별도로 계산하지 않고 그대로 표시).
-          - 아직 동기화된 항목이 전혀 없는 카테고리(totalCount=0)는 collectionRate도 0으로 내려간다.
+          - collectionRate는 소수점 첫째자리까지 반올림된 백분율이다(앱에서 별도로 계산하지 않고 그대로 표시).
+          - 아직 동기화된 항목이 전혀 없는 카테고리(totalCount=0)는 collectionRate도 0.0으로 내려간다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
