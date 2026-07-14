@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="nav(activePage)" class="navbar bg-base-100 shadow-md mb-6 px-4 flex-wrap">
+  <div class="flex-1">
+    <a th:href="@{/admin/dashboard}" class="btn btn-ghost text-lg">어대GO 관리자</a>
+  </div>
+  <div class="flex-none flex items-center gap-2 flex-wrap">
+    <ul class="menu menu-horizontal px-1 gap-1">
+      <li><a th:href="@{/admin/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">대시보드</a></li>
+      <li><a th:href="@{/admin/facility/amusement-rides}" th:classappend="${activePage == 'amusement-rides'} ? 'active' : ''">놀이기구 관리</a></li>
+      <li><a th:href="@{/admin/crawling/schedules}" th:classappend="${activePage == 'crawling-schedules'} ? 'active' : ''">크롤링 스케줄</a></li>
+      <li><a th:href="@{/admin/facility}" th:classappend="${activePage == 'facility'} ? 'active' : ''">시설 조회</a></li>
+      <li><a th:href="@{/admin/facility/operating-hours}" th:classappend="${activePage == 'operating-hours'} ? 'active' : ''">운영시간 조회</a></li>
+      <li><a th:href="@{/admin/catalog/animals}" th:classappend="${activePage == 'animals'} ? 'active' : ''">동물도감 조회</a></li>
+      <li><a th:href="@{/admin/catalog/plants}" th:classappend="${activePage == 'plants'} ? 'active' : ''">식물도감 조회</a></li>
+      <li><a th:href="@{/admin/congestion}" th:classappend="${activePage == 'congestion'} ? 'active' : ''">혼잡도 조회</a></li>
+    </ul>
+    <form th:action="@{/admin/logout}" method="post">
+      <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button type="submit" class="btn btn-outline btn-sm">로그아웃</button>
+    </form>
+  </div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>동물도감 조회 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='animals')}"></div>
+<div class="p-8">
+  <h2 class="text-xl font-bold mb-4">동물도감 조회</h2>
+  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>이름</th>
+        <th>학명</th>
+        <th>영문명</th>
+        <th>분류</th>
+        <th>분포</th>
+        <th>먹이</th>
+        <th>위치</th>
+        <th>수정일시</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="animal : ${animals}">
+        <td th:text="${animal.name()}"></td>
+        <td th:text="${animal.scientificName()}"></td>
+        <td th:text="${animal.englishName()}"></td>
+        <td th:text="${animal.classification()}"></td>
+        <td th:text="${animal.distribution()}"></td>
+        <td th:text="${animal.diet()}"></td>
+        <td th:text="${animal.locationName()}"></td>
+        <td th:text="${animal.updatedAt()}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

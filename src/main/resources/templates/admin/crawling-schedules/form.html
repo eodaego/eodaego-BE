@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${mode == 'create'} ? '크롤링 스케줄 등록 - 어대고 관리자' : '크롤링 스케줄 수정 - 어대고 관리자'"></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='crawling-schedules')}"></div>
+<div class="p-8">
+  <h2 class="text-xl font-bold mb-4" th:text="${mode == 'create'} ? '크롤링 스케줄 등록' : '크롤링 스케줄 수정'"></h2>
+  <form th:action="${mode == 'create'} ? @{/admin/crawling/schedules} : @{'/admin/crawling/schedules/' + ${scheduleId}}"
+        th:object="${request}" method="post" class="card bg-base-100 shadow-xl p-6 max-w-lg">
+    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <div class="form-control mb-3" th:if="${mode == 'create'}">
+      <label class="label"><span class="label-text">작업 ID</span></label>
+      <input type="text" th:field="*{jobId}" class="input input-bordered"/>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('jobId')}" th:errors="*{jobId}"></span>
+    </div>
+    <div class="form-control mb-3" th:if="${mode == 'edit'}">
+      <label class="label"><span class="label-text">작업 ID</span></label>
+      <input type="text" th:value="${jobId}" class="input input-bordered" disabled/>
+    </div>
+    <div class="form-control mb-3">
+      <label class="label"><span class="label-text">트리거 유형</span></label>
+      <select th:field="*{triggerType}" class="select select-bordered">
+        <option value="interval">interval</option>
+        <option value="cron">cron</option>
+      </select>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('triggerType')}" th:errors="*{triggerType}"></span>
+    </div>
+    <div class="form-control mb-3">
+      <label class="label"><span class="label-text">트리거 설정값</span></label>
+      <input type="text" th:field="*{triggerConfig}" placeholder="interval: 초 단위 숫자, cron: cron 표현식" class="input input-bordered"/>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('triggerConfig')}" th:errors="*{triggerConfig}"></span>
+    </div>
+    <div class="form-control mb-4">
+      <label class="label cursor-pointer justify-start gap-2">
+        <input type="checkbox" th:field="*{active}" class="checkbox"/>
+        <span class="label-text">활성화</span>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">저장</button>
+  </form>
+</div>
+</body>
+</html>

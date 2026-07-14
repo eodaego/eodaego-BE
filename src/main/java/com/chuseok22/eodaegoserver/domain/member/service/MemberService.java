@@ -2,7 +2,9 @@ package com.chuseok22.eodaegoserver.domain.member.service;
 
 import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
+import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
+import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameResponse;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
@@ -54,7 +56,24 @@ public class MemberService {
     }
 
     log.info("약관 동의 정보 수정: memberId={}", memberId);
+  }
 
+  @Transactional
+  public NicknameResponse updateNickname(UUID memberId, NicknameUpdateRequest request) {
+    Member member = memberRepository.findById(memberId)
+      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    String nickname = request.nickname();
+
+    if (memberRepository.existsByNicknameAndIdNot(nickname, memberId)) {
+      throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+    }
+
+    member.setNickname(nickname);
+
+    log.info("닉네임 변경 완료: memberId={}, nickname={}", memberId, nickname);
+
+    return new NicknameResponse(nickname);
   }
 
   @Transactional
@@ -62,9 +81,14 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
       .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    refreshTokenRepository.deleteByMember(member);
+    deleteRelatedMemberData(member);
+
     memberRepository.delete(member);
 
     log.info("회원탈퇴 완료: memberId={}", memberId);
+  }
+
+  private void deleteRelatedMemberData(Member member) {
+    refreshTokenRepository.deleteByMember(member);
   }
 }

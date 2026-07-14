@@ -3,7 +3,9 @@ package com.chuseok22.eodaegoserver.domain.member.controller;
 import com.chuseok22.apichangelog.annotation.ApiChangeLog;
 import com.chuseok22.apichangelog.annotation.ApiChangeLogs;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
+import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
+import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameResponse;
 import com.chuseok22.eodaegoserver.global.exception.ErrorResponse;
 import com.chuseok22.eodaegoserver.global.swagger.ChangeLogAuthor;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,19 +100,55 @@ public interface MemberControllerDocs {
   @Operation(
     summary = "회원탈퇴",
     description = """
-        현재 인증된 회원을 탈퇴 처리한다.
+          현재 인증된 회원을 탈퇴 처리한다.
 
-        - Authorization: Bearer {accessToken} 헤더가 필요하다.
-        - 현재 저장된 refreshToken을 삭제한다.
-        - 회원 정보를 DB에서 삭제한다.
-        - 성공 시 응답 바디는 없다(204).
-        """,
+          - Authorization: Bearer {accessToken} 헤더가 필요하다.
+          - 현재 저장된 refreshToken을 삭제한다.
+          - 회원 정보를 DB에서 삭제한다.
+          - 성공 시 응답 바디는 없다(204).
+          """,
     security = @SecurityRequirement(name = "Bearer Token")
   )
   @ApiResponses({
     @ApiResponse(responseCode = "204", description = "회원탈퇴 성공, 응답 바디 없음"),
-    @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음"),
-    @ApiResponse(responseCode = "404", description = "존재하지 않는 회원")
+    @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. errorCode: MEMBER_NOT_FOUND",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<Void> withdraw(UUID memberId);
+
+  @ApiChangeLogs({
+    @ApiChangeLog(
+      date = "2026-07-13",
+      author = ChangeLogAuthor.KANG_JIYUN,
+      description = "닉네임 변경 API 추가",
+      issueUrl = "https://github.com/eodaego/eodaego-BE/issues/21"
+    )
+  })
+  @Operation(
+    summary = "닉네임 변경",
+    description = """
+          현재 인증된 회원의 닉네임을 변경한다.
+
+          - Authorization: Bearer {accessToken} 헤더가 필요하다.
+          - 닉네임은 공백일 수 없다.
+          - 닉네임은 2자 이상 30자 이하로 입력해야 한다.
+          - 닉네임은 한글, 영어, 숫자만 사용할 수 있다.
+          - 다른 회원이 이미 사용 중인 닉네임이면 변경할 수 없다.
+          """,
+    security = @SecurityRequirement(name = "Bearer Token")
+  )
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "닉네임 변경 성공"),
+    @ApiResponse(responseCode = "400", description = "요청 바디 검증 실패. errorCode: INVALID_REQUEST",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(responseCode = "404", description = "존재하지 않는 회원. errorCode: MEMBER_NOT_FOUND",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(responseCode = "409", description = "이미 사용 중인 닉네임. errorCode: NICKNAME_ALREADY_EXISTS",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+  })
+  ResponseEntity<NicknameResponse> updateNickname(UUID memberId, NicknameUpdateRequest request);
 }
