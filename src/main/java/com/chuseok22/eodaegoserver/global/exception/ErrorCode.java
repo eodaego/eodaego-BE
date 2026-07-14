@@ -36,6 +36,12 @@ public enum ErrorCode {
 
   AI_SERVER_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버에 연결할 수 없습니다."),
 
+  // ADMIN
+
+  AMUSEMENT_RIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 놀이기구입니다."),
+
+  CRAWLING_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 크롤링 스케줄입니다."),
+
   // Member
 
   NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
