@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>오류 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200 flex items-center justify-center">
+<div class="card bg-base-100 shadow-xl max-w-md">
+  <div class="card-body">
+    <h2 class="card-title text-error">오류가 발생했습니다</h2>
+    <p th:text="${errorMessage}"></p>
+    <div class="card-actions justify-end">
+      <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-sm">대시보드로 돌아가기</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
