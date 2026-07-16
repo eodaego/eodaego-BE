@@ -11,7 +11,7 @@ import java.util.List;
 public record CourseRecommendationRequest(
 
     @Schema(description = "관심 태그 목록. 건너뛰면 null이며, 이 경우 전체 태그를 사용한다.", example = "[\"ANIMAL\", \"ACTIVITY\"]")
-    List<InterestType> preferenceTags,
+    List<InterestType> interestTypes,
 
     @Schema(description = "예상 체류 시간(분). 건너뛰면 null이며, 이 경우 기본값(1440분, 24시간)을 사용한다.", example = "120")
     @Positive
