@@ -52,7 +52,7 @@ public class CourseRecommendationService {
     AiRouteRecommendationResponse aiResponse = courseAiClient.recommendRoutes(aiRequest);
 
     List<Course> savedCourses = aiResponse.courses().stream()
-        .map(aiCourse -> toCourse(aiCourse, preferenceTags.get(0), stayDurationMinutes, request.entrance(), request.exit()))
+        .map(aiCourse -> toCourse(aiCourse, preferenceTags, stayDurationMinutes, request.entrance(), request.exit()))
         .map(courseRepository::save)
         .toList();
 
@@ -93,14 +93,14 @@ public class CourseRecommendationService {
 
   private Course toCourse(
       AiRecommendedCourse aiCourse,
-      InterestType representativeInterestType,
+      List<InterestType> preferenceTags,
       int durationMinutes,
       EntranceGate entrance,
       EntranceGate exit
   ) {
     Course course = Course.builder()
         .title(aiCourse.title())
-        .interestType(representativeInterestType)
+        .interestTypes(preferenceTags)
         .tagLabel(aiCourse.reason())
         .durationMinutes(durationMinutes)
         .entrance(entrance)

@@ -15,8 +15,8 @@ public record CourseResponse(
     @Schema(description = "코스 제목", example = "동물 만나러 가는 길")
     String title,
 
-    @Schema(description = "코스 대표 관심 태그", example = "ANIMAL")
-    InterestType interestType,
+    @Schema(description = "코스 관심 태그 목록", example = "[\"ANIMAL\", \"NATURE\"]")
+    List<InterestType> interestTypes,
 
     @Schema(description = "추천 이유/태그 문구", example = "동물을 좋아하는 분께 추천하는 코스예요")
     String tagLabel,
@@ -42,7 +42,7 @@ public record CourseResponse(
     return new CourseResponse(
         course.getId(),
         course.getTitle(),
-        course.getInterestType(),
+        course.getInterestTypes(),
         course.getTagLabel(),
         course.getDurationMinutes(),
         course.getEntrance(),

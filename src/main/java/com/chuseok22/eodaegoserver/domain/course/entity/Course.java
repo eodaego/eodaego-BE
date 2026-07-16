@@ -4,12 +4,15 @@ import com.chuseok22.eodaegoserver.domain.course.EntranceGate;
 import com.chuseok22.eodaegoserver.domain.course.InterestType;
 import com.chuseok22.eodaegoserver.global.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import java.util.ArrayList;
@@ -35,8 +38,12 @@ public class Course extends BaseEntity {
 
   private String title;
 
+
+  @Builder.Default
+  @ElementCollection
+  @CollectionTable(name = "course_interest_type", joinColumns = @JoinColumn(name = "course_id"))
   @Enumerated(EnumType.STRING)
-  private InterestType interestType;
+  private List<InterestType> interestTypes = new ArrayList<>();
 
   private String tagLabel;
 
