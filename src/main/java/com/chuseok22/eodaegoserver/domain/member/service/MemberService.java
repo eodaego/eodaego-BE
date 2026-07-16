@@ -1,6 +1,7 @@
 package com.chuseok22.eodaegoserver.domain.member.service;
 
 import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
+import com.chuseok22.eodaegoserver.domain.catalog.repository.MemberCatalogCollectionRepository;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
@@ -26,6 +27,7 @@ public class MemberService {
   private final Clock clock;
   private final MemberRepository memberRepository;
   private final RefreshTokenRepository refreshTokenRepository;
+  private final MemberCatalogCollectionRepository memberCatalogCollectionRepository;
 
   public AgreementResponse getAgreement(UUID memberId) {
     Member member = memberRepository.findById(memberId)
@@ -90,5 +92,6 @@ public class MemberService {
 
   private void deleteRelatedMemberData(Member member) {
     refreshTokenRepository.deleteByMember(member);
+    memberCatalogCollectionRepository.deleteAllByMemberId(member.getId());
   }
 }

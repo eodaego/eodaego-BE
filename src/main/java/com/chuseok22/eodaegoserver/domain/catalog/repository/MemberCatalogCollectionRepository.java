@@ -24,6 +24,8 @@ public interface MemberCatalogCollectionRepository extends JpaRepository<MemberC
 
   long countByMemberIdAndCatalogItem_Category(UUID memberId, CatalogCategory category);
 
+  void deleteAllByMemberId(UUID memberId);
+
   @Query(value = """
       SELECT ci.category AS category, COUNT(*) AS count
       FROM member_catalog_collection mcc
