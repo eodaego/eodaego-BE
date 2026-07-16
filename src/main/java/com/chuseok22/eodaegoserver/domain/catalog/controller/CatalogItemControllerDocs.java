@@ -83,6 +83,12 @@ public interface CatalogItemControllerDocs {
           date = "2026-07-13",
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "이미 등록된 항목도 외부 원본 값(이름/이미지 또는 위경도)이 바뀌었으면 갱신하도록 변경. 응답을 신규 등록 목록/갱신 목록으로 분리(CatalogSyncResponse)"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-16",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "PLACE(시설) 신규 등록 시 feature가 항상 빈 문자열로 저장되던 문제 수정. 외부 description(상세 설명)을 feature로 자동 매핑하도록 변경(식물과 동일한 방식)",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/30"
       )
   })
   @Operation(
@@ -91,8 +97,8 @@ public interface CatalogItemControllerDocs {
           외부 AI 서버(동물/식물/시설)의 전체 목록을 조회해, 아직 등록되지 않은(externalId 기준) 항목은
           신규 등록하고, 이미 등록된 항목은 외부 원본 값이 바뀌었을 때만 갱신한다.
 
-          - 신규 등록된 항목은 feature/childDescription이 빈 문자열("")로 생성되며(식물은 feature가 외부
-            설명으로 자동 채워짐), 관리자가 이후 별도로 채워야 한다.
+          - 신규 등록된 항목은 feature/childDescription이 빈 문자열("")로 생성되며(식물/시설은 feature가
+            외부 설명으로 자동 채워짐), 관리자가 이후 별도로 채워야 한다.
           - status는 AVAILABLE로 기본 생성된다.
           - 이미 등록된 항목(externalId 기준)은 새로 만들지 않는다. 대신 동물/식물은 name/imageUrl,
             시설은 name/latitude/longitude가 외부 원본과 다르면 그 값만 갱신한다.
