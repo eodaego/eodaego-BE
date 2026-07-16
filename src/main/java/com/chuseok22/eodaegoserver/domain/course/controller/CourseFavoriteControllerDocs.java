@@ -33,7 +33,8 @@ public interface CourseFavoriteControllerDocs {
       description = """
           courseId를 즐겨찾기에 등록한다.
 
-          - 이미 즐겨찾기된 코스를 다시 등록해도 에러 없이 기존 즐겨찾기 정보를 그대로 반환한다(멱등).
+          - 몇 번을 호출해도 결과가 같아야 하는 액션이라(좋아요/북마크류와 동일한 성격),
+            이미 즐겨찾기된 코스를 다시 등록 요청해도 에러 없이 최초 등록 시점의 정보를 그대로 반환한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")

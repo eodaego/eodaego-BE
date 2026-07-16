@@ -18,7 +18,7 @@ public record CourseResponse(
     @Schema(description = "코스 관심 태그 목록", example = "[\"ANIMAL\", \"NATURE\"]")
     List<InterestType> interestTypes,
 
-    @Schema(description = "추천 이유/태그 문구", example = "동물을 좋아하는 분께 추천하는 코스예요")
+    @Schema(description = "코스 카드에 붙는 짧은 태그 문구. 현재 구현에서는 항상 null이다.", example = "동물 듬뿍")
     String tagLabel,
 
     @Schema(description = "소요 시간(분)", example = "120")
@@ -33,7 +33,12 @@ public record CourseResponse(
     @Schema(description = "현재 조회하는 회원이 이 코스를 즐겨찾기했는지 여부", example = "false")
     boolean favorite,
 
-    @Schema(description = "방문 순서대로 정렬된 장소 목록")
+    @Schema(description = "방문 순서대로 정렬된 장소 목록", example = """
+        [
+          {"visitOrder": 1, "facilityId": 11, "name": "맹수마을", "category": "ANIMAL", "latitude": 37.5487, "longitude": 127.0812, "mapX": null, "mapY": null},
+          {"visitOrder": 2, "facilityId": 12, "name": "바다동물관", "category": "PLACE", "latitude": 37.5491, "longitude": 127.0825, "mapX": null, "mapY": null}
+        ]
+        """)
     List<CoursePlaceResponse> places
 
 ) {
