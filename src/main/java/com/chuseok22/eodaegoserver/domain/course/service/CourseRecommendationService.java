@@ -27,9 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CourseRecommendationService {
 
-  private static final int DEFAULT_STAY_DURATION_MINUTES = 1440;
-  private static final CompanionType DEFAULT_COMPANION_TYPE = CompanionType.ALONE;
-
   private final CourseRepository courseRepository;
   private final CourseFavoriteRepository courseFavoriteRepository;
   private final CourseAiClient courseAiClient;
@@ -37,22 +34,18 @@ public class CourseRecommendationService {
   @Transactional
   public List<CourseResponse> recommendCourses(CourseRecommendationRequest request) {
 
-    List<InterestType> interestTypes = resolveInterestTypes(request.interestTypes());
-    int stayDurationMinutes = resolveStayDurationMinutes(request.stayDurationMinutes());
-    CompanionType companionType = resolveCompanionType(request.companionType());
-
     AiRouteRecommendationRequest aiRequest = new AiRouteRecommendationRequest(
-        interestTypes,
-        stayDurationMinutes,
+        request.interestTypes(),
+        request.stayDurationMinutes(),
         request.entrance(),
         request.exit(),
-        companionType
+        request.companionType()
     );
 
     AiRouteRecommendationResponse aiResponse = courseAiClient.recommendRoutes(aiRequest);
 
     List<Course> savedCourses = aiResponse.courses().stream()
-        .map(aiCourse -> toCourse(aiCourse, interestTypes, stayDurationMinutes, request.entrance(), request.exit()))
+        .map(aiCourse -> toCourse(aiCourse, request.interestTypes(), request.entrance(), request.exit()))
         .map(courseRepository::save)
         .toList();
 
@@ -76,32 +69,16 @@ public class CourseRecommendationService {
     return CourseResponse.from(course, favorite);
   }
 
-  private List<InterestType> resolveInterestTypes(List<InterestType> interestTypes) {
-    if (interestTypes == null || interestTypes.isEmpty()) {
-      return List.of(InterestType.values());
-    }
-    return interestTypes;
-  }
-
-  private int resolveStayDurationMinutes(Integer stayDurationMinutes) {
-    return stayDurationMinutes != null ? stayDurationMinutes : DEFAULT_STAY_DURATION_MINUTES;
-  }
-
-  private CompanionType resolveCompanionType(CompanionType companionType) {
-    return companionType != null ? companionType : DEFAULT_COMPANION_TYPE;
-  }
-
   private Course toCourse(
       AiRecommendedCourse aiCourse,
       List<InterestType> interestTypes,
-      int durationMinutes,
       EntranceGate entrance,
       EntranceGate exit
   ) {
     Course course = Course.builder()
         .title(aiCourse.title())
         .interestTypes(interestTypes)
-        .durationMinutes(durationMinutes)
+        .durationMinutes(aiCourse.durationMinutes())
         .entrance(entrance)
         .exit(exit)
         .build();

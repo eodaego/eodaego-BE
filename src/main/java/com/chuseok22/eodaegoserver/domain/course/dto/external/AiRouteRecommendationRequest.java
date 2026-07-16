@@ -9,19 +9,19 @@ import java.util.List;
 public record AiRouteRecommendationRequest(
 
     @JsonProperty("preference_tags")
-    List<InterestType> preferenceTags,       // 선호 태그(최소 1개)
+    List<InterestType> preferenceTags,       // 선호 태그(null 허용)
 
     @JsonProperty("stay_duration_minutes")
-    int stayDurationMinutes,                 // 체류 시간(분)
+    Integer stayDurationMinutes,              // 체류 시간(분, null 허용)
 
     @JsonProperty("entrance_facility_code")
-    EntranceGate entranceFacilityCode,       // 입구 코드
+    EntranceGate entranceFacilityCode,       // 입구 코드(필수)
 
     @JsonProperty("exit_facility_code")
-    EntranceGate exitFacilityCode,           // 출구 코드
+    EntranceGate exitFacilityCode,           // 출구 코드(필수)
 
     @JsonProperty("companion_type")
-    CompanionType companionType
+    CompanionType companionType               // 동행 유형(null 허용)
 
 ) {
 

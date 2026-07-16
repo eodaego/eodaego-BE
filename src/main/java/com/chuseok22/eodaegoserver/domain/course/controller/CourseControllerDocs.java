@@ -35,8 +35,8 @@ public interface CourseControllerDocs {
           추천된 코스를 그대로 저장해 반환한다.
 
           - entrance/exit는 필수이며 건너뛸 수 없다.
-          - interestTypes를 건너뛰면 전체 관심 태그를, stayDurationMinutes를 건너뛰면 1440분(24시간)을,
-            companionType을 건너뛰면 ALONE을 기본값으로 사용한다.
+          - interestTypes/stayDurationMinutes/companionType은 건너뛰면(null) AI 서버에도 null 그대로 전달된다(BE가 별도 기본값을 채우지 않는다).
+          - 응답 코스의 durationMinutes는 AI 서버가 실제로 계산해 응답한 값을 그대로 저장한 것이다(요청의 stayDurationMinutes를 그대로 저장하는 것이 아니다).
           - 응답 코스 수는 AI 서버 응답에 따라 달라지며 고정된 개수를 보장하지 않는다.
           - 방금 생성된 코스이므로 응답의 favorite는 항상 false다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
