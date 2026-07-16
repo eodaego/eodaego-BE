@@ -38,6 +38,7 @@ public interface CourseControllerDocs {
           - interestTypes/stayDurationMinutes/companionType은 건너뛰면(null) AI 서버에도 null 그대로 전달된다(BE가 별도 기본값을 채우지 않는다).
           - 응답 코스의 durationMinutes는 AI 서버가 실제로 계산해 응답한 값을 그대로 저장한 것이다(요청의 stayDurationMinutes를 그대로 저장하는 것이 아니다).
           - 응답 코스 수는 AI 서버 응답에 따라 달라지며 고정된 개수를 보장하지 않는다.
+          - 각 코스의 장소(places)는 AI가 준 facilityId를 도감(catalog_item, category=PLACE)의 externalId와 매칭해 이름/좌표를 채운다. 아직 도감에 동기화되지 않은 시설이면 해당 장소의 name/category/latitude/longitude는 null이다.
           - 방금 생성된 코스이므로 응답의 favorite는 항상 false다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,

@@ -16,6 +16,8 @@ public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> 
 
   List<CatalogItem> findByExternalIdIn(List<Long> externalIds);
 
+  List<CatalogItem> findByCategoryAndExternalIdIn(CatalogCategory category, List<Long> externalIds);
+
   @Query(value = "SELECT category AS category, COUNT(*) AS count FROM catalog_item GROUP BY category", nativeQuery = true)
   List<CategoryCountProjection> countGroupByCategory();
 }
