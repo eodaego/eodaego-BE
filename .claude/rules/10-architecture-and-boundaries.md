@@ -13,6 +13,7 @@
 - `global.*`은 특정 도메인에 속하지 않는 공통 설정(config), 공통 프로퍼티(properties), 공통 엔티티(entity — BaseEntity), 예외 처리(exception), 보안(security)만 둔다. `@ConfigurationProperties` 레코드는 도메인 전용 데이터를 담고 있어도 예외 없이 `global/properties/`에 둔다(예: 관리자 계정 목록인 `AdminAccountProperties`도 `domain.admin`이 아닌 `global.properties`에 위치).
 - 모듈 간 허용 의존 방향: 도메인 패키지 간(예: `domain.auth` → `domain.member`) 자유로운 참조를 허용한다. 모든 도메인은 `global.*`을 참조할 수 있다. `global.*`은 특정 `domain.*`을 참조하지 않는다(역방향 의존 금지).
 - 금지 의존 관계: 도메인 패키지 간 순환 참조 금지(예: `domain.member`가 다시 `domain.auth`를 참조하는 구조 금지). `global.*` → `domain.*` 방향의 의존 금지.
+- `domain.admin`의 외부 도메인 참조 원칙: 다른 도메인의 Entity/Repository는 필요시 직접 참조할 수 있지만, 다른 도메인의 Service 메서드는 재사용하지 않는다. 일반 사용자 대상 Service는 status/활성화 여부에 따라 조회 결과를 제한하는 필터링 로직을 포함하는 경우가 많은데, 관리자는 상태와 무관하게 전체 데이터를 조회·관리해야 하므로 이런 필터링 로직을 그대로 물려받으면 안 된다. 관리자 전용 조회/변경 로직은 `domain.admin.service`에 별도로 작성한다(필요하면 Repository에 관리자 전용 쿼리 메서드를 추가).
 
 ## Data flow
 
