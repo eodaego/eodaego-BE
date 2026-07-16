@@ -101,7 +101,6 @@ public class CourseRecommendationService {
     Course course = Course.builder()
         .title(aiCourse.title())
         .interestTypes(preferenceTags)
-        .tagLabel(aiCourse.reason())
         .durationMinutes(durationMinutes)
         .entrance(entrance)
         .exit(exit)
