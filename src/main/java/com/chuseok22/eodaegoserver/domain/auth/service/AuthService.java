@@ -9,6 +9,7 @@ import com.chuseok22.eodaegoserver.domain.auth.entity.RefreshToken;
 import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
+import com.chuseok22.eodaegoserver.domain.member.service.RandomNicknameGenerator;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import com.chuseok22.eodaegoserver.global.properties.JwtProperties;
@@ -37,6 +38,7 @@ public class AuthService {
   private final JwtProvider jwtProvider;
   private final JwtProperties jwtProperties;
   private final Clock clock;
+  private final RandomNicknameGenerator randomNicknameGenerator;
 
   @Transactional
   public LoginResponse login(LoginRequest request) {
@@ -48,7 +50,7 @@ public class AuthService {
         .orElseGet(() -> {
           Member newMember = Member.builder()
               .email(firebaseToken.getEmail())
-              .nickname(resolveNickname(firebaseToken))
+              .nickname(randomNicknameGenerator.generateUniqueNickname())
               .socialType(request.socialType())
               .providerId(firebaseToken.getUid())
               .role(Role.USER)
@@ -139,19 +141,6 @@ public class AuthService {
         );
 
     return new TokenResponse(accessToken, refreshToken, firstLogin);
-  }
-
-  private String resolveNickname(FirebaseToken firebaseToken) {
-    String firebaseName = firebaseToken.getName();
-
-    if (firebaseName != null
-        && !firebaseName.isBlank()
-        && !memberRepository.existsByNickname(firebaseName)) {
-      return firebaseName;
-    }
-
-    String uid = firebaseToken.getUid();
-    return "회원" + uid.substring(0, Math.min(8, uid.length()));
   }
 
   private LocalDateTime toExpiry(long expMillis) {
