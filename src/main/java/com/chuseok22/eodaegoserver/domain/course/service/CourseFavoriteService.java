@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +64,15 @@ public class CourseFavoriteService {
   }
 
   public List<CourseFavoriteItemResponse> getFavorites(UUID memberId) {
-    return courseFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId).stream()
+    List<CourseFavorite> favorites = courseFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+
+    favorites.forEach(favorite -> {
+      Hibernate.initialize(favorite.getCourse());
+      Hibernate.initialize(favorite.getCourse().getInterestTypes());
+      Hibernate.initialize(favorite.getCourse().getPlaces());
+    });
+
+    return favorites.stream()
         .map(CourseFavoriteItemResponse::from)
         .toList();
   }

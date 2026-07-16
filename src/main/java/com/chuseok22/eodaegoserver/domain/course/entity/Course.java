@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Getter
@@ -43,6 +44,7 @@ public class Course extends BaseEntity {
   @ElementCollection
   @CollectionTable(name = "course_interest_type", joinColumns = @JoinColumn(name = "course_id"))
   @Enumerated(EnumType.STRING)
+  @BatchSize(size = 20)
   private List<InterestType> interestTypes = new ArrayList<>();
 
   private String tagLabel;
@@ -58,6 +60,7 @@ public class Course extends BaseEntity {
   @Builder.Default
   @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
   @OrderBy("visitOrder asc")
+  @BatchSize(size = 20)
   private List<CoursePlace> places = new ArrayList<>();
 
 }
