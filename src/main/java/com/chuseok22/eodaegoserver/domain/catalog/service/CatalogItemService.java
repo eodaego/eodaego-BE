@@ -201,7 +201,7 @@ public class CatalogItemService {
           .sequenceNumber(sequenceNumber++)
           .category(CatalogCategory.PLACE)
           .name(external.name())
-          .feature("")
+          .feature(Objects.requireNonNullElse(external.description(), ""))
           .childDescription("")
           .status(CatalogItemStatus.AVAILABLE)
           .latitude(external.latitude())
