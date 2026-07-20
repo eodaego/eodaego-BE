@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>날씨 조회 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='weather')}"></div>
+<div class="p-8">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">날씨 조회</h2>
+    <form th:action="@{/admin/weather/crawl}" method="post">
+      <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button type="submit" class="btn btn-primary btn-sm">지금 수집</button>
+    </form>
+  </div>
+  <div th:replace="~{admin/fragments/crawl-result :: single(result=${crawlResult})}"></div>
+  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>장소 키</th>
+        <th>기온(℃)</th>
+        <th>습도(%)</th>
+        <th>강수형태</th>
+        <th>풍속(m/s)</th>
+        <th>하늘상태</th>
+        <th>관측일시</th>
+        <th>수집일시</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="snapshot : ${weatherSnapshots}">
+        <td th:text="${snapshot.placeRefKey()}"></td>
+        <td th:text="${snapshot.temperature()}"></td>
+        <td th:text="${snapshot.humidity()}"></td>
+        <td th:text="${snapshot.precipitationType()}"></td>
+        <td th:text="${snapshot.windSpeed()}"></td>
+        <td th:text="${snapshot.skyCondition()}"></td>
+        <td th:text="${snapshot.observedAt()}"></td>
+        <td th:text="${snapshot.collectedAt()}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

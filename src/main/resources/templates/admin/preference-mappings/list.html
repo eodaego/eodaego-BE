@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>취향 매핑 관리 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='preference-mappings')}"></div>
+<div class="p-8">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">취향 매핑 관리</h2>
+    <a th:href="@{/admin/recommendation/preference-mappings/new}" class="btn btn-primary btn-sm">매핑 등록</a>
+  </div>
+  <form th:action="@{/admin/recommendation/preference-mappings}" method="get" class="mb-4 flex gap-2 items-end">
+    <div class="form-control">
+      <label class="label"><span class="label-text">태그 필터</span></label>
+      <select name="preferenceTag" class="select select-bordered select-sm" onchange="this.form.submit()">
+        <option value="">전체</option>
+        <option th:each="tag : ${preferenceTags}" th:value="${tag}" th:text="${tag}"
+                th:selected="${tag == selectedTag}"></option>
+      </select>
+    </div>
+  </form>
+  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>취향 태그</th>
+        <th>카테고리</th>
+        <th>수정일시</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="mapping : ${mappings}">
+        <td th:text="${mapping.preferenceTag()}"></td>
+        <td th:text="${mapping.category()}"></td>
+        <td th:text="${mapping.updatedAt()}"></td>
+        <td>
+          <form th:action="@{'/admin/recommendation/preference-mappings/' + ${mapping.id()} + '/delete'}" method="post">
+            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-outline btn-error btn-xs">삭제</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

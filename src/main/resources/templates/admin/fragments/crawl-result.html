@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="single(result)" th:if="${result != null}" class="alert mb-4"
+     th:classappend="${result.success()} ? 'alert-success' : 'alert-error'">
+  <span th:text="${result.success()} ? ('수집 완료: ' + ${result.collectedCount()} + '건') : ${result.message()}"></span>
+</div>
+<div th:fragment="catalog(result)" th:if="${result != null}" class="flex flex-col gap-2 mb-4">
+  <div class="alert" th:classappend="${result.animals().success()} ? 'alert-success' : 'alert-error'">
+    <span th:text="'동물: ' + (${result.animals().success()} ? (${result.animals().collectedCount()} + '건 수집') : ${result.animals().message()})"></span>
+  </div>
+  <div class="alert" th:classappend="${result.plants().success()} ? 'alert-success' : 'alert-error'">
+    <span th:text="'식물: ' + (${result.plants().success()} ? (${result.plants().collectedCount()} + '건 수집') : ${result.plants().message()})"></span>
+  </div>
+  <div class="alert" th:classappend="${result.locations().success()} ? 'alert-success' : 'alert-error'">
+    <span th:text="'위치 동기화: ' + (${result.locations().success()} ? (${result.locations().collectedCount()} + '건 동기화') : ${result.locations().message()})"></span>
+  </div>
+</div>
+</body>
+</html>

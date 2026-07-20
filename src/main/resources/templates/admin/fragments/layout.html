@@ -15,6 +15,9 @@
       <li><a th:href="@{/admin/catalog/animals}" th:classappend="${activePage == 'animals'} ? 'active' : ''">동물도감 조회</a></li>
       <li><a th:href="@{/admin/catalog/plants}" th:classappend="${activePage == 'plants'} ? 'active' : ''">식물도감 조회</a></li>
       <li><a th:href="@{/admin/congestion}" th:classappend="${activePage == 'congestion'} ? 'active' : ''">혼잡도 조회</a></li>
+      <li><a th:href="@{/admin/recommendation/preference-mappings}" th:classappend="${activePage == 'preference-mappings'} ? 'active' : ''">취향 매핑 관리</a></li>
+      <li><a th:href="@{/admin/prompts}" th:classappend="${activePage == 'prompts'} ? 'active' : ''">프롬프트 템플릿 관리</a></li>
+      <li><a th:href="@{/admin/weather}" th:classappend="${activePage == 'weather'} ? 'active' : ''">날씨 조회</a></li>
     </ul>
     <form th:action="@{/admin/logout}" method="post">
       <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

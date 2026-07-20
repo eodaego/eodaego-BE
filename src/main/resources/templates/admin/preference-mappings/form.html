@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>취향 매핑 등록 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='preference-mappings')}"></div>
+<div class="p-8">
+  <h2 class="text-xl font-bold mb-4">취향 매핑 등록</h2>
+  <form th:action="@{/admin/recommendation/preference-mappings}" th:object="${request}" method="post"
+        class="card bg-base-100 shadow-xl p-6 max-w-lg">
+    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <div class="form-control mb-3">
+      <label class="label"><span class="label-text">취향 태그</span></label>
+      <select th:field="*{preferenceTag}" class="select select-bordered">
+        <option th:each="tag : ${preferenceTags}" th:value="${tag}" th:text="${tag}"></option>
+      </select>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('preferenceTag')}" th:errors="*{preferenceTag}"></span>
+    </div>
+    <div class="form-control mb-4">
+      <label class="label"><span class="label-text">시설 카테고리</span></label>
+      <select th:field="*{category}" class="select select-bordered">
+        <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+      </select>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">저장</button>
+  </form>
+</div>
+</body>
+</html>
