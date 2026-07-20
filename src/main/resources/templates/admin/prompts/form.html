@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${mode == 'create'} ? '프롬프트 템플릿 등록 - 어대고 관리자' : '프롬프트 템플릿 수정 - 어대고 관리자'"></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div th:replace="~{admin/fragments/layout :: nav(activePage='prompts')}"></div>
+<div class="p-8">
+  <h2 class="text-xl font-bold mb-4" th:text="${mode == 'create'} ? '프롬프트 템플릿 등록' : '프롬프트 템플릿 수정'"></h2>
+  <form th:action="${mode == 'create'} ? @{/admin/prompts} : @{'/admin/prompts/' + ${promptId}}"
+        th:object="${request}" method="post" class="card bg-base-100 shadow-xl p-6 max-w-2xl">
+    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <div class="form-control mb-3">
+      <label class="label"><span class="label-text">이름</span></label>
+      <input type="text" th:field="*{name}" class="input input-bordered"/>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+    </div>
+    <div class="form-control mb-3">
+      <label class="label"><span class="label-text">모델</span></label>
+      <select th:field="*{model}" class="select select-bordered">
+        <option th:each="aiModel : ${models}" th:value="${aiModel}" th:text="${aiModel}"></option>
+      </select>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('model')}" th:errors="*{model}"></span>
+    </div>
+    <div class="form-control mb-3">
+      <label class="label"><span class="label-text">용도</span></label>
+      <select th:field="*{purpose}" class="select select-bordered">
+        <option th:each="purposeOption : ${purposes}" th:value="${purposeOption}" th:text="${purposeOption}"></option>
+      </select>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('purpose')}" th:errors="*{purpose}"></span>
+    </div>
+    <div class="form-control mb-3">
+      <label class="label"><span class="label-text">템플릿 내용</span></label>
+      <textarea th:field="*{templateText}" class="textarea textarea-bordered h-48"></textarea>
+      <span class="text-error text-sm" th:if="${#fields.hasErrors('templateText')}" th:errors="*{templateText}"></span>
+    </div>
+    <div class="form-control mb-4">
+      <label class="label cursor-pointer justify-start gap-2">
+        <input type="checkbox" th:field="*{active}" class="checkbox"/>
+        <span class="label-text">활성화</span>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">저장</button>
+  </form>
+</div>
+</body>
+</html>
