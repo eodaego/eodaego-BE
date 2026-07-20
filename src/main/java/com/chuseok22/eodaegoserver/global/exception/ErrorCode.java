@@ -50,6 +50,14 @@ public enum ErrorCode {
 
   CRAWLING_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 크롤링 스케줄입니다."),
 
+  PREFERENCE_CATEGORY_MAPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 취향 매핑입니다."),
+
+  PREFERENCE_CATEGORY_MAPPING_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 취향 매핑입니다."),
+
+  PROMPT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프롬프트 템플릿입니다."),
+
+  PROMPT_TEMPLATE_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 프롬프트 템플릿 이름입니다."),
+
   // Member
 
   NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
