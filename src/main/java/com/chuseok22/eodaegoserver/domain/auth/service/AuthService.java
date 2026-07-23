@@ -4,16 +4,13 @@ import com.chuseok22.eodaegoserver.domain.auth.dto.request.LoginRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.request.ReissueRequest;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.LoginResponse;
 import com.chuseok22.eodaegoserver.domain.auth.dto.response.ReissueResponse;
-import com.chuseok22.eodaegoserver.domain.auth.dto.response.TokenResponse;
 import com.chuseok22.eodaegoserver.domain.auth.entity.RefreshToken;
 import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
-import com.chuseok22.eodaegoserver.domain.member.service.RandomNicknameGenerator;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import com.chuseok22.eodaegoserver.global.properties.JwtProperties;
-import com.chuseok22.eodaegoserver.global.security.Role;
 import com.chuseok22.eodaegoserver.global.security.jwt.JwtProvider;
 import com.google.firebase.auth.FirebaseToken;
 import io.jsonwebtoken.Claims;
@@ -25,79 +22,67 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AuthService {
 
-  private static final int MAX_ATTEMPTS = 30;
+  private static final int MAX_NICKNAME_ATTEMPTS = 30;
+  private static final int MAX_SOCIAL_PROVIDER_RETRIES = 3;
+
+  private static final String NICKNAME_CONSTRAINT = "uk_member_nickname";
+  private static final String SOCIAL_PROVIDER_CONSTRAINT = "uk_member_social_provider";
 
   private final MemberRepository memberRepository;
+  private final LoginTransactionService loginTransactionService;
+
   private final RefreshTokenRepository refreshTokenRepository;
   private final FirebaseTokenVerifier firebaseTokenVerifier;
   private final JwtProvider jwtProvider;
   private final JwtProperties jwtProperties;
   private final Clock clock;
-  private final RandomNicknameGenerator randomNicknameGenerator;
 
-  @Transactional
   public LoginResponse login(LoginRequest request) {
     FirebaseToken firebaseToken = firebaseTokenVerifier.verify(request.idToken());
     firebaseTokenVerifier.assertSocialTypeMatches(firebaseToken, request.socialType());
 
-    Member member = memberRepository
-      .findBySocialTypeAndProviderId(request.socialType(), firebaseToken.getUid())
-      .orElseGet(() -> {
-        String nickname = randomNicknameGenerator.generate();
+    int nicknameAttempts = 0;
+    int socialProviderRetries = 0;
 
-        Member newMember = Member.builder()
-          .email(firebaseToken.getEmail())
-          .nickname(nickname)
-          .socialType(request.socialType())
-          .providerId(firebaseToken.getUid())
-          .role(Role.USER)
-          .firstLogin(true)
-          .deviceType(request.deviceType())
-          .deviceId(request.deviceId())
-          .fcmToken(request.fcmToken())
-          .build();
-        return memberRepository.save(newMember);
-      });
+    while (nicknameAttempts < MAX_NICKNAME_ATTEMPTS) {
+      try {
+        return loginTransactionService.login(request, firebaseToken);
+      } catch (DataIntegrityViolationException e) {
+        if (isConstraintViolation(e, NICKNAME_CONSTRAINT)) {
+          nicknameAttempts++;
+          log.warn("랜덤 닉네임 충돌: attempt={}/{}", nicknameAttempts, MAX_NICKNAME_ATTEMPTS);
+          continue;
+        }
 
-    boolean firstLogin = member.isFirstLogin();
-    if (firstLogin) {
-      member.setFirstLogin(false);
-    } else {
-      member.setDeviceType(request.deviceType());
-      member.setDeviceId(request.deviceId());
-      if (request.fcmToken() != null) {
-        member.setFcmToken(request.fcmToken());
+        if (isConstraintViolation(e, SOCIAL_PROVIDER_CONSTRAINT) && socialProviderRetries < MAX_SOCIAL_PROVIDER_RETRIES) {
+          socialProviderRetries++;
+          log.info("동일 소셜 계정 동시 생성 충돌: retry={}/{}", socialProviderRetries, MAX_SOCIAL_PROVIDER_RETRIES);
+          continue;
+        }
+        throw e;
       }
     }
 
-    boolean requiresAgreement = !hasAgreedRequiredTerms(member);
-
-    TokenResponse tokenResponse = issueTokens(member, firstLogin);
-    log.info("로그인 성공: memberId={}, firstLogin={}, requiresAgreement={}",
-        member.getId(), firstLogin, requiresAgreement);
-
-    return LoginResponse.of(tokenResponse, requiresAgreement, member);
+    throw new CustomException(ErrorCode.NICKNAME_GENERATION_FAILED);
   }
 
   @Transactional
   public ReissueResponse reissue(ReissueRequest request) {
     Claims claims = jwtProvider.parseExpiredClaims(request.refreshToken());
     UUID memberId = UUID.fromString(claims.getSubject());
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    RefreshToken savedToken = refreshTokenRepository.findByMember(member)
-        .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+    RefreshToken savedToken = refreshTokenRepository.findByMember(member).orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
-    if (!savedToken.getToken().equals(request.refreshToken())
-        || savedToken.getExpiryDate().isBefore(LocalDateTime.now(clock))) {
+    if (!savedToken.getToken().equals(request.refreshToken()) || savedToken.getExpiryDate().isBefore(LocalDateTime.now(clock))) {
       throw new CustomException(ErrorCode.REFRESH_TOKEN_MISMATCH);
     }
 
@@ -112,51 +97,24 @@ public class AuthService {
 
   @Transactional
   public void logout(UUID memberId) {
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     refreshTokenRepository.deleteByMember(member);
     log.info("로그아웃 성공: memberId={}", memberId);
   }
 
-  private boolean hasAgreedRequiredTerms(Member member) {
-    return member.isPrivacyPolicyAgreed()
-           && member.isLocationInfoAgreed()
-           && member.isTermsOfServiceAgreed();
-  }
+  private boolean isConstraintViolation(Throwable throwable, String expectedConstraintName) {
+    Throwable current = throwable;
 
-  private TokenResponse issueTokens(Member member, boolean firstLogin) {
-    String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-    String refreshToken = jwtProvider.createRefreshToken(member.getId(), member.getRole());
-    LocalDateTime expiryDate = toExpiry(jwtProperties.refreshExpMillis());
+    while (current != null) {
+      if (current instanceof ConstraintViolationException exception) {
+        String actualConstraintName = exception.getConstraintName();
 
-    refreshTokenRepository.findByMember(member)
-        .ifPresentOrElse(
-            existing -> {
-              existing.setToken(refreshToken);
-              existing.setExpiryDate(expiryDate);
-            },
-            () -> refreshTokenRepository.save(
-                RefreshToken.builder()
-                    .member(member)
-                    .token(refreshToken)
-                    .expiryDate(expiryDate)
-                    .build()
-            )
-        );
-
-    return new TokenResponse(accessToken, refreshToken, firstLogin);
-  }
-
-  private String generateAvailableNickname() {
-    for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      String nickname = randomNicknameGenerator.generate();
-
-      if (!memberRepository.existsByNickname(nickname)) {
-        return nickname;
+        return actualConstraintName != null && expectedConstraintName.equalsIgnoreCase(actualConstraintName);
       }
+      current = current.getCause();
     }
 
-    throw new CustomException(ErrorCode.NICKNAME_GENERATION_FAILED);
+    return false;
   }
 
   private LocalDateTime toExpiry(long expMillis) {

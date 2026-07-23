@@ -1,7 +1,5 @@
 package com.chuseok22.eodaegoserver.domain.member.service;
 
-import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
-import com.chuseok22.eodaegoserver.domain.catalog.repository.MemberCatalogCollectionRepository;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
@@ -18,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Slf4j
 @Service
@@ -27,20 +26,16 @@ public class MemberService {
 
   private final Clock clock;
   private final MemberRepository memberRepository;
-  private final RefreshTokenRepository refreshTokenRepository;
-  private final MemberCatalogCollectionRepository memberCatalogCollectionRepository;
 
   public AgreementResponse getAgreement(UUID memberId) {
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     return AgreementResponse.from(member);
   }
 
   @Transactional
   public void updateAgreement(UUID memberId, AgreementRequest request) {
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     member.setPrivacyPolicyAgreed(request.privacyPolicyAgreed());
     member.setLocationInfoAgreed(request.locationInfoAgreed());
@@ -62,18 +57,10 @@ public class MemberService {
   }
 
   @Transactional
-  public NicknameResponse updateNickname(
-    UUID memberId,
-    NicknameUpdateRequest request
-  ) {
-    Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+  public NicknameResponse updateNickname(UUID memberId, NicknameUpdateRequest request) {
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     String nickname = request.nickname();
-
-    if (memberRepository.existsByNicknameAndIdNot(nickname, memberId)) {
-      throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
-    }
 
     member.setNickname(nickname);
 
@@ -90,18 +77,10 @@ public class MemberService {
 
   @Transactional
   public void withdraw(UUID memberId) {
-    Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-    deleteRelatedMemberData(member);
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     memberRepository.delete(member);
 
     log.info("회원탈퇴 완료: memberId={}", memberId);
-  }
-
-  private void deleteRelatedMemberData(Member member) {
-    refreshTokenRepository.deleteByMember(member);
-    memberCatalogCollectionRepository.deleteAllByMemberId(member.getId());
   }
 }
