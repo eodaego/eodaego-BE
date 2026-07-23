@@ -16,13 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.hibernate.exception.ConstraintViolationException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
+
+  private static final String NICKNAME_CONSTRAINT = "uk_member_nickname";
 
   private final Clock clock;
   private final MemberRepository memberRepository;
@@ -67,7 +69,11 @@ public class MemberService {
     try {
       memberRepository.flush();
     } catch (DataIntegrityViolationException e) {
-      throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+      if (isConstraintViolation(e, NICKNAME_CONSTRAINT)) {
+        throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+      }
+
+      throw e;
     }
 
     log.info("닉네임 변경 완료: memberId={}, nickname={}", memberId, nickname);
@@ -82,5 +88,21 @@ public class MemberService {
     memberRepository.delete(member);
 
     log.info("회원탈퇴 완료: memberId={}", memberId);
+  }
+
+  private boolean isConstraintViolation(Throwable throwable, String expectedConstraintName) {
+    Throwable current = throwable;
+
+    while (current != null) {
+      if (current instanceof ConstraintViolationException exception) {
+        String actualConstraintName = exception.getConstraintName();
+
+        return expectedConstraintName.equalsIgnoreCase(actualConstraintName);
+      }
+
+      current = current.getCause();
+    }
+
+    return false;
   }
 }
