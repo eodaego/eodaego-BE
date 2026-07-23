@@ -1,8 +1,5 @@
 package com.chuseok22.eodaegoserver.domain.member.service;
 
-import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
-import com.chuseok22.eodaegoserver.global.exception.CustomException;
-import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,33 +14,17 @@ public class RandomNicknameGenerator {
 
   private static final String ADJECTIVES_PATH = "nickname/adjectives.txt";
   private static final String NOUNS_PATH = "nickname/nouns.txt";
-
   private static final int NUMBER_BOUND = 10_000;
-  private static final int MAX_ATTEMPTS = 30;
 
-  private final MemberRepository memberRepository;
   private final List<String> adjectives;
   private final List<String> nouns;
 
-  public RandomNicknameGenerator(MemberRepository memberRepository) {
-    this.memberRepository = memberRepository;
+  public RandomNicknameGenerator() {
     this.adjectives = loadWords(ADJECTIVES_PATH);
     this.nouns = loadWords(NOUNS_PATH);
   }
 
-  public String generateUniqueNickname() {
-    for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      String nickname = generateNickname();
-
-      if (!memberRepository.existsByNickname(nickname)) {
-        return nickname;
-      }
-    }
-
-    throw new CustomException(ErrorCode.NICKNAME_GENERATION_FAILED);
-  }
-
-  private String generateNickname() {
+  public String generate() {
     String adjective = getRandomWord(adjectives);
     String noun = getRandomWord(nouns);
     int number = ThreadLocalRandom.current().nextInt(NUMBER_BOUND);
@@ -74,7 +55,9 @@ public class RandomNicknameGenerator {
         .toList();
 
       if (words.isEmpty()) {
-        throw new IllegalStateException("닉네임 단어 파일이 비어 있습니다: " + path);
+        throw new IllegalStateException(
+          "닉네임 단어 파일이 비어 있습니다: " + path
+        );
       }
 
       return words;

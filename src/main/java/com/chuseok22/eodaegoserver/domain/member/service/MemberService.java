@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +62,10 @@ public class MemberService {
   }
 
   @Transactional
-  public NicknameResponse updateNickname(UUID memberId, NicknameUpdateRequest request) {
+  public NicknameResponse updateNickname(
+    UUID memberId,
+    NicknameUpdateRequest request
+  ) {
     Member member = memberRepository.findById(memberId)
       .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -72,6 +76,12 @@ public class MemberService {
     }
 
     member.setNickname(nickname);
+
+    try {
+      memberRepository.flush();
+    } catch (DataIntegrityViolationException e) {
+      throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+    }
 
     log.info("닉네임 변경 완료: memberId={}, nickname={}", memberId, nickname);
 

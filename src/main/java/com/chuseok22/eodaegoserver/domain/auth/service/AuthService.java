@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AuthService {
 
+  private static final int MAX_ATTEMPTS = 30;
+
   private final MemberRepository memberRepository;
   private final RefreshTokenRepository refreshTokenRepository;
   private final FirebaseTokenVerifier firebaseTokenVerifier;
@@ -46,21 +48,23 @@ public class AuthService {
     firebaseTokenVerifier.assertSocialTypeMatches(firebaseToken, request.socialType());
 
     Member member = memberRepository
-        .findBySocialTypeAndProviderId(request.socialType(), firebaseToken.getUid())
-        .orElseGet(() -> {
-          Member newMember = Member.builder()
-              .email(firebaseToken.getEmail())
-              .nickname(randomNicknameGenerator.generateUniqueNickname())
-              .socialType(request.socialType())
-              .providerId(firebaseToken.getUid())
-              .role(Role.USER)
-              .firstLogin(true)
-              .deviceType(request.deviceType())
-              .deviceId(request.deviceId())
-              .fcmToken(request.fcmToken())
-              .build();
-          return memberRepository.save(newMember);
-        });
+      .findBySocialTypeAndProviderId(request.socialType(), firebaseToken.getUid())
+      .orElseGet(() -> {
+        String nickname = randomNicknameGenerator.generate();
+
+        Member newMember = Member.builder()
+          .email(firebaseToken.getEmail())
+          .nickname(nickname)
+          .socialType(request.socialType())
+          .providerId(firebaseToken.getUid())
+          .role(Role.USER)
+          .firstLogin(true)
+          .deviceType(request.deviceType())
+          .deviceId(request.deviceId())
+          .fcmToken(request.fcmToken())
+          .build();
+        return memberRepository.save(newMember);
+      });
 
     boolean firstLogin = member.isFirstLogin();
     if (firstLogin) {
@@ -141,6 +145,18 @@ public class AuthService {
         );
 
     return new TokenResponse(accessToken, refreshToken, firstLogin);
+  }
+
+  private String generateAvailableNickname() {
+    for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      String nickname = randomNicknameGenerator.generate();
+
+      if (!memberRepository.existsByNickname(nickname)) {
+        return nickname;
+      }
+    }
+
+    throw new CustomException(ErrorCode.NICKNAME_GENERATION_FAILED);
   }
 
   private LocalDateTime toExpiry(long expMillis) {
