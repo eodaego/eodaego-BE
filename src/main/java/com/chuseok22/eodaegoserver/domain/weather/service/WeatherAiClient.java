@@ -23,14 +23,13 @@ public class WeatherAiClient {
       AiWeatherResponse response = aiServerRestClient.get().uri(CURRENT_WEATHER_URI).retrieve().body(AiWeatherResponse.class);
 
       if (response == null) {
-        log.warn("AI 서버의 날씨 응답 본문이 비어 있습니다.");
+        log.error("AI 서버 날씨 응답 본문이 비어 있습니다. uri={}", CURRENT_WEATHER_URI);
         throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
       }
 
       return response;
-    } catch (RestClientException e) {
-      log.warn("AI 서버 날씨 조회에 실패했습니다. uri={}, error={}", CURRENT_WEATHER_URI, e.getMessage());
-
+    } catch (RestClientException exception) {
+      log.error("AI 서버 날씨 조회 실패. uri={}", CURRENT_WEATHER_URI, exception);
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
   }
