@@ -10,7 +10,7 @@ public record WeatherResponse(
 
   @Schema(description = "날씨 데이터 식별자", example = "1") Long id,
 
-  @Schema(description = "장소 참조 키", example = "children_grand_park") String placeRefKey,
+  @Schema(description = "장소 참조 키", example = "어린이대공원") String placeRefKey,
 
   @Schema(description = "현재 기온", example = "28.5") Double temperature,
 
