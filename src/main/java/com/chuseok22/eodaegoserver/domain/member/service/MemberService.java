@@ -1,6 +1,5 @@
 package com.chuseok22.eodaegoserver.domain.member.service;
 
-import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
@@ -14,8 +13,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.exception.ConstraintViolationException;
 
 @Slf4j
 @Service
@@ -23,21 +24,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
 
+  private static final String NICKNAME_CONSTRAINT = "uk_member_nickname";
+
   private final Clock clock;
   private final MemberRepository memberRepository;
-  private final RefreshTokenRepository refreshTokenRepository;
 
   public AgreementResponse getAgreement(UUID memberId) {
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     return AgreementResponse.from(member);
   }
 
   @Transactional
   public void updateAgreement(UUID memberId, AgreementRequest request) {
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     member.setPrivacyPolicyAgreed(request.privacyPolicyAgreed());
     member.setLocationInfoAgreed(request.locationInfoAgreed());
@@ -60,16 +60,21 @@ public class MemberService {
 
   @Transactional
   public NicknameResponse updateNickname(UUID memberId, NicknameUpdateRequest request) {
-    Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     String nickname = request.nickname();
 
-    if (memberRepository.existsByNicknameAndIdNot(nickname, memberId)) {
-      throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
-    }
-
     member.setNickname(nickname);
+
+    try {
+      memberRepository.flush();
+    } catch (DataIntegrityViolationException e) {
+      if (isConstraintViolation(e, NICKNAME_CONSTRAINT)) {
+        throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+      }
+
+      throw e;
+    }
 
     log.info("닉네임 변경 완료: memberId={}, nickname={}", memberId, nickname);
 
@@ -78,17 +83,26 @@ public class MemberService {
 
   @Transactional
   public void withdraw(UUID memberId) {
-    Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-    deleteRelatedMemberData(member);
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     memberRepository.delete(member);
 
     log.info("회원탈퇴 완료: memberId={}", memberId);
   }
 
-  private void deleteRelatedMemberData(Member member) {
-    refreshTokenRepository.deleteByMember(member);
+  private boolean isConstraintViolation(Throwable throwable, String expectedConstraintName) {
+    Throwable current = throwable;
+
+    while (current != null) {
+      if (current instanceof ConstraintViolationException exception) {
+        String actualConstraintName = exception.getConstraintName();
+
+        return expectedConstraintName.equalsIgnoreCase(actualConstraintName);
+      }
+
+      current = current.getCause();
+    }
+
+    return false;
   }
 }

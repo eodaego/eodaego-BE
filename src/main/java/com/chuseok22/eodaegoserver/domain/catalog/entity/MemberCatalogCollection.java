@@ -20,18 +20,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.ForeignKey;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
 @Entity
-@Table(
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_member_catalog_item",
-            columnNames = {"member_id", "catalog_item_id"}
-        )
-    }
-)
+@Table(uniqueConstraints = {@UniqueConstraint(name = "uk_member_catalog_item", columnNames = {"member_id", "catalog_item_id"})})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,7 +38,8 @@ public class MemberCatalogCollection extends BaseEntity {
   private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id", nullable = false)
+  @JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(name = "fk_member_catalog_collection_member"))
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)

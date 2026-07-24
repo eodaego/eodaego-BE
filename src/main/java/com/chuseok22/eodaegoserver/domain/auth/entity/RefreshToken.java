@@ -18,6 +18,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.ForeignKey;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -32,7 +35,8 @@ public class RefreshToken extends BaseEntity {
   private UUID id;
 
   @OneToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "member_id", nullable = false, unique = true)
+  @JoinColumn(name = "member_id", nullable = false, unique = true, foreignKey = @ForeignKey(name = "fk_refresh_token_member"))
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Member member;
 
   @Column(nullable = false)

@@ -61,6 +61,7 @@ public enum ErrorCode {
   // Member
 
   NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
+  NICKNAME_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 생성에 실패했습니다."),
 
   ;
 
