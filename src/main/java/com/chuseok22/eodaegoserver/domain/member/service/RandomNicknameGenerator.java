@@ -40,32 +40,16 @@ public class RandomNicknameGenerator {
   private List<String> loadWords(String path) {
     ClassPathResource resource = new ClassPathResource(path);
 
-    try (
-      BufferedReader reader = new BufferedReader(
-        new InputStreamReader(
-          resource.getInputStream(),
-          StandardCharsets.UTF_8
-        )
-      )
-    ) {
-      List<String> words = reader.lines()
-        .map(String::trim)
-        .filter(word -> !word.isBlank())
-        .filter(word -> !word.startsWith("#"))
-        .toList();
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
+      List<String> words = reader.lines().map(String::trim).filter(word -> !word.isBlank()).filter(word -> !word.startsWith("#")).toList();
 
       if (words.isEmpty()) {
-        throw new IllegalStateException(
-          "닉네임 단어 파일이 비어 있습니다: " + path
-        );
+        throw new IllegalStateException("닉네임 단어 파일이 비어 있습니다: " + path);
       }
 
       return words;
     } catch (IOException e) {
-      throw new IllegalStateException(
-        "닉네임 단어 파일을 읽을 수 없습니다: " + path,
-        e
-      );
+      throw new IllegalStateException("닉네임 단어 파일을 읽을 수 없습니다: " + path, e);
     }
   }
 }
