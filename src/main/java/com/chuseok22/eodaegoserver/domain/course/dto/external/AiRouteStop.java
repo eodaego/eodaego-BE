@@ -1,16 +1,23 @@
 package com.chuseok22.eodaegoserver.domain.course.dto.external;
 
+import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiFacilityResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record AiRouteStop(
 
-    @JsonProperty("facility_id")
-    Long facilityId,
+  AiFacilityResponse facility,
 
-    int order
+  int order
 
 ) {
+
+  public Long facilityId() {
+    return facility.id();
+  }
+
+  public String facilityCategory() {
+    return facility.category();
+  }
 
 }
