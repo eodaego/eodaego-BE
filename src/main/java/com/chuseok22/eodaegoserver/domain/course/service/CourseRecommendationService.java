@@ -68,7 +68,7 @@ public class CourseRecommendationService {
   }
 
   public CourseResponse getCourse(UUID courseId, UUID memberId) {
-    Course course = courseRepository.findById(courseId)
+    Course course = courseRepository.findByIdWithPlaces(courseId)
         .orElseThrow(() -> {
           log.warn("코스 조회 실패. courseId={}", courseId);
           throw new CustomException(ErrorCode.COURSE_NOT_FOUND);
@@ -127,13 +127,21 @@ public class CourseRecommendationService {
 
   private CatalogCategory toCatalogCategory(String facilityCategory) {
     if (facilityCategory == null || facilityCategory.isBlank()) {
+      log.warn("AI 시설 category가 비어 있어 PLACE로 처리합니다.");
       return CatalogCategory.PLACE;
     }
 
-    return switch (facilityCategory.trim()) {
-      case "동물나라" -> CatalogCategory.ANIMAL;
-      case "자연나라" -> CatalogCategory.PLANT;
-      default -> CatalogCategory.PLACE;
+    String normalizedCategory = facilityCategory.trim();
+
+    return switch (normalizedCategory) {
+      case "동물나라", "ANIMAL" -> CatalogCategory.ANIMAL;
+      case "자연나라", "PLANT" -> CatalogCategory.PLANT;
+      case "PLACE" -> CatalogCategory.PLACE;
+      default -> {
+        log.warn("정의되지 않은 AI 시설 category를 PLACE로 처리합니다. category={}", normalizedCategory);
+        yield CatalogCategory.PLACE;
+      }
     };
   }
+
 }

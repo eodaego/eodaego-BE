@@ -15,7 +15,7 @@ public record CoursePlaceResponse(
     @Schema(description = "장소 이름. 도감(catalog_item, category=PLACE)에 동기화된 시설이면 그 이름이 채워지고, 아직 동기화되지 않은 시설이면 null이다.", example = "맹수마을")
     String name,
 
-    @Schema(description = "카테고리. 도감 매칭에 성공하면 항상 PLACE이고, 매칭에 실패하면 null이다(ANIMAL/PLANT는 나오지 않는다).", example = "PLACE")
+    @Schema(description = "장소 카테고리. AI 시설의 원본 category를 변환한 값으로,동물나라는 ANIMAL, 자연나라는 PLANT, 그 외 시설은 PLACE로 반환한다.", example = "PLACE")
     CatalogCategory category,
 
     @Schema(description = "위도. 도감에 동기화된 시설이면 그 값이 채워지고, 아직 동기화되지 않았으면 null이다.", example = "37.5487")
