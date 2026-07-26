@@ -45,6 +45,12 @@ public interface AuthControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "fcmToken 갱신 조건 문구 정정 — 실제로는 요청에 값이 있을 때만 갱신되고 생략 시 기존 값이 유지되는데, 문서에는 매 로그인마다 갱신되는 것처럼 잘못 적혀있던 부분 수정",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/17"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-26",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "예상치 못한 DB 무결성 위반을 500이 아닌 409 DATA_INTEGRITY_VIOLATION으로 응답하도록 매핑함에 따라 409 응답을 문서화, 랜덤 닉네임 재시도 소진 시의 500 NICKNAME_GENERATION_FAILED 응답도 함께 명시",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/26"
       )
   })
   @Operation(
@@ -78,6 +84,17 @@ public interface AuthControllerDocs {
 
           - errorCode: FIREBASE_TOKEN_VERIFICATION_FAILED — Firebase ID Token 검증 실패(위변조, 만료, 발급자 불일치 등)
           - errorCode: SOCIAL_TYPE_MISMATCH — 요청한 socialType이 idToken에서 검증된 실제 로그인 제공자(sign_in_provider)와 일치하지 않음
+          """, content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "409", description = """
+          동시 요청 충돌로 처리에 실패함. errorCode: DATA_INTEGRITY_VIOLATION
+
+          - 동일 소셜 계정(socialType + providerId)으로 거의 동시에 회원가입이 시도되어, 재시도 후에도 유니크 제약 충돌이 해소되지 않음
+          - 그 밖에 예상치 못한 DB 무결성 제약 위반이 발생함
+          """, content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "500", description = """
+          서버 내부 오류. errorCode: NICKNAME_GENERATION_FAILED
+
+          - 신규 회원가입 시 랜덤 닉네임 생성이 최대 재시도 횟수만큼 모두 중복되어 유니크한 닉네임 발급에 실패함(실질적으로 발생 가능성이 매우 낮음)
           """, content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<LoginResponse> login(LoginRequest request);

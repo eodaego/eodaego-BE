@@ -3,6 +3,7 @@ package com.chuseok22.eodaegoserver.global.exception;
 import io.jsonwebtoken.JwtException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,6 +58,16 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.builder()
             .errorCode(ErrorCode.INVALID_REQUEST)
             .errorMessage(ErrorCode.INVALID_REQUEST.getMessage())
+            .build());
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+    log.warn("[DataIntegrityViolationException] 발생: {}", e.getMessage());
+    return ResponseEntity.status(ErrorCode.DATA_INTEGRITY_VIOLATION.getStatus())
+        .body(ErrorResponse.builder()
+            .errorCode(ErrorCode.DATA_INTEGRITY_VIOLATION)
+            .errorMessage(ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage())
             .build());
   }
 
