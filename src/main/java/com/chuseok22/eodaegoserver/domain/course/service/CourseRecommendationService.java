@@ -68,7 +68,7 @@ public class CourseRecommendationService {
   }
 
   public CourseResponse getCourse(UUID courseId, UUID memberId) {
-    Course course = courseRepository.findByIdWithPlaces(courseId)
+    Course course = courseRepository.findWithPlacesById(courseId)
         .orElseThrow(() -> {
           log.warn("코스 조회 실패. courseId={}", courseId);
           throw new CustomException(ErrorCode.COURSE_NOT_FOUND);
