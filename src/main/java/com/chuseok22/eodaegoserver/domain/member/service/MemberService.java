@@ -6,6 +6,7 @@ import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameResponse;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
+import com.chuseok22.eodaegoserver.global.exception.ConstraintViolationInspector;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.time.Clock;
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +69,7 @@ public class MemberService {
     try {
       memberRepository.flush();
     } catch (DataIntegrityViolationException e) {
-      if (isConstraintViolation(e, NICKNAME_CONSTRAINT)) {
+      if (ConstraintViolationInspector.matches(e, NICKNAME_CONSTRAINT)) {
         throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
       }
 
@@ -88,21 +88,5 @@ public class MemberService {
     memberRepository.delete(member);
 
     log.info("회원탈퇴 완료: memberId={}", memberId);
-  }
-
-  private boolean isConstraintViolation(Throwable throwable, String expectedConstraintName) {
-    Throwable current = throwable;
-
-    while (current != null) {
-      if (current instanceof ConstraintViolationException exception) {
-        String actualConstraintName = exception.getConstraintName();
-
-        return expectedConstraintName.equalsIgnoreCase(actualConstraintName);
-      }
-
-      current = current.getCause();
-    }
-
-    return false;
   }
 }

@@ -8,6 +8,7 @@ import com.chuseok22.eodaegoserver.domain.auth.entity.RefreshToken;
 import com.chuseok22.eodaegoserver.domain.auth.repository.RefreshTokenRepository;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
+import com.chuseok22.eodaegoserver.global.exception.ConstraintViolationInspector;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import com.chuseok22.eodaegoserver.global.properties.JwtProperties;
@@ -20,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,13 +56,13 @@ public class AuthService {
       try {
         return loginTransactionService.login(request, firebaseToken);
       } catch (DataIntegrityViolationException e) {
-        if (isConstraintViolation(e, NICKNAME_CONSTRAINT)) {
+        if (ConstraintViolationInspector.matches(e, NICKNAME_CONSTRAINT)) {
           nicknameAttempts++;
           log.warn("랜덤 닉네임 충돌: attempt={}/{}", nicknameAttempts, MAX_NICKNAME_ATTEMPTS);
           continue;
         }
 
-        if (isConstraintViolation(e, SOCIAL_PROVIDER_CONSTRAINT) && socialProviderRetries < MAX_SOCIAL_PROVIDER_RETRIES) {
+        if (ConstraintViolationInspector.matches(e, SOCIAL_PROVIDER_CONSTRAINT) && socialProviderRetries < MAX_SOCIAL_PROVIDER_RETRIES) {
           socialProviderRetries++;
           log.info("동일 소셜 계정 동시 생성 충돌: retry={}/{}", socialProviderRetries, MAX_SOCIAL_PROVIDER_RETRIES);
           continue;
@@ -100,21 +100,6 @@ public class AuthService {
     Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     refreshTokenRepository.deleteByMember(member);
     log.info("로그아웃 성공: memberId={}", memberId);
-  }
-
-  private boolean isConstraintViolation(Throwable throwable, String expectedConstraintName) {
-    Throwable current = throwable;
-
-    while (current != null) {
-      if (current instanceof ConstraintViolationException exception) {
-        String actualConstraintName = exception.getConstraintName();
-
-        return actualConstraintName != null && expectedConstraintName.equalsIgnoreCase(actualConstraintName);
-      }
-      current = current.getCause();
-    }
-
-    return false;
   }
 
   private LocalDateTime toExpiry(long expMillis) {
