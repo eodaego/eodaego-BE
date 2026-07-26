@@ -1,0 +1,33 @@
+package com.chuseok22.eodaegoserver.domain.course.dto.external;
+
+import com.chuseok22.eodaegoserver.domain.course.CompanionType;
+import com.chuseok22.eodaegoserver.domain.course.EntranceGate;
+import com.chuseok22.eodaegoserver.domain.course.InterestType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record AiRouteRecommendationRequest(
+
+    @JsonProperty("preference_tags")
+    List<InterestType> preferenceTags,       // 선호 태그(null 허용)
+
+    @JsonProperty("stay_duration_minutes")
+    Integer stayDurationMinutes,              // 체류 시간(분, null 허용)
+
+    @NotNull
+    @JsonProperty("entrance_facility_code")
+    EntranceGate entranceFacilityCode,       // 입구 코드(필수)
+
+    @NotNull
+    @JsonProperty("exit_facility_code")
+    EntranceGate exitFacilityCode,           // 출구 코드(필수)
+
+    @JsonProperty("companion_type")
+    CompanionType companionType               // 동행 유형(null 허용)
+
+) {
+
+}
