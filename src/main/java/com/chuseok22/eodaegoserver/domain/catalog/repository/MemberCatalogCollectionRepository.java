@@ -17,21 +17,18 @@ public interface MemberCatalogCollectionRepository extends JpaRepository<MemberC
 
   List<MemberCatalogCollection> findByMemberIdAndCatalogItem_NameContaining(UUID memberId, String name);
 
-  List<MemberCatalogCollection> findByMemberIdAndCatalogItem_CategoryAndCatalogItem_NameContaining(
-      UUID memberId, CatalogCategory category, String name);
+  List<MemberCatalogCollection> findByMemberIdAndCatalogItem_CategoryAndCatalogItem_NameContaining(UUID memberId, CatalogCategory category, String name);
 
   long countByMemberId(UUID memberId);
 
   long countByMemberIdAndCatalogItem_Category(UUID memberId, CatalogCategory category);
 
   @Query(value = """
-      SELECT ci.category AS category, COUNT(*) AS count
-      FROM member_catalog_collection mcc
-      JOIN catalog_item ci ON ci.id = mcc.catalog_item_id
-      WHERE mcc.member_id = :memberId
-      GROUP BY ci.category
-      """, nativeQuery = true)
+    SELECT ci.category AS category, COUNT(*) AS COUNT
+    FROM member_catalog_collection mcc
+    JOIN catalog_item ci ON ci.id = mcc.catalog_item_id
+    WHERE mcc.member_id = :memberId
+    GROUP BY ci.category
+    """, nativeQuery = true)
   List<CategoryCountProjection> countCollectedGroupByCategory(@Param("memberId") UUID memberId);
-
-
 }
