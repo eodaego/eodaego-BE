@@ -113,7 +113,7 @@ public class CourseRecommendationService {
               .visitOrder(stop.order())
               .facilityId(stop.facilityId())
               .name(catalogItem != null ? catalogItem.getName() : null)
-              .category(catalogItem != null ? catalogItem.getCategory() : null)
+              .category(toCatalogCategory(stop.facilityCategory()))
               .latitude(catalogItem != null ? catalogItem.getLatitude() : null)
               .longitude(catalogItem != null ? catalogItem.getLongitude() : null)
               .build();
@@ -123,5 +123,17 @@ public class CourseRecommendationService {
     course.setPlaces(places);
 
     return course;
+  }
+
+  private CatalogCategory toCatalogCategory(String facilityCategory) {
+    if (facilityCategory == null || facilityCategory.isBlank()) {
+      return CatalogCategory.PLACE;
+    }
+
+    return switch (facilityCategory.trim()) {
+      case "동물나라" -> CatalogCategory.ANIMAL;
+      case "자연나라" -> CatalogCategory.PLANT;
+      default -> CatalogCategory.PLACE;
+    };
   }
 }
