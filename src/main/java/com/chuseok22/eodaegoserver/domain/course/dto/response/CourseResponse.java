@@ -18,8 +18,8 @@ public record CourseResponse(
     @Schema(description = "코스 관심 태그 목록", example = "[\"ANIMAL\", \"NATURE\"]")
     List<InterestType> interestTypes,
 
-    @Schema(description = "코스 카드에 붙는 짧은 태그 문구. 현재 구현에서는 항상 null이다.", example = "동물 듬뿍")
-    String tagLabel,
+    @Schema(description = "코스 특징을 요약하는 짧은 태그 목록. AI가 코스마다 1~3개 생성한다.", example = "[\"동물듬뿍\", \"산책하기 좋은 코스\"]")
+    List<String> tagLabels,
 
     @Schema(description = "소요 시간(분)", example = "120")
     int durationMinutes,
@@ -48,7 +48,7 @@ public record CourseResponse(
         course.getId(),
         course.getTitle(),
         course.getInterestTypes(),
-        course.getTagLabel(),
+        course.getTagLabels(),
         course.getDurationMinutes(),
         course.getEntrance(),
         course.getExit(),

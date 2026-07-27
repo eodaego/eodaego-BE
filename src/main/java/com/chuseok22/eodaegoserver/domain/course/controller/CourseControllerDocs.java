@@ -32,6 +32,12 @@ public interface CourseControllerDocs {
         author = ChangeLogAuthor.KANG_JIYUN,
         description = "코스 장소 카테고리 세분화 및 응답 설명 개선",
         issueUrl = "https://github.com/eodaego/eodaego-BE/issues/34"
+      ),
+      @ApiChangeLog(
+        date = "2026-07-27",
+        author = ChangeLogAuthor.KIM_JAEHYEON,
+        description = "코스 응답 tagLabel(String)을 tagLabels(List)로 변경, AI가 주는 코스별 태그 목록 반영",
+        issueUrl = "https://github.com/eodaego/eodaego-BE/issues/34"
       )
   })
   @Operation(
@@ -47,6 +53,7 @@ public interface CourseControllerDocs {
           - 각 코스의 장소(places)는 AI가 준 facilityId를 도감(catalog_item, category=PLACE)의 externalId와 매칭해 이름/좌표를 채운다.
           - 장소 category는 AI 시설 원본 분류를 ANIMAL / PLANT / PLACE로 변환해 저장한다.
           - 아직 도감에 동기화되지 않은 시설이면 해당 장소의 name/latitude/longitude는 null이지만, category는 AI 응답을 기준으로 채워진다.
+          - 각 코스의 tagLabels는 AI가 코스마다 생성한 특징 태그 목록(1~3개)을 그대로 저장한 것이다.
           - 방금 생성된 코스이므로 응답의 favorite는 항상 false다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
@@ -69,6 +76,12 @@ public interface CourseControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "코스 추천 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/29"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-27",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "코스 응답 tagLabel(String)을 tagLabels(List)로 변경",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/34"
       )
   })
   @Operation(

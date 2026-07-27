@@ -14,7 +14,10 @@ public record AiRecommendedCourse(
     @JsonProperty("duration_minutes")
     int durationMinutes,       // 코스 실제 소요시간(분)
 
-    List<AiRouteStop> stops
+    List<AiRouteStop> stops,
+
+    @JsonProperty("tag_labels")
+    List<String> tagLabels
 
 ) {
 

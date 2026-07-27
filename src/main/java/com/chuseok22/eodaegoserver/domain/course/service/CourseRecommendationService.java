@@ -99,6 +99,7 @@ public class CourseRecommendationService {
   ) {
     Course course = Course.builder()
         .title(aiCourse.title())
+        .tagLabels(aiCourse.tagLabels())
         .interestTypes(interestTypes)
         .durationMinutes(aiCourse.durationMinutes())
         .entrance(entrance)

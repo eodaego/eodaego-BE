@@ -47,7 +47,11 @@ public class Course extends BaseEntity {
   @BatchSize(size = 20)
   private List<InterestType> interestTypes = new ArrayList<>();
 
-  private String tagLabel;
+  @Builder.Default
+  @ElementCollection
+  @CollectionTable(name = "course_tag_label", joinColumns = @JoinColumn(name = "course_id"))
+  @BatchSize(size = 20)
+  private List<String> tagLabels = new ArrayList<>();
 
   private int durationMinutes;
 
