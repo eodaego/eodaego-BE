@@ -1,6 +1,8 @@
 package com.chuseok22.eodaegoserver.domain.course.service;
 
+import com.chuseok22.eodaegoserver.domain.course.CourseFavoriteSortType;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteItemResponse;
+import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteListResponse;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteResponse;
 import com.chuseok22.eodaegoserver.domain.course.entity.Course;
 import com.chuseok22.eodaegoserver.domain.course.entity.CourseFavorite;
@@ -15,6 +17,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,39 +35,49 @@ public class CourseFavoriteService {
   public CourseFavoriteResponse addFavorite(UUID memberId, UUID courseId) {
 
     return courseFavoriteRepository.findByMemberIdAndCourseId(memberId, courseId)
-        .map(existing -> {
-          log.debug("이미 즐겨찾기된 코스. memberId={}, courseId={}", memberId, courseId);
-          return CourseFavoriteResponse.from(existing);
-        })
-        .orElseGet(() -> {
+      .map(existing -> {
+        log.debug("이미 즐겨찾기된 코스. memberId={}, courseId={}", memberId, courseId);
+        return CourseFavoriteResponse.from(existing);
+      })
+      .orElseGet(() -> {
 
-          Course course = courseRepository.findById(courseId)
-              .orElseThrow(() -> {
-                log.warn("즐겨찾기 등록 실패. 존재하지 않는 코스. courseId={}", courseId);
-                throw new CustomException(ErrorCode.COURSE_NOT_FOUND);
-              });
+        Course course = courseRepository.findById(courseId)
+          .orElseThrow(() -> {
+            log.warn("즐겨찾기 등록 실패. 존재하지 않는 코스. courseId={}", courseId);
+            throw new CustomException(ErrorCode.COURSE_NOT_FOUND);
+          });
 
-          Member member = memberRepository.findById(memberId)
-              .orElseThrow(() -> {
-                log.warn("즐겨찾기 등록 실패. 존재하지 않는 회원. memberId={}", memberId);
-                throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
-              });
+        Member member = memberRepository.findById(memberId)
+          .orElseThrow(() -> {
+            log.warn("즐겨찾기 등록 실패. 존재하지 않는 회원. memberId={}", memberId);
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+          });
 
-          CourseFavorite courseFavorite = courseFavoriteRepository.save(
-              CourseFavorite.builder()
-                  .member(member)
-                  .course(course)
-                  .build()
-          );
+        CourseFavorite courseFavorite = courseFavoriteRepository.save(
+          CourseFavorite.builder()
+            .member(member)
+            .course(course)
+            .build()
+        );
 
-          log.info("즐겨찾기 등록 완료. memberId={}, courseId={}", memberId, courseId);
+        log.info("즐겨찾기 등록 완료. memberId={}, courseId={}", memberId, courseId);
 
-          return CourseFavoriteResponse.from(courseFavorite);
-        });
+        return CourseFavoriteResponse.from(courseFavorite);
+      });
   }
 
-  public List<CourseFavoriteItemResponse> getFavorites(UUID memberId) {
-    List<CourseFavorite> favorites = courseFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+  public CourseFavoriteListResponse getFavorites(
+    UUID memberId,
+    CourseFavoriteSortType sortType,
+    Sort.Direction order
+  ) {
+    Sort sort = Sort.by(order, sortType.getProperty());
+
+    if (sortType == CourseFavoriteSortType.DURATION) {
+      sort = sort.and(Sort.by(Sort.Direction.DESC, "createdAt"));
+    }
+
+    List<CourseFavorite> favorites = courseFavoriteRepository.findByMemberId(memberId, sort);
 
     favorites.forEach(favorite -> {
       Hibernate.initialize(favorite.getCourse());
@@ -72,18 +85,20 @@ public class CourseFavoriteService {
       Hibernate.initialize(favorite.getCourse().getPlaces());
     });
 
-    return favorites.stream()
-        .map(CourseFavoriteItemResponse::from)
-        .toList();
+    List<CourseFavoriteItemResponse> items = favorites.stream()
+      .map(CourseFavoriteItemResponse::from)
+      .toList();
+
+    return CourseFavoriteListResponse.from(items);
   }
 
   @Transactional
   public void deleteFavorite(UUID memberId, UUID courseId) {
     CourseFavorite courseFavorite = courseFavoriteRepository.findByMemberIdAndCourseId(memberId, courseId)
-        .orElseThrow(() -> {
-          log.warn("즐겨찾기 삭제 실패. 존재하지 않는 즐겨찾기. memberId={}, courseId={}", memberId, courseId);
-          throw new CustomException(ErrorCode.COURSE_NOT_FOUND);
-        });
+      .orElseThrow(() -> {
+        log.warn("즐겨찾기 삭제 실패. 존재하지 않는 즐겨찾기. memberId={}, courseId={}", memberId, courseId);
+        throw new CustomException(ErrorCode.COURSE_NOT_FOUND);
+      });
 
     courseFavoriteRepository.delete(courseFavorite);
 
