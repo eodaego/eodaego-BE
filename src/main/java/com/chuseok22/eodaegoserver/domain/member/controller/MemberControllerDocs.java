@@ -3,8 +3,10 @@ package com.chuseok22.eodaegoserver.domain.member.controller;
 import com.chuseok22.apichangelog.annotation.ApiChangeLog;
 import com.chuseok22.apichangelog.annotation.ApiChangeLogs;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
+import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameCheckRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
+import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameAvailabilityResponse;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameResponse;
 import com.chuseok22.eodaegoserver.global.exception.ErrorResponse;
 import com.chuseok22.eodaegoserver.global.swagger.ChangeLogAuthor;
@@ -126,6 +128,45 @@ public interface MemberControllerDocs {
 
   @ApiChangeLogs({
     @ApiChangeLog(
+      date = "2026-07-27",
+      author = ChangeLogAuthor.KANG_JIYUN,
+      description = "닉네임 중복 확인 API 추가",
+      issueUrl = "https://github.com/eodaego/eodaego-BE/issues/21"
+    )
+  })
+  @Operation(
+    summary = "닉네임 중복 확인",
+    description = """
+      입력한 닉네임의 사용 가능 여부를 확인한다.
+      
+      - Authorization: Bearer {accessToken} 헤더가 필요하다.
+      - 현재 인증된 회원이 사용 중인 닉네임은 중복 대상에서 제외한다.
+      - 닉네임은 2자 이상 10자 이하로 입력해야 한다.
+      - 닉네임은 공백 없이 한글, 영어, 숫자만 사용할 수 있다.
+      - available이 true이면 사용할 수 있는 닉네임이다.
+      - available이 false이면 다른 회원이 이미 사용 중인 닉네임이다.
+      """,
+    security = @SecurityRequirement(name = "Bearer Token")
+  )
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "닉네임 사용 가능 여부 조회 성공",
+      content = @Content(schema = @Schema(implementation = NicknameAvailabilityResponse.class))),
+    @ApiResponse(responseCode = "400", description = "닉네임 형식 검증 실패. errorCode: INVALID_REQUEST",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
+      content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(
+      responseCode = "404",
+      description = "존재하지 않는 회원. errorCode: MEMBER_NOT_FOUND",
+      content = @Content(
+        schema = @Schema(implementation = ErrorResponse.class)
+      )
+    )
+  })
+  ResponseEntity<NicknameAvailabilityResponse> checkNicknameAvailability(UUID memberId, NicknameCheckRequest request);
+
+  @ApiChangeLogs({
+    @ApiChangeLog(
       date = "2026-07-13",
       author = ChangeLogAuthor.KANG_JIYUN,
       description = "닉네임 변경 API 추가",
@@ -136,6 +177,12 @@ public interface MemberControllerDocs {
       author = ChangeLogAuthor.KANG_JIYUN,
       description = "닉네임 중복 검사 및 저장 처리 개선",
       issueUrl = "https://github.com/eodaego/eodaego-BE/issues/26"
+    ),
+    @ApiChangeLog(
+      date = "2026-07-27",
+      author = ChangeLogAuthor.KIM_JAEHYEON,
+      description = "닉네임 최대 길이를 30자에서 10자로 축소",
+      issueUrl = "https://github.com/eodaego/eodaego-BE/issues/45"
     )
   })
   @Operation(
@@ -145,7 +192,7 @@ public interface MemberControllerDocs {
       
       - Authorization: Bearer {accessToken} 헤더가 필요하다.
       - 닉네임은 공백일 수 없다.
-      - 닉네임은 2자 이상 30자 이하로 입력해야 한다.
+      - 닉네임은 2자 이상 10자 이하로 입력해야 한다.
       - 닉네임은 한글, 영어, 숫자만 사용할 수 있다.
       - 다른 회원이 이미 사용 중인 닉네임이면 변경할 수 없다.
       """,

@@ -1,8 +1,10 @@
 package com.chuseok22.eodaegoserver.domain.member.controller;
 
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
+import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameCheckRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
+import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameAvailabilityResponse;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameResponse;
 import com.chuseok22.eodaegoserver.domain.member.service.MemberService;
 import com.chuseok22.logging.annotation.LogMonitoring;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +32,7 @@ public class MemberController implements MemberControllerDocs {
   @LogMonitoring
   @GetMapping(path = "/me/agreements", version = "1")
   public ResponseEntity<AgreementResponse> getAgreement(
-      @AuthenticationPrincipal UUID memberId
+    @AuthenticationPrincipal UUID memberId
   ) {
     return ResponseEntity.ok(memberService.getAgreement(memberId));
   }
@@ -38,11 +41,23 @@ public class MemberController implements MemberControllerDocs {
   @LogMonitoring
   @PatchMapping(path = "/me/agreements", version = "1")
   public ResponseEntity<Void> updateAgreement(
-      @AuthenticationPrincipal UUID memberId,
-      @Valid @RequestBody AgreementRequest request
+    @AuthenticationPrincipal UUID memberId,
+    @Valid @RequestBody AgreementRequest request
   ) {
     memberService.updateAgreement(memberId, request);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  @LogMonitoring
+  @GetMapping(path = "/me/nickname/exists", version = "1")
+  public ResponseEntity<NicknameAvailabilityResponse> checkNicknameAvailability(
+    @AuthenticationPrincipal UUID memberId,
+    @Valid @ModelAttribute NicknameCheckRequest request
+  ) {
+    return ResponseEntity.ok(
+      memberService.checkNicknameAvailability(memberId, request.nickname())
+    );
   }
 
   @Override
