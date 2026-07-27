@@ -177,6 +177,12 @@ public interface MemberControllerDocs {
       author = ChangeLogAuthor.KANG_JIYUN,
       description = "닉네임 중복 검사 및 저장 처리 개선",
       issueUrl = "https://github.com/eodaego/eodaego-BE/issues/26"
+    ),
+    @ApiChangeLog(
+      date = "2026-07-27",
+      author = ChangeLogAuthor.KIM_JAEHYEON,
+      description = "닉네임 최대 길이를 30자에서 10자로 축소",
+      issueUrl = "https://github.com/eodaego/eodaego-BE/issues/45"
     )
   })
   @Operation(
