@@ -3,6 +3,7 @@ package com.chuseok22.eodaegoserver.domain.member.service;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.AgreementRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.request.NicknameUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.AgreementResponse;
+import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameAvailabilityResponse;
 import com.chuseok22.eodaegoserver.domain.member.dto.response.NicknameResponse;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
 import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
@@ -56,6 +57,19 @@ public class MemberService {
     }
 
     log.info("약관 동의 정보 수정: memberId={}", memberId);
+  }
+
+  public NicknameAvailabilityResponse checkNicknameAvailability(
+    UUID memberId,
+    String nickname
+  ) {
+    memberRepository.findById(memberId)
+      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    boolean available =
+      !memberRepository.existsByNicknameAndIdNot(nickname, memberId);
+
+    return new NicknameAvailabilityResponse(available);
   }
 
   @Transactional
