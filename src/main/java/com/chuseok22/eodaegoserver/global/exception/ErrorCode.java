@@ -16,6 +16,8 @@ public enum ErrorCode {
 
   ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
 
+  DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT, "요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
+
   // AUTH
 
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
@@ -65,6 +67,7 @@ public enum ErrorCode {
   // Member
 
   NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
+  NICKNAME_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 생성에 실패했습니다."),
 
   ;
 

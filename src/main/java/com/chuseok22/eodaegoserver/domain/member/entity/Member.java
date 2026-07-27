@@ -27,7 +27,8 @@ import lombok.Setter;
 @Entity
 @Builder
 @Table(uniqueConstraints = {
-    @UniqueConstraint(name = "uk_member_social_provider", columnNames = {"social_type", "provider_id"})
+    @UniqueConstraint(name = "uk_member_social_provider", columnNames = {"social_type", "provider_id"}),
+    @UniqueConstraint(name = "uk_member_nickname", columnNames = {"nickname"})
 })
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,7 +41,7 @@ public class Member extends BaseEntity {
   @Column
   private String email;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   private String nickname;
 
   @Enumerated(EnumType.STRING)
