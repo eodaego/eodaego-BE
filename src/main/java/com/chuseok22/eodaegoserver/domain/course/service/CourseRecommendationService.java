@@ -18,6 +18,8 @@ import com.chuseok22.eodaegoserver.domain.course.repository.CourseFavoriteReposi
 import com.chuseok22.eodaegoserver.domain.course.repository.CourseRepository;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -101,40 +103,44 @@ public class CourseRecommendationService {
         .title(aiCourse.title())
         .tagLabels(aiCourse.tagLabels())
         .interestTypes(interestTypes)
-        .durationMinutes(aiCourse.durationMinutes())
+        .durationMinutes(aiCourse.durationMinutes() != null ? aiCourse.durationMinutes() : 0)
         .entrance(entrance)
         .exit(exit)
         .build();
 
-    List<CoursePlace> places = aiCourse.stops().stream()
-        .filter(stop->!isGate(stop))
-        .map(stop -> {
-          CatalogItem catalogItem = catalogItemsByFacilityId.get(stop.facilityId());
-          return CoursePlace.builder()
-              .course(course)
-              .visitOrder(stop.order())
-              .facilityId(stop.facilityId())
-              .name(catalogItem != null ? catalogItem.getName() : null)
-              .category(toCatalogCategory(stop.facilityCategory()))
-              .latitude(catalogItem != null ? catalogItem.getLatitude() : null)
-              .longitude(catalogItem != null ? catalogItem.getLongitude() : null)
-              .build();
-        })
+    List<AiRouteStop> visitStops = aiCourse.stops().stream()
+        .filter(stop -> !isGate(stop))
+        .sorted(Comparator.comparingInt(AiRouteStop::order))
         .toList();
+
+    List<CoursePlace> places = new ArrayList<>();
+    for (int index = 0; index < visitStops.size(); index++) {
+      AiRouteStop stop = visitStops.get(index);
+      CatalogItem catalogItem = catalogItemsByFacilityId.get(stop.facilityId());
+      places.add(CoursePlace.builder()
+          .course(course)
+          .visitOrder(index + 1)
+          .facilityId(stop.facilityId())
+          .name(catalogItem != null ? catalogItem.getName() : stop.facility().name())
+          .category(toCatalogCategory(stop.facilityCategory()))
+          .latitude(catalogItem != null ? catalogItem.getLatitude() : stop.facility().latitude())
+          .longitude(catalogItem != null ? catalogItem.getLongitude() : stop.facility().longitude())
+          .build());
+    }
 
     course.setPlaces(places);
 
     return course;
   }
 
-  private boolean isGate(AiRouteStop stop){
+  private boolean isGate(AiRouteStop stop) {
     String category = stop.facilityCategory();
     return category != null && "출입문".equals(category.trim());
   }
 
   private CatalogCategory toCatalogCategory(String facilityCategory) {
     if (facilityCategory == null || facilityCategory.isBlank()) {
-      log.warn("AI 시설 category가 비어 있어 PLACE로 처리합니다.");
+      log.debug("AI 시설 category가 비어 있어 PLACE로 처리합니다.");
       return CatalogCategory.PLACE;
     }
 
@@ -145,7 +151,7 @@ public class CourseRecommendationService {
       case "자연나라", "PLANT" -> CatalogCategory.PLANT;
       case "PLACE" -> CatalogCategory.PLACE;
       default -> {
-        log.warn("정의되지 않은 AI 시설 category를 PLACE로 처리합니다. category={}", normalizedCategory);
+        log.debug("정의되지 않은 AI 시설 category를 PLACE로 처리합니다. category={}", normalizedCategory);
         yield CatalogCategory.PLACE;
       }
     };

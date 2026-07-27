@@ -10,10 +10,10 @@ import java.util.List;
 
 public record CourseRecommendationRequest(
 
-    @Schema(description = "관심 태그 목록. 건너뛰면 null이며, 이 경우 전체 태그를 사용한다.", example = "[\"ANIMAL\", \"ACTIVITY\"]")
+    @Schema(description = "관심 태그 목록. 건너뛰면 null이며, 이 경우 AI 서버가 전체 태그를 대상으로 추천한다.", example = "[\"ANIMAL\", \"ACTIVITY\"]")
     List<InterestType> interestTypes,
 
-    @Schema(description = "예상 체류 시간(분). 건너뛰면 null이며, 이 경우 기본값(1440분, 24시간)을 사용한다.", example = "120")
+    @Schema(description = "예상 체류 시간(분). 건너뛰면 null이며, BE는 기본값을 채우지 않고 AI 서버에 null 그대로 전달한다.", example = "120")
     @Positive
     Integer stayDurationMinutes,
 
@@ -25,7 +25,7 @@ public record CourseRecommendationRequest(
     @NotNull
     EntranceGate exit,
 
-    @Schema(description = "동행 유형. 건너뛰면 null이며, 이 경우 기본값(ALONE)을 사용한다.", example = "WITH_CHILD")
+    @Schema(description = "동행 유형. 건너뛰면 null이며, BE는 기본값을 채우지 않고 AI 서버에 null 그대로 전달한다.", example = "WITH_CHILD")
     CompanionType companionType
 
 ) {

@@ -12,7 +12,7 @@ public record AiRecommendedCourse(
     String reason,             // 이 코스를 추천하는 이유
 
     @JsonProperty("duration_minutes")
-    int durationMinutes,       // 코스 실제 소요시간(분)
+    Integer durationMinutes,       // 코스 실제 소요시간(분). AI가 null로 줄 수 있어 Integer로 받는다.
 
     List<AiRouteStop> stops,
 
