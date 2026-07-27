@@ -107,6 +107,7 @@ public class CourseRecommendationService {
         .build();
 
     List<CoursePlace> places = aiCourse.stops().stream()
+        .filter(stop->!isGate(stop))
         .map(stop -> {
           CatalogItem catalogItem = catalogItemsByFacilityId.get(stop.facilityId());
           return CoursePlace.builder()
@@ -124,6 +125,11 @@ public class CourseRecommendationService {
     course.setPlaces(places);
 
     return course;
+  }
+
+  private boolean isGate(AiRouteStop stop){
+    String category = stop.facilityCategory();
+    return category != null && "출입문".equals(category.trim());
   }
 
   private CatalogCategory toCatalogCategory(String facilityCategory) {
