@@ -72,15 +72,15 @@ public class CourseFavoriteService {
 
   @Transactional
   public void deleteFavorite(UUID memberId, UUID courseId) {
-    CourseFavorite courseFavorite = courseFavoriteRepository.findByMemberIdAndCourseId(memberId, courseId)
-        .orElseThrow(() -> {
-          log.warn("즐겨찾기 삭제 실패. 존재하지 않는 즐겨찾기. memberId={}, courseId={}", memberId, courseId);
-          throw new CustomException(ErrorCode.COURSE_NOT_FOUND);
-        });
 
-    courseFavoriteRepository.delete(courseFavorite);
-
-    log.info("즐겨찾기 삭제 완료. memberId={}, courseId={}", memberId, courseId);
+    courseFavoriteRepository.findByMemberIdAndCourseId(memberId, courseId)
+        .ifPresentOrElse(
+            courseFavorite -> {
+              courseFavoriteRepository.delete(courseFavorite);
+              log.info("즐겨찾기 삭제 완료. memberId={}, courseId={}", memberId, courseId);
+            },
+            () -> log.debug("즐겨찾기 삭제 요청. 이미 즐겨찾기되어 있지 않음. memberId={}, courseId={}", memberId, courseId)
+        );
   }
 
 

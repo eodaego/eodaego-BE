@@ -58,6 +58,12 @@ public interface CourseFavoriteControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "코스 즐겨찾기 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/29"
+      ),
+      @ApiChangeLog(
+          date = "2026-07-28",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "삭제를 멱등(idempotent) 처리로 변경. 즐겨찾기되어 있지 않은 코스를 삭제 요청해도 404 대신 204로 성공 응답",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/29"
       )
   })
   @Operation(
@@ -65,15 +71,16 @@ public interface CourseFavoriteControllerDocs {
       description = """
           courseId에 해당하는 즐겨찾기를 삭제한다.
 
+          - 멱등(idempotent) 동작이다. 이미 즐겨찾기되어 있지 않은(또는 존재하지 않는) 코스를 삭제 요청해도
+            에러 없이 204로 응답한다. 클라이언트 의도가 "이 코스를 즐겨찾기에서 제외"이므로 이미 제외된 상태도 성공으로 본다.
+            등록(addFavorite)이 멱등인 것과 대칭이며, 더블클릭/재시도 시에도 안전하다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
   )
   @ApiResponses({
-      @ApiResponse(responseCode = "204", description = "삭제 성공"),
+      @ApiResponse(responseCode = "204", description = "삭제 성공(이미 즐겨찾기되어 있지 않았더라도 204)"),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = "즐겨찾기되어 있지 않은 코스. errorCode: COURSE_NOT_FOUND",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<Void> deleteFavorite(UUID memberId, UUID courseId);
