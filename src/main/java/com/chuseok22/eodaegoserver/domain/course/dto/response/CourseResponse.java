@@ -47,8 +47,8 @@ public record CourseResponse(
     return new CourseResponse(
         course.getId(),
         course.getTitle(),
-        course.getInterestTypes(),
-        course.getTagLabels(),
+        List.copyOf(course.getInterestTypes()),
+        List.copyOf(course.getTagLabels()),
         course.getDurationMinutes(),
         course.getEntrance(),
         course.getExit(),
