@@ -52,10 +52,10 @@ public class CatalogItem extends BaseEntity {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String feature;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String childDescription;
 
   @Enumerated(EnumType.STRING)
