@@ -103,7 +103,7 @@ public class CourseRecommendationService {
         .title(aiCourse.title())
         .tagLabels(aiCourse.tagLabels())
         .interestTypes(interestTypes)
-        .durationMinutes(aiCourse.durationMinutes() != null ? aiCourse.durationMinutes() : 0)
+        .estimatedDurationMinutes(aiCourse.estimatedDurationMinutes())
         .entrance(entrance)
         .exit(exit)
         .build();

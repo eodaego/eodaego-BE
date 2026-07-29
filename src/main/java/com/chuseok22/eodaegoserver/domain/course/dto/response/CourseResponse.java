@@ -21,8 +21,8 @@ public record CourseResponse(
     @Schema(description = "코스 특징을 요약하는 짧은 태그 목록. AI가 코스마다 1~3개 생성한다.", example = "[\"동물듬뿍\", \"산책하기 좋은 코스\"]")
     List<String> tagLabels,
 
-    @Schema(description = "소요 시간(분)", example = "120")
-    int durationMinutes,
+    @Schema(description = "AI가 계산한 코스 완주 예상 소요시간(분). 요청의 stayDurationMinutes(희망 체류시간)와는 다른 값이다.", example = "120")
+    int estimatedDurationMinutes,
 
     @Schema(description = "입구", example = "MAIN_GATE")
     EntranceGate entrance,
@@ -49,7 +49,7 @@ public record CourseResponse(
         course.getTitle(),
         List.copyOf(course.getInterestTypes()),
         List.copyOf(course.getTagLabels()),
-        course.getDurationMinutes(),
+        course.getEstimatedDurationMinutes(),
         course.getEntrance(),
         course.getExit(),
         favorite,

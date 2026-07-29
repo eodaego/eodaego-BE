@@ -50,6 +50,12 @@ public interface CourseControllerDocs {
         author = ChangeLogAuthor.KIM_JAEHYEON,
         description = "장소 name/좌표를 도감 미동기화 시 AI 시설 값으로 폴백(null 방지)",
         issueUrl = "https://github.com/eodaego/eodaego-BE/issues/34"
+      ),
+      @ApiChangeLog(
+        date = "2026-07-29",
+        author = ChangeLogAuthor.KIM_JAEHYEON,
+        description = "응답 소요시간 필드명 변경(durationMinutes → estimatedDurationMinutes). AI 예상 소요시간(estimated_duration_minutes)을 정상 반영하도록 매핑 수정",
+        issueUrl = "https://github.com/eodaego/eodaego-BE/issues/34"
       )
   })
   @Operation(
