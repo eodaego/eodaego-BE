@@ -54,6 +54,8 @@ public class CourseRecommendationService {
 
     AiRouteRecommendationResponse aiResponse = courseAiClient.recommendRoutes(aiRequest);
 
+    validateAiResponse(aiResponse);
+
     Map<Long, CatalogItem> catalogItemsByFacilityId = findCatalogItemsByFacilityId(aiResponse);
 
     List<Course> savedCourses = aiResponse.courses().stream()
@@ -79,6 +81,30 @@ public class CourseRecommendationService {
     boolean favorite = courseFavoriteRepository.existsByMemberIdAndCourseId(memberId, courseId);
 
     return CourseResponse.from(course, favorite);
+  }
+
+  private void validateAiResponse(AiRouteRecommendationResponse response) {
+    if (response == null || response.courses() == null || response.courses().isEmpty()) {
+      log.warn("AI 추천 응답에 코스가 없습니다.");
+      throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+    }
+
+    for (AiRecommendedCourse course : response.courses()) {
+      if (course.title() == null
+          || course.tagLabels() == null
+          || course.estimatedDurationMinutes() == null
+          || course.stops() == null) {
+        log.warn("AI 코스 필수값 누락. title={}", course.title());
+        throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+      }
+
+      for (AiRouteStop stop : course.stops()) {
+        if (stop.facility() == null || stop.facility().id() == null) {
+          log.warn("AI 코스 시설정보 누락. title={}", course.title());
+          throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+        }
+      }
+    }
   }
 
   private Map<Long, CatalogItem> findCatalogItemsByFacilityId(AiRouteRecommendationResponse response) {
