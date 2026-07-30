@@ -148,7 +148,7 @@ public class CourseRecommendationService {
 
     return switch (normalizedCategory) {
       case "동물나라", "ANIMAL" -> CatalogCategory.ANIMAL;
-      case "자연나라", "PLANT" -> CatalogCategory.PLANT;
+      case "자연나라", "PLANT", "조경시설", "체험시설" -> CatalogCategory.PLANT;
       case "PLACE" -> CatalogCategory.PLACE;
       default -> {
         log.debug("정의되지 않은 AI 시설 category를 PLACE로 처리합니다. category={}", normalizedCategory);
