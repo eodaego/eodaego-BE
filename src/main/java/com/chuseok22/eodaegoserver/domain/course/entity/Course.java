@@ -53,7 +53,7 @@ public class Course extends BaseEntity {
   @BatchSize(size = 20)
   private List<String> tagLabels = new ArrayList<>();
 
-  private int durationMinutes;
+  private int estimatedDurationMinutes;
 
   @Enumerated(EnumType.STRING)
   private EntranceGate entrance;
