@@ -18,7 +18,9 @@ public class AiServerConfig {
 
   @Bean
   public RestClient aiServerRestClient() {
+    // AI 서버(uvicorn)가 HTTP/1.1만 지원한다. HttpClient 기본값(HTTP/2)으로 두면 업그레이드 시도가 400으로 거부되므로 HTTP/1.1로 고정한다.
     HttpClient httpClient = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_1_1)
         .connectTimeout(aiServerProperties.connectTimeout())
         .build();
     JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
