@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> {
 
@@ -17,6 +18,11 @@ public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> 
   List<CatalogItem> findByExternalIdIn(List<Long> externalIds);
 
   List<CatalogItem> findByCategoryAndExternalIdIn(CatalogCategory category, List<Long> externalIds);
+
+  Optional<CatalogItem> findByCategoryAndExternalId(CatalogCategory category, Long externalId);
+
+  @Query(value = "SELECT * FROM catalog_item WHERE category = :category AND id <> :excludeId ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
+  List<CatalogItem> findRandomDistractors(@Param("category") String category, @Param("excludeId") UUID excludeId, @Param("limit") int limit);
 
   @Query(value = "SELECT category AS category, COUNT(*) AS count FROM catalog_item GROUP BY category", nativeQuery = true)
   List<CategoryCountProjection> countGroupByCategory();

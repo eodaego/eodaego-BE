@@ -34,6 +34,9 @@ chuseok22:
     entries-to-show: 10
     date-format: "yyyy-MM-dd"
 
+quiz:
+  answer-ttl-millis: 1800000 # 생성된 퀴즈 정답의 Redis 보관 시간(30분)
+
 springdoc:
   servers:
     - url: https://api.eodaego.chuseok22.com
