@@ -50,7 +50,7 @@ public class AdminFacilityService {
 
   public FacilityView findById(Integer facilityId) {
     return listFacilities().stream()
-        .filter(facility -> facility.id().equals(facilityId))
+        .filter(facility -> Objects.equals(facility.id(), facilityId))
         .findFirst()
         .orElseThrow(() -> new CustomException(ErrorCode.FACILITY_NOT_FOUND));
   }
