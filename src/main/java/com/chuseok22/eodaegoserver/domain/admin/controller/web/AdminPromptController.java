@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 public class AdminPromptController {
 
-  private static final List<String> PURPOSES = List.of("chat", "recommendation");
+  private static final List<String> PURPOSES = List.of("chat", "recommendation", "photo_recognition");
 
   private final AdminPromptService adminPromptService;
 
