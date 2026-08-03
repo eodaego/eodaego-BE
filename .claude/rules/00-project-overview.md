@@ -40,6 +40,7 @@
   - 비회원 기능은 제공하지 않는다 — 회원 관련 API는 항상 인증을 전제로 설계한다.
 - 사용 금지 기술 / 패턴: 20-team-conventions.md 참고(Entity 팩토리 메서드 금지, getReferenceById 금지, 축약어 사용 금지 등)
 - 현재 프로젝트에서 중요하게 보는 품질 기준: 명확한 계층 분리(Controller는 요청/응답만), 일관된 네이밍, Swagger 문서(ControllerDocs)를 통한 프론트 개발자와의 명확한 API 계약
+- 형제 디렉토리 `eodaego-ai`(AI 서버, `/Users/chuseok22/Workspace/projects/eodaego/eodaego-ai`)는 이 프로젝트 작업 시 참고 자료로만 사용한다. 코드 탐색/열람(Read)은 허용하지만, 어떤 세션에서도 `eodaego-ai`의 파일을 수정(Write/Edit)하지 않는다.
 
 ## Change policy
 
