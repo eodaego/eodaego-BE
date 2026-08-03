@@ -23,6 +23,12 @@ public interface CongestionControllerDocs {
       author = ChangeLogAuthor.KIM_JAEHYEON,
       description = "공원 혼잡도 조회 API 최초 작성",
       issueUrl = "https://github.com/eodaego/eodaego-BE/issues/51"
+    ),
+    @ApiChangeLog(
+      date = "2026-08-04",
+      author = ChangeLogAuthor.KANG_JIYUN,
+      description = "공원 혼잡도 조회 503 설명 수정",
+      issueUrl = "https://github.com/eodaego/eodaego-BE/issues/51"
     )
   })
   @Operation(
@@ -62,7 +68,7 @@ public interface CongestionControllerDocs {
     ),
     @ApiResponse(
       responseCode = "503",
-      description = "AI 서버 연결 실패, 또는 AI 서버는 정상이지만 수집된 혼잡도 데이터가 한 건도 없음. errorCode: AI_SERVER_UNAVAILABLE",
+      description = "AI 서버 연결 실패, 수집된 혼잡도 데이터가 없거나 응답 필수값(congestionLevel, collectedAt)이 누락된 경우. errorCode: AI_SERVER_UNAVAILABLE",
       content = @Content(schema = @Schema(implementation = ErrorResponse.class))
     )
   })
