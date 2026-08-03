@@ -62,4 +62,10 @@ public class AdminAiCatalogController {
     redirectAttributes.addFlashAttribute("crawlResult", adminAiCatalogService.triggerWeatherCrawl());
     return "redirect:/admin/weather";
   }
+
+  @PostMapping("/admin/congestion/crawl")
+  public String triggerCongestionCrawl(RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("crawlResult", adminAiCatalogService.triggerCongestionCrawl());
+    return "redirect:/admin/congestion";
+  }
 }

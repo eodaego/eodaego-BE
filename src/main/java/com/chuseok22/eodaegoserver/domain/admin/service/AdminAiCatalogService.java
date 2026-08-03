@@ -74,6 +74,10 @@ public class AdminAiCatalogService {
     return postCrawl("/api/v1/weather/crawl");
   }
 
+  public CrawlResultView triggerCongestionCrawl() {
+    return postCrawl("/api/v1/congestion/crawl");
+  }
+
   private CrawlResultView postCrawl(String uri) {
     try {
       return aiServerRestClient.post()
