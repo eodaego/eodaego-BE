@@ -137,7 +137,7 @@ public interface CourseFavoriteControllerDocs {
       @ApiResponse(responseCode = "200", description = "조회 성공(즐겨찾기한 코스가 없으면 totalCount 0, items 빈 배열)"),
       @ApiResponse(responseCode = "400", description = """
           sort에 허용 목록 밖의 값을 보냄. errorCode: INVALID_REQUEST
-          - fieldErrors[0].field에 파라미터명 "sort", fieldErrors[0].reason에 "허용되지 않는 값입니다: {보낸값}"이 담긴다.
+          - fieldErrors[0].field에 파라미터명 "sort", fieldErrors[0].reason에 "허용되지 않는 값입니다."가 담긴다.
           """,
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",

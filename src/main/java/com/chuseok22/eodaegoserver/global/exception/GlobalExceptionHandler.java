@@ -43,15 +43,25 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-    log.warn("[MethodArgumentTypeMismatchException] 발생. parameter={}, value={}", e.getName(), e.getValue());
+  public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+    MethodArgumentTypeMismatchException exception) {
+
+    log.warn(
+      "[MethodArgumentTypeMismatchException] 발생. parameter={}, requiredType={}",
+      exception.getName(),
+      exception.getRequiredType());
 
     return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus())
-        .body(ErrorResponse.builder()
-            .errorCode(ErrorCode.INVALID_REQUEST)
-            .errorMessage(ErrorCode.INVALID_REQUEST.getMessage())
-            .fieldErrors(List.of(new FieldErrorDetail(e.getName(), "허용되지 않는 값입니다: " + e.getValue())))
-            .build());
+      .body(ErrorResponse.builder()
+        .errorCode(ErrorCode.INVALID_REQUEST)
+        .errorMessage(ErrorCode.INVALID_REQUEST.getMessage())
+        .fieldErrors(List.of(
+          new FieldErrorDetail(
+            exception.getName(),
+            "허용되지 않는 값입니다."
+          )
+        ))
+        .build());
   }
 
   @ExceptionHandler(JwtException.class)
