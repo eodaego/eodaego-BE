@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Slf4j
@@ -38,6 +39,18 @@ public class GlobalExceptionHandler {
             .errorCode(ErrorCode.INVALID_REQUEST)
             .errorMessage(ErrorCode.INVALID_REQUEST.getMessage())
             .fieldErrors(fieldErrors)
+            .build());
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    log.warn("[MethodArgumentTypeMismatchException] 발생. parameter={}, value={}", e.getName(), e.getValue());
+
+    return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus())
+        .body(ErrorResponse.builder()
+            .errorCode(ErrorCode.INVALID_REQUEST)
+            .errorMessage(ErrorCode.INVALID_REQUEST.getMessage())
+            .fieldErrors(List.of(new FieldErrorDetail(e.getName(), "허용되지 않는 값입니다: " + e.getValue())))
             .build());
   }
 
