@@ -18,13 +18,18 @@ import org.springframework.web.client.RestClientException;
 @RequiredArgsConstructor
 public class CourseAiClient {
 
+  private static final String ROUTE_RECOMMENDATION_URI = "/api/v1/recommendation/routes";
+
   private final RestClient aiServerRestClient;
 
-  public AiRouteRecommendationResponse recommendRoutes(AiRouteRecommendationRequest request) {
+  public AiRouteRecommendationResponse recommendRoutes(
+    AiRouteRecommendationRequest request) {
+
     AiRouteRecommendationResponse response;
+
     try {
       response = aiServerRestClient.post()
-        .uri("/api/v1/recommendation/routes")
+        .uri(ROUTE_RECOMMENDATION_URI)
         .body(request)
         .retrieve()
         .body(AiRouteRecommendationResponse.class);
@@ -34,11 +39,14 @@ public class CourseAiClient {
     }
 
     validateResponse(response);
+
     return response;
   }
 
   private void validateResponse(AiRouteRecommendationResponse response) {
-    if (response == null || response.courses() == null) {
+    if (response == null
+        || response.courses() == null
+        || response.courses().isEmpty()) {
       log.warn("AI 코스 추천 응답이 비어 있습니다.");
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
@@ -68,5 +76,4 @@ public class CourseAiClient {
       }
     }
   }
-
 }
