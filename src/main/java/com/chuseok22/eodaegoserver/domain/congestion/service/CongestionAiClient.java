@@ -23,16 +23,39 @@ public class CongestionAiClient {
   public AiCongestionSnapshotResponse fetchLatestSnapshot() {
     try {
       List<AiCongestionSnapshotResponse> snapshots = aiServerRestClient.get()
-        .uri(uriBuilder -> uriBuilder.path(CONGESTION_URI).queryParam("limit", 1).build())
+        .uri(uriBuilder -> uriBuilder
+          .path(CONGESTION_URI)
+          .queryParam("limit", 1)
+          .build())
         .retrieve()
-        .body(new ParameterizedTypeReference<List<AiCongestionSnapshotResponse>>() {});
+        .body(new ParameterizedTypeReference<>() {
+        });
 
       if (snapshots == null || snapshots.isEmpty()) {
         log.error("AI 서버 혼잡도 응답이 비어 있습니다. uri={}", CONGESTION_URI);
         throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
       }
 
-      return snapshots.getFirst();
+      AiCongestionSnapshotResponse latestSnapshot = snapshots.getFirst();
+
+      if (latestSnapshot == null) {
+        log.error("AI 서버 혼잡도 응답 항목이 null입니다. uri={}", CONGESTION_URI);
+        throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+      }
+
+      if (latestSnapshot.congestionLevel() == null
+          || latestSnapshot.congestionLevel().isBlank()
+          || latestSnapshot.collectedAt() == null) {
+        log.error(
+          "AI 서버 혼잡도 응답의 필수값이 누락되었습니다. uri={}, congestionLevelPresent={}, collectedAtPresent={}",
+          CONGESTION_URI,
+          latestSnapshot.congestionLevel() != null
+          && !latestSnapshot.congestionLevel().isBlank(),
+          latestSnapshot.collectedAt() != null);
+        throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+      }
+
+      return latestSnapshot;
     } catch (RestClientException exception) {
       log.error("AI 서버 혼잡도 조회 실패. uri={}", CONGESTION_URI, exception);
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
