@@ -7,14 +7,20 @@
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
 </head>
 <body class="min-h-screen bg-base-200">
-<div th:replace="~{admin/fragments/layout :: nav(activePage='dashboard')}"></div>
-<div class="p-8">
+<div class="drawer lg:drawer-open">
+  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
+  <div class="drawer-content flex flex-col">
+    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
+    <main class="p-8">
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body">
       <h2 class="card-title">관리자 대시보드</h2>
-      <p>상단 메뉴에서 놀이기구/크롤링 스케줄 관리 및 콘텐츠 조회 화면으로 이동할 수 있습니다.</p>
+      <p>왼쪽 사이드바에서 놀이기구/크롤링 스케줄 관리 및 콘텐츠 조회 화면으로 이동할 수 있습니다.</p>
     </div>
   </div>
+    </main>
+  </div>
+  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='dashboard')}"></div>
 </div>
 </body>
 </html>

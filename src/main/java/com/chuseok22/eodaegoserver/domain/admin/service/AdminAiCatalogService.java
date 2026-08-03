@@ -4,14 +4,12 @@ import com.chuseok22.eodaegoserver.domain.admin.dto.response.AnimalView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CatalogCrawlResultView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CongestionView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
-import com.chuseok22.eodaegoserver.domain.admin.dto.response.FacilityView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.OperatingHoursView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.PlantView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.WeatherSnapshotView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,10 +25,6 @@ import org.springframework.web.client.RestClientResponseException;
 public class AdminAiCatalogService {
 
   private final RestClient aiServerRestClient;
-
-  public List<FacilityView> listFacilities() {
-    return get("/api/v1/facility", new ParameterizedTypeReference<List<FacilityView>>() {});
-  }
 
   public List<OperatingHoursView> listOperatingHours() {
     return get("/api/v1/facility/operating-hours", new ParameterizedTypeReference<List<OperatingHoursView>>() {});
@@ -50,15 +44,6 @@ public class AdminAiCatalogService {
 
   public List<WeatherSnapshotView> listWeather() {
     return get("/api/v1/weather", new ParameterizedTypeReference<List<WeatherSnapshotView>>() {});
-  }
-
-  public List<String> listFacilityCategories() {
-    return listFacilities().stream()
-        .map(FacilityView::category)
-        .filter(Objects::nonNull)
-        .distinct()
-        .sorted()
-        .toList();
   }
 
   public CatalogCrawlResultView triggerCatalogCrawl() {
@@ -85,12 +70,12 @@ public class AdminAiCatalogService {
     return postCrawl("/api/v1/facility/operating-hours/crawl");
   }
 
-  public CrawlResultView triggerFacilityImport() {
-    return postCrawl("/api/v1/facility/import");
-  }
-
   public CrawlResultView triggerWeatherCrawl() {
     return postCrawl("/api/v1/weather/crawl");
+  }
+
+  public CrawlResultView triggerCongestionCrawl() {
+    return postCrawl("/api/v1/congestion/crawl");
   }
 
   private CrawlResultView postCrawl(String uri) {

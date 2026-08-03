@@ -15,12 +15,6 @@ public class AdminAiCatalogController {
 
   private final AdminAiCatalogService adminAiCatalogService;
 
-  @GetMapping("/admin/facility")
-  public String facilityList(Model model) {
-    model.addAttribute("facilities", adminAiCatalogService.listFacilities());
-    return "admin/facility/list";
-  }
-
   @GetMapping("/admin/facility/operating-hours")
   public String operatingHoursList(Model model) {
     model.addAttribute("operatingHoursSections", adminAiCatalogService.listOperatingHours());
@@ -63,15 +57,15 @@ public class AdminAiCatalogController {
     return "redirect:/admin/facility/operating-hours";
   }
 
-  @PostMapping("/admin/facility/import")
-  public String triggerFacilityImport(RedirectAttributes redirectAttributes) {
-    redirectAttributes.addFlashAttribute("crawlResult", adminAiCatalogService.triggerFacilityImport());
-    return "redirect:/admin/facility";
-  }
-
   @PostMapping("/admin/weather/crawl")
   public String triggerWeatherCrawl(RedirectAttributes redirectAttributes) {
     redirectAttributes.addFlashAttribute("crawlResult", adminAiCatalogService.triggerWeatherCrawl());
     return "redirect:/admin/weather";
+  }
+
+  @PostMapping("/admin/congestion/crawl")
+  public String triggerCongestionCrawl(RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("crawlResult", adminAiCatalogService.triggerCongestionCrawl());
+    return "redirect:/admin/congestion";
   }
 }
