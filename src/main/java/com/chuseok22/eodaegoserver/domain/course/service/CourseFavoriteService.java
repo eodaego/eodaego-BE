@@ -1,6 +1,8 @@
 package com.chuseok22.eodaegoserver.domain.course.service;
 
+import com.chuseok22.eodaegoserver.domain.course.CourseFavoriteSortType;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteItemResponse;
+import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteListResponse;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteResponse;
 import com.chuseok22.eodaegoserver.domain.course.entity.Course;
 import com.chuseok22.eodaegoserver.domain.course.entity.CourseFavorite;
@@ -62,12 +64,13 @@ public class CourseFavoriteService {
         });
   }
 
-  public List<CourseFavoriteItemResponse> getFavorites(UUID memberId) {
-    List<CourseFavorite> favorites = courseFavoriteRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
-
-    return favorites.stream()
+  public CourseFavoriteListResponse getFavorites(UUID memberId, CourseFavoriteSortType sortType) {
+    List<CourseFavoriteItemResponse> items = courseFavoriteRepository.findByMemberId(memberId, sortType.getSort())
+        .stream()
         .map(CourseFavoriteItemResponse::from)
         .toList();
+
+    return CourseFavoriteListResponse.from(items);
   }
 
   @Transactional
