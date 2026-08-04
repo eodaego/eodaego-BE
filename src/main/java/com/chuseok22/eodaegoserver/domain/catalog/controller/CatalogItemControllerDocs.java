@@ -89,6 +89,12 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "PLACE(시설) 신규 등록 시 feature가 항상 빈 문자열로 저장되던 문제 수정. 외부 description(상세 설명)을 feature로 자동 매핑하도록 변경(식물과 동일한 방식)",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/30"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-04",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "시설 중 출입문(정문/후문 등 11개)과 고객안내센터를 도감 등록 대상에서 제외. 동기화해도 PLACE로 생성되지 않으며, 기존에 등록돼 있던 12건은 삭제됨",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/52"
       )
   })
   @Operation(
@@ -103,6 +109,8 @@ public interface CatalogItemControllerDocs {
           - 이미 등록된 항목(externalId 기준)은 새로 만들지 않는다. 대신 동물/식물은 name/imageUrl,
             시설은 name/latitude/longitude가 외부 원본과 다르면 그 값만 갱신한다.
           - feature/childDescription/status는 관리자가 직접 입력한 값이라 재동기화로 절대 덮어쓰지 않는다.
+          - 시설 중 출입문(정문/후문 등)과 고객안내센터는 회원이 수집하는 도감 대상이 아니므로
+            동기화에서 제외된다. 즉 시설 목록 전체가 PLACE로 등록되지는 않는다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
