@@ -122,23 +122,53 @@ public class CourseRecommendationService {
         .toList();
 
     List<CoursePlace> places = new ArrayList<>();
-    for (int index = 0; index < visitStops.size(); index++) {
-      AiRouteStop stop = visitStops.get(index);
+    for (AiRouteStop stop : visitStops) {
       CatalogItem catalogItem = catalogItemsByFacilityId.get(stop.facilityId());
+
+      String name = resolveName(catalogItem, stop);
+      Double latitude = resolveLatitude(catalogItem, stop);
+      Double longitude = resolveLongitude(catalogItem, stop);
+
+      if (name == null || latitude == null || longitude == null) {
+        log.warn("표시에 필요한 정보가 없어 장소를 제외합니다. facilityId={}", stop.facilityId());
+        continue;
+      }
+
       places.add(CoursePlace.builder()
           .course(course)
-          .visitOrder(index + 1)
+          .visitOrder(places.size() + 1)
           .facilityId(stop.facilityId())
-          .name(catalogItem != null ? catalogItem.getName() : stop.facility().name())
+          .name(name)
           .category(toCatalogCategory(stop.facilityCategory()))
-          .latitude(catalogItem != null ? catalogItem.getLatitude() : stop.facility().latitude())
-          .longitude(catalogItem != null ? catalogItem.getLongitude() : stop.facility().longitude())
+          .latitude(latitude)
+          .longitude(longitude)
           .build());
     }
 
     course.setPlaces(places);
 
     return course;
+  }
+
+  private String resolveName(CatalogItem catalogItem, AiRouteStop stop) {
+    if (catalogItem != null && catalogItem.getName() != null) {
+      return catalogItem.getName();
+    }
+    return stop.facility().name();
+  }
+
+  private Double resolveLatitude(CatalogItem catalogItem, AiRouteStop stop) {
+    if (catalogItem != null && catalogItem.getLatitude() != null) {
+      return catalogItem.getLatitude();
+    }
+    return stop.facility().latitude();
+  }
+
+  private Double resolveLongitude(CatalogItem catalogItem, AiRouteStop stop) {
+    if (catalogItem != null && catalogItem.getLongitude() != null) {
+      return catalogItem.getLongitude();
+    }
+    return stop.facility().longitude();
   }
 
   private boolean hasVisitablePlace(Course course) {
