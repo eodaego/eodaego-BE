@@ -22,17 +22,15 @@ public class CourseAiClient {
 
   private final RestClient aiServerRestClient;
 
-  public AiRouteRecommendationResponse recommendRoutes(
-    AiRouteRecommendationRequest request) {
-
+  public AiRouteRecommendationResponse recommendRoutes(AiRouteRecommendationRequest request) {
     AiRouteRecommendationResponse response;
 
     try {
       response = aiServerRestClient.post()
-        .uri(ROUTE_RECOMMENDATION_URI)
-        .body(request)
-        .retrieve()
-        .body(AiRouteRecommendationResponse.class);
+          .uri(ROUTE_RECOMMENDATION_URI)
+          .body(request)
+          .retrieve()
+          .body(AiRouteRecommendationResponse.class);
     } catch (RestClientException exception) {
       log.error("AI 서버 코스 추천 호출 실패", exception);
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
@@ -77,4 +75,5 @@ public class CourseAiClient {
       }
     }
   }
+
 }
