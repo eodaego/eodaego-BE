@@ -6,6 +6,7 @@ import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteRecommendat
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteStop;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,13 +18,16 @@ import org.springframework.web.client.RestClientException;
 @RequiredArgsConstructor
 public class CourseAiClient {
 
+  private static final String ROUTE_RECOMMENDATION_URI = "/api/v1/recommendation/routes";
+
   private final RestClient aiServerRestClient;
 
   public AiRouteRecommendationResponse recommendRoutes(AiRouteRecommendationRequest request) {
     AiRouteRecommendationResponse response;
+
     try {
       response = aiServerRestClient.post()
-          .uri("/api/v1/recommendation/routes")
+          .uri(ROUTE_RECOMMENDATION_URI)
           .body(request)
           .retrieve()
           .body(AiRouteRecommendationResponse.class);
@@ -33,26 +37,38 @@ public class CourseAiClient {
     }
 
     validateResponse(response);
+
     return response;
   }
 
   private void validateResponse(AiRouteRecommendationResponse response) {
-    if (response == null || response.courses() == null || response.courses().isEmpty()) {
-      log.warn("AI 추천 응답에 코스가 없습니다.");
+    if (response == null
+        || response.courses() == null
+        || response.courses().isEmpty()) {
+      log.warn("AI 코스 추천 응답이 비어 있습니다.");
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
 
     for (AiRecommendedCourse course : response.courses()) {
+      if (course == null) {
+        log.warn("AI 코스 항목이 null입니다.");
+        throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+      }
+
       if (course.title() == null
           || course.tagLabels() == null
+          || course.tagLabels().stream().anyMatch(Objects::isNull)
           || course.estimatedDurationMinutes() == null
-          || course.stops() == null) {
+          || course.stops() == null
+          || course.stops().isEmpty()) {
         log.warn("AI 코스 필수값 누락. title={}", course.title());
         throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
       }
 
       for (AiRouteStop stop : course.stops()) {
-        if (stop.facility() == null || stop.facility().id() == null) {
+        if (stop == null
+            || stop.facility() == null
+            || stop.facility().id() == null) {
           log.warn("AI 코스 시설정보 누락. title={}", course.title());
           throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
         }

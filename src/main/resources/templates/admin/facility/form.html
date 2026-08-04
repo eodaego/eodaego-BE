@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title th:text="${mode == 'create'} ? '시설 등록 - 어대고 관리자' : '시설 수정 - 어대고 관리자'"></title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
@@ -17,38 +18,38 @@
             th:object="${request}" method="post" class="card bg-base-100 shadow-xl p-6 max-w-lg">
         <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="form-control mb-3">
-          <label class="label"><span class="label-text">카테고리</span></label>
-          <input type="text" th:field="*{category}" class="input input-bordered"/>
+          <label for="category" class="label"><span class="label-text">카테고리</span></label>
+          <input id="category" type="text" th:field="*{category}" class="input input-bordered"/>
           <span class="text-error text-sm" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></span>
         </div>
         <div class="form-control mb-3">
-          <label class="label"><span class="label-text">이름</span></label>
-          <input type="text" th:field="*{name}" class="input input-bordered"/>
+          <label for="name" class="label"><span class="label-text">이름</span></label>
+          <input id="name" type="text" th:field="*{name}" class="input input-bordered"/>
           <span class="text-error text-sm" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
         </div>
         <div class="form-control mb-3">
-          <label class="label"><span class="label-text">코드</span></label>
-          <input type="text" th:field="*{code}" class="input input-bordered"/>
+          <label for="code" class="label"><span class="label-text">코드</span></label>
+          <input id="code" type="text" th:field="*{code}" class="input input-bordered"/>
         </div>
         <div class="form-control mb-3">
-          <label class="label"><span class="label-text">소개</span></label>
-          <input type="text" th:field="*{intro}" class="input input-bordered"/>
+          <label for="intro" class="label"><span class="label-text">소개</span></label>
+          <input id="intro" type="text" th:field="*{intro}" class="input input-bordered"/>
         </div>
         <div class="form-control mb-3">
-          <label class="label"><span class="label-text">상세 설명</span></label>
-          <textarea th:field="*{description}" class="textarea textarea-bordered"></textarea>
+          <label for="description" class="label"><span class="label-text">상세 설명</span></label>
+          <textarea id="description" th:field="*{description}" class="textarea textarea-bordered"></textarea>
         </div>
         <div class="form-control mb-3">
-          <label class="label"><span class="label-text">위도</span></label>
-          <input type="number" step="any" th:field="*{latitude}" class="input input-bordered"/>
+          <label for="latitude" class="label"><span class="label-text">위도</span></label>
+          <input id="latitude" type="number" step="any" th:field="*{latitude}" class="input input-bordered"/>
         </div>
         <div class="form-control mb-3">
-          <label class="label"><span class="label-text">경도</span></label>
-          <input type="number" step="any" th:field="*{longitude}" class="input input-bordered"/>
+          <label for="longitude" class="label"><span class="label-text">경도</span></label>
+          <input id="longitude" type="number" step="any" th:field="*{longitude}" class="input input-bordered"/>
         </div>
         <div class="form-control mb-4">
-          <label class="label"><span class="label-text">세부 시설 유형</span></label>
-          <input type="text" th:field="*{facilityType}" class="input input-bordered"/>
+          <label for="facilityType" class="label"><span class="label-text">세부 시설 유형</span></label>
+          <input id="facilityType" type="text" th:field="*{facilityType}" class="input input-bordered"/>
         </div>
         <button type="submit" class="btn btn-primary">저장</button>
       </form>

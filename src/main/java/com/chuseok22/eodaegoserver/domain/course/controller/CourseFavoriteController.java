@@ -1,10 +1,10 @@
 package com.chuseok22.eodaegoserver.domain.course.controller;
 
-import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteItemResponse;
+import com.chuseok22.eodaegoserver.domain.course.CourseFavoriteSortType;
+import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteListResponse;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteResponse;
 import com.chuseok22.eodaegoserver.domain.course.service.CourseFavoriteService;
 import com.chuseok22.logging.annotation.LogMonitoring;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,9 +37,10 @@ public class CourseFavoriteController implements CourseFavoriteControllerDocs {
   @Override
   @LogMonitoring
   @GetMapping(path = "", version = "1")
-  public ResponseEntity<List<CourseFavoriteItemResponse>> getFavorites(
-      @AuthenticationPrincipal UUID memberId) {
-    return ResponseEntity.ok(courseFavoriteService.getFavorites(memberId));
+  public ResponseEntity<CourseFavoriteListResponse> getFavorites(
+      @AuthenticationPrincipal UUID memberId,
+      @RequestParam(defaultValue = "LATEST") CourseFavoriteSortType sort) {
+    return ResponseEntity.ok(courseFavoriteService.getFavorites(memberId, sort));
   }
 
   @Override

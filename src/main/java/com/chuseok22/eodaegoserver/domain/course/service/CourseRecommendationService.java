@@ -36,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CourseRecommendationService {
 
+  private static final String GATE_CATEGORY = "출입문";
+
   private final CourseRepository courseRepository;
   private final CourseFavoriteRepository courseFavoriteRepository;
   private final CatalogItemRepository catalogItemRepository;
@@ -58,8 +60,14 @@ public class CourseRecommendationService {
 
     List<Course> savedCourses = aiResponse.courses().stream()
         .map(aiCourse -> toCourse(aiCourse, request.interestTypes(), request.entrance(), request.exit(), catalogItemsByFacilityId))
+        .filter(this::hasVisitablePlace)
         .map(courseRepository::save)
         .toList();
+
+    if (savedCourses.isEmpty()) {
+      log.warn("방문 가능한 장소를 가진 코스가 없습니다. AI 추천 코스 수={}", aiResponse.courses().size());
+      throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+    }
 
     log.info("코스 추천 완료. 추천된 코스 수={}", savedCourses.size());
 
@@ -114,17 +122,26 @@ public class CourseRecommendationService {
         .toList();
 
     List<CoursePlace> places = new ArrayList<>();
-    for (int index = 0; index < visitStops.size(); index++) {
-      AiRouteStop stop = visitStops.get(index);
+    for (AiRouteStop stop : visitStops) {
       CatalogItem catalogItem = catalogItemsByFacilityId.get(stop.facilityId());
+
+      String name = resolveName(catalogItem, stop);
+      Double latitude = resolveLatitude(catalogItem, stop);
+      Double longitude = resolveLongitude(catalogItem, stop);
+
+      if (name == null || latitude == null || longitude == null) {
+        log.warn("표시에 필요한 정보가 없어 장소를 제외합니다. facilityId={}", stop.facilityId());
+        continue;
+      }
+
       places.add(CoursePlace.builder()
           .course(course)
-          .visitOrder(index + 1)
+          .visitOrder(places.size() + 1)
           .facilityId(stop.facilityId())
-          .name(catalogItem != null ? catalogItem.getName() : stop.facility().name())
+          .name(name)
           .category(toCatalogCategory(stop.facilityCategory()))
-          .latitude(catalogItem != null ? catalogItem.getLatitude() : stop.facility().latitude())
-          .longitude(catalogItem != null ? catalogItem.getLongitude() : stop.facility().longitude())
+          .latitude(latitude)
+          .longitude(longitude)
           .build());
     }
 
@@ -133,9 +150,38 @@ public class CourseRecommendationService {
     return course;
   }
 
+  private String resolveName(CatalogItem catalogItem, AiRouteStop stop) {
+    if (catalogItem != null && catalogItem.getName() != null) {
+      return catalogItem.getName();
+    }
+    return stop.facility().name();
+  }
+
+  private Double resolveLatitude(CatalogItem catalogItem, AiRouteStop stop) {
+    if (catalogItem != null && catalogItem.getLatitude() != null) {
+      return catalogItem.getLatitude();
+    }
+    return stop.facility().latitude();
+  }
+
+  private Double resolveLongitude(CatalogItem catalogItem, AiRouteStop stop) {
+    if (catalogItem != null && catalogItem.getLongitude() != null) {
+      return catalogItem.getLongitude();
+    }
+    return stop.facility().longitude();
+  }
+
+  private boolean hasVisitablePlace(Course course) {
+    if (course.getPlaces().isEmpty()) {
+      log.warn("방문 가능한 장소가 없어 코스를 제외합니다. title={}", course.getTitle());
+      return false;
+    }
+    return true;
+  }
+
   private boolean isGate(AiRouteStop stop) {
     String category = stop.facilityCategory();
-    return category != null && "출입문".equals(category.trim());
+    return category != null && GATE_CATEGORY.equals(category.trim());
   }
 
   private CatalogCategory toCatalogCategory(String facilityCategory) {
