@@ -102,20 +102,28 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "시설 중 출입문(정문/후문 등 11개)과 고객안내센터를 도감 등록 대상에서 제외. 동기화해도 PLACE로 생성되지 않으며, 기존에 등록돼 있던 12건은 삭제됨",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/52"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-04",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "재동기화가 관리자 수정값(name/imageUrl/위경도)을 AI 원본으로 되돌리던 문제 수정. 이제 AI 원본은 별도로 보관되고, 관리자가 수정하지 않은 필드만 AI 변경사항을 반영한다. 함께 수정되지 않던 식물/시설의 feature도 이제 갱신된다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
       )
   })
   @Operation(
       summary = "외부 AI 서버 전체 동기화",
       description = """
-          외부 AI 서버(동물/식물/시설)의 전체 목록을 조회해, 아직 등록되지 않은(externalId 기준) 항목은
-          신규 등록하고, 이미 등록된 항목은 외부 원본 값이 바뀌었을 때만 갱신한다.
+          외부 AI 서버(동물/식물/시설)의 전체 목록을 조회해 AI 원본 데이터를 갱신한다.
+          아직 등록되지 않은(카테고리 + externalId 기준) 항목은 도감 항목까지 함께 신규 등록한다.
 
-          - 신규 등록된 항목은 feature/childDescription이 빈 문자열("")로 생성되며(식물/시설은 feature가
-            외부 설명으로 자동 채워짐), 관리자가 이후 별도로 채워야 한다.
-          - status는 AVAILABLE로 기본 생성된다.
-          - 이미 등록된 항목(externalId 기준)은 새로 만들지 않는다. 대신 동물/식물은 name/imageUrl,
-            시설은 name/latitude/longitude가 외부 원본과 다르면 그 값만 갱신한다.
-          - feature/childDescription/status는 관리자가 직접 입력한 값이라 재동기화로 절대 덮어쓰지 않는다.
+          - **관리자가 수정한 값은 이 API로 절대 덮어쓰이지 않는다.** AI 원본과 관리자 수정값이
+            분리 보관되므로, 수정해둔 필드는 몇 번을 동기화해도 그대로 유지된다.
+          - 반대로 관리자가 수정하지 않은 필드는 AI 원본이 바뀌면 그대로 따라간다.
+            예를 들어 이름만 수정해둔 항목은, 이름은 유지되면서 이미지·설명은 AI 최신값으로 갱신된다.
+          - 신규 등록된 항목은 childDescription이 빈 문자열("")로 생성되며 관리자가 직접 채워야 한다.
+            AI가 childDescription을 제공하지 않기 때문이다.
+          - name/feature/imageUrl/latitude/longitude는 관리자가 수정하기 전까지 AI 원본 값이 그대로 표시된다.
+          - status는 AVAILABLE로 기본 생성되며, 재동기화로 바뀌지 않는다.
           - 시설 중 출입문(정문/후문 등)과 고객안내센터는 회원이 수집하는 도감 대상이 아니므로
             동기화에서 제외된다. 즉 시설 목록 전체가 PLACE로 등록되지는 않는다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
@@ -123,7 +131,7 @@ public interface CatalogItemControllerDocs {
       security = @SecurityRequirement(name = "Bearer Token")
   )
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "동기화 성공. created(신규 등록된 항목 목록)와 updated(값이 바뀌어 갱신된 항목 목록)를 함께 반환한다(둘 다 없으면 빈 배열)"),
+      @ApiResponse(responseCode = "200", description = "동기화 성공. created(신규 등록된 항목 목록)와 updated(AI 원본 값이 바뀐 항목 목록)를 함께 반환한다(둘 다 없으면 빈 배열). updated에 포함되어도 관리자가 수정해둔 필드는 바뀌지 않는다"),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "503", description = "외부 AI 서버 호출 실패. errorCode: AI_SERVER_UNAVAILABLE",
@@ -137,21 +145,47 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "도감 항목 관리 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/12"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-04",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "요청 필드명이 name/feature/imageUrl/latitude/longitude에서 nameOverride/featureOverride/imageUrlOverride/latitudeOverride/longitudeOverride로 변경됨. null을 보내면 해당 필드가 AI 원본 값으로 되돌아간다(기존에는 name/feature가 필수라 원복이 불가능했음)",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-05",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "featureOverride/imageUrlOverride에 빈 문자열을 보내면 AI 원본을 따르지 않고 '값 없음'으로 고정하도록 변경. AI 설명이 부적절하거나 썸네일이 깨졌을 때 비울 수 있다. nameOverride는 이름이 비어 있을 수 없어 빈 값을 원복과 동일하게 처리한다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
       )
   })
   @Operation(
       summary = "도감 항목 통합 수정",
       description = """
-          name/feature/childDescription/status/imageUrl/latitude/longitude를 한 번에 수정한다.
+          AI 원본 대신 사용할 값(xxxOverride)과 관리자 전용 값(childDescription/status)을 한 번에 수정한다.
           category/externalId는 등록 이후 변경할 수 없어 이 요청에 포함되지 않는다.
 
+          - **xxxOverride에 null을 보내면 그 필드는 AI 원본 값을 따른다(원복).** 값을 보내면 그 값이
+            AI 원본 대신 표시되며, 이후 동기화로 덮어쓰이지 않는다.
+          - featureOverride/imageUrlOverride는 빈 문자열("")을 보내면 AI 원본을 따르지 않고
+            "값 없음"으로 고정된다. 즉 세 가지 상태를 표현할 수 있다.
+            null = AI 원본 따르기 / "" = 비우기 / 값 = 그 값으로 고정.
+            imageUrlOverride를 ""로 두면 응답의 imageUrl이 null로 내려간다.
+          - nameOverride는 이름이 비어 있을 수 없어 ""를 원복(null)과 동일하게 처리한다.
+          - latitudeOverride/longitudeOverride는 숫자 타입이라 "비우기"를 표현할 수 없다.
+            null(원복) 또는 값 지정만 가능하다.
+          - 예를 들어 nameOverride만 채우고 imageUrlOverride를 null로 두면, 이름은 지정한 값으로 고정되고
+            이미지는 AI가 바꿀 때마다 최신값을 따라간다.
+          - childDescription과 status는 AI가 제공하지 않는 관리자 전용 값이라 원복 개념이 없고 필수다.
+          - 이 API는 전체 교체 방식이다. 생략한 xxxOverride는 "유지"가 아니라 "null로 설정(원복)"으로
+            처리되므로, 유지하려는 override 값도 함께 보내야 한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
   )
   @ApiResponses({
       @ApiResponse(responseCode = "204", description = "수정 성공"),
-      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(name/feature/childDescription 빈 값, status 누락 등). errorCode: INVALID_REQUEST",
+      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(childDescription 빈 값, status 누락 등). errorCode: INVALID_REQUEST",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -194,12 +228,22 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "도감 항목 관리 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/12"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-04",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "도감 항목과 함께 그 AI 원본도 삭제하도록 변경. 원본만 남으면 다음 동기화가 '이미 있는 항목'으로 판단해 삭제한 항목이 되살아나지 않는 문제가 있었다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
       )
   })
   @Operation(
       summary = "도감 항목 삭제",
       description = """
-          Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
+          도감 항목과 그 AI 원본 데이터를 함께 삭제한다.
+          따라서 다음 동기화 때 AI 서버가 같은 항목을 보내주면 새 항목으로 다시 등록된다
+          (관리자가 입력했던 childDescription과 override 값은 함께 사라진다).
+
+          - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
   )
