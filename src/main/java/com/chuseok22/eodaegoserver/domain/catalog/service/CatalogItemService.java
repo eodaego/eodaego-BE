@@ -1,6 +1,7 @@
 package com.chuseok22.eodaegoserver.domain.catalog.service;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
+import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemComparators;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiAnimalResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiFacilityResponse;
@@ -70,7 +71,9 @@ public class CatalogItemService {
   }
 
   public List<CatalogItem> getAllCatalogItems() {
-    return catalogItemRepository.findAll();
+    return catalogItemRepository.findAll().stream()
+        .sorted(CatalogItemComparators.DISPLAY_ORDER)
+        .toList();
   }
 
   public CatalogItem getCatalogItem(UUID catalogItemId) {
