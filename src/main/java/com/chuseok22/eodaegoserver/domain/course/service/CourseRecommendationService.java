@@ -96,7 +96,7 @@ public class CourseRecommendationService {
         .distinct()
         .toList();
 
-    return catalogItemRepository.findByCategoryAndExternalIdIn(CatalogCategory.PLACE, facilityIds).stream()
+    return catalogItemRepository.findByCategoryAndSource_ExternalIdIn(CatalogCategory.PLACE, facilityIds).stream()
         .collect(Collectors.toMap(CatalogItem::getExternalId, Function.identity()));
   }
 
