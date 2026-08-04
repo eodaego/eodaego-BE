@@ -34,6 +34,12 @@ public interface CatalogControllerDocs {
           author = ChangeLogAuthor.BAEK_JIHOON,
           description = "미수집 상태의 SUSPENDED/RETIRED 항목이 목록에서 필터링되지 않던 누락 로직 수정. 이미 수집한 항목은 상태와 무관하게 계속 노출",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/12"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-04",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "목록 정렬 기준이 없어 항목 순서가 보장되지 않던 문제 수정. 이제 항상 sequenceNumber(도감 코드) 오름차순으로 반환된다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/58"
       )
   })
   @Operation(
@@ -42,6 +48,9 @@ public interface CatalogControllerDocs {
           카테고리/이름으로 필터링된 도감 항목 목록과, 현재 회원의 수집 개수/전체 개수를 함께 반환한다.
 
           - category를 생략하면 전체 카테고리를 대상으로 조회한다.
+          - items는 항상 code(sequenceNumber) 오름차순으로 정렬되어 내려간다. category를 생략한 전체
+            조회에서는 카테고리(ANIMAL → PLANT → PLACE, 즉 코드 접두사 A → B → C 순)로 먼저 묶인 뒤
+            각 카테고리 안에서 오름차순 정렬된다.
           - name은 부분 일치(대소문자 구분)로 검색된다.
           - 미수집 항목은 name/imageUrl이 null로 내려간다(프론트에서 '?'로 표시).
           - collectedCount는 현재 필터(category) 기준 회원의 수집 개수, items의 개수가 곧 현재 필터 기준 전체 개수다.

@@ -70,7 +70,9 @@ public class CatalogItemService {
   }
 
   public List<CatalogItem> getAllCatalogItems() {
-    return catalogItemRepository.findAll();
+    return catalogItemRepository.findAll().stream()
+        .sorted(CatalogItemComparators.DISPLAY_ORDER)
+        .toList();
   }
 
   public CatalogItem getCatalogItem(UUID catalogItemId) {

@@ -142,13 +142,18 @@ public class CatalogService {
   }
 
   private List<CatalogItem> findItemsByFilter(UUID memberId, CatalogCategory category, String name) {
+    List<CatalogItem> catalogItems;
     if (name != null) {
-      return findCollectedItemsByFilter(memberId, category, name);
+      catalogItems = findCollectedItemsByFilter(memberId, category, name);
     } else if (category != null) {
-      return catalogItemRepository.findByCategory(category);
+      catalogItems = catalogItemRepository.findByCategory(category);
     } else {
-      return catalogItemRepository.findAll();
+      catalogItems = catalogItemRepository.findAll();
     }
+
+    return catalogItems.stream()
+        .sorted(CatalogItemComparators.DISPLAY_ORDER)
+        .toList();
   }
 
   private List<CatalogItem> findCollectedItemsByFilter(UUID memberId, CatalogCategory category, String name) {
@@ -166,12 +171,7 @@ public class CatalogService {
   }
 
   private String buildCode(CatalogItem catalogItem) {
-    String prefix = switch (catalogItem.getCategory()) {
-      case ANIMAL -> "A";
-      case PLANT -> "B";
-      case PLACE -> "C";
-    };
-    return prefix + String.format("%03d", catalogItem.getSequenceNumber());
+    return catalogItem.getCategory().getCodePrefix() + String.format("%03d", catalogItem.getSequenceNumber());
   }
 
   private double calculateCollectionRate(long total, long collected) {

@@ -28,6 +28,12 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "도감 항목 관리 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/12"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-04",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "목록 정렬 기준이 없어 항목 순서가 보장되지 않던 문제 수정. 이제 카테고리(ANIMAL → PLANT → PLACE) → sequenceNumber 오름차순으로 반환된다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/58"
       )
   })
   @Operation(
@@ -35,6 +41,7 @@ public interface CatalogItemControllerDocs {
       description = """
           회원의 수집 여부와 무관하게 CatalogItem 원본 데이터를 그대로 전체 반환한다.
 
+          - 카테고리(ANIMAL → PLANT → PLACE, 즉 도감 코드 접두사 A → B → C 순)로 먼저 묶인 뒤, 각 카테고리 안에서 sequenceNumber 오름차순으로 정렬되어 내려간다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
