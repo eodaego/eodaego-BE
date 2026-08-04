@@ -30,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CatalogItemService {
 
+  private static final String GATE_CATEGORY = "출입문";
+  private static final String INFORMATION_FACILITY_TYPE = "안내";
+
   private final CatalogItemRepository catalogItemRepository;
   private final CatalogAiClient catalogAiClient;
 
@@ -182,8 +185,14 @@ public class CatalogItemService {
     int sequenceNumber = nextSequenceNumber(CatalogCategory.PLACE);
     List<CatalogItem> created = new ArrayList<>();
     List<CatalogItem> updated = new ArrayList<>();
+    int excludedCount = 0;
 
     for (AiFacilityResponse external : externalFacilities) {
+
+      if (isExcludedFacility(external)) {
+        excludedCount++;
+        continue;
+      }
 
       CatalogItem existing = existingByExternalId.get(external.id());
       if (existing != null) {
@@ -209,7 +218,19 @@ public class CatalogItemService {
           .externalId(external.id())
           .build()));
     }
+
+    log.info("시설 동기화 완료. 도감 제외 {}건(출입문/안내시설)", excludedCount);
     return new CatalogSyncResult(created, updated);
+  }
+
+  // 출입문은 EntranceGate enum으로 따로 관리하고, 고객안내센터(facilityType=안내)는
+  // 도감에서 제외한다.
+  private boolean isExcludedFacility(AiFacilityResponse external) {
+    String category = external.category();
+    String facilityType = external.facilityType();
+
+    return (category != null && GATE_CATEGORY.equals(category.trim()))
+           || (facilityType != null && INFORMATION_FACILITY_TYPE.equals(facilityType.trim()));
   }
 
   private int nextSequenceNumber(CatalogCategory category) {
