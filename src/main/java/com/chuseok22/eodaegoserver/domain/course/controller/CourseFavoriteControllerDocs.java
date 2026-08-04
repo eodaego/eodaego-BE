@@ -103,6 +103,12 @@ public interface CourseFavoriteControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "정렬 파라미터를 sort/order 두 개에서 sort 하나로 통합(LATEST/OLDEST/DURATION_SHORT/DURATION_LONG). 허용 목록 밖의 sort 값에 400 응답 추가",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/43"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-04",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "sort 값이 잘못됐을 때의 400 응답 reason에 허용 값 목록을 함께 내려주도록 변경",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/43"
       )
   })
   @Operation(
@@ -137,7 +143,9 @@ public interface CourseFavoriteControllerDocs {
       @ApiResponse(responseCode = "200", description = "조회 성공(즐겨찾기한 코스가 없으면 totalCount 0, items 빈 배열)"),
       @ApiResponse(responseCode = "400", description = """
           sort에 허용 목록 밖의 값을 보냄. errorCode: INVALID_REQUEST
-          - fieldErrors[0].field에 파라미터명 "sort", fieldErrors[0].reason에 "허용되지 않는 값입니다."가 담긴다.
+          - fieldErrors[0].field에 파라미터명 "sort"가 담긴다.
+          - fieldErrors[0].reason에 "허용되지 않는 값입니다. 허용 값: LATEST, OLDEST, DURATION_SHORT, DURATION_LONG"이 담긴다.
+            허용 값 목록은 서버가 enum 정의에서 생성하므로, 정렬 기준이 추가되면 이 문자열도 함께 늘어난다.
           """,
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
