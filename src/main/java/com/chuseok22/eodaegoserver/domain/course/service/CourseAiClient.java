@@ -61,7 +61,8 @@ public class CourseAiClient {
           || course.tagLabels() == null
           || course.tagLabels().stream().anyMatch(Objects::isNull)
           || course.estimatedDurationMinutes() == null
-          || course.stops() == null) {
+          || course.stops() == null
+          || course.stops().isEmpty()) {
         log.warn("AI 코스 필수값 누락. title={}", course.title());
         throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
       }
