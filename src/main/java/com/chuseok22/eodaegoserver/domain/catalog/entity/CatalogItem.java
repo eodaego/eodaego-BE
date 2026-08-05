@@ -73,18 +73,13 @@ public class CatalogItem extends BaseEntity {
 
   private Double longitudeOverride;
 
-  // override는 저장 전에 정규화되어 null(원복) / ""(비움) / 실제값 세 가지만 들어온다.
-  // 이름은 비울 수 없는 값이라 ""가 저장되지 않으므로 null 여부만 보면 된다.
+  // 아래 표시값 getter는 모두 같은 규칙을 따른다 — override가 null이면 AI 원본, 아니면 override.
   public String getName() {
     return nameOverride != null ? nameOverride : source.getName();
   }
 
-  // 이미지는 "없음"도 유효한 상태다. null(원복)과 빈 문자열(이미지 없음으로 고정)을 구분한다.
   public String getImageUrl() {
-    if (imageUrlOverride == null) {
-      return source.getImageUrl();
-    }
-    return imageUrlOverride.isEmpty() ? null : imageUrlOverride;
+    return imageUrlOverride != null ? imageUrlOverride : source.getImageUrl();
   }
 
   public String getFeature() {
