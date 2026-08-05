@@ -4,15 +4,18 @@ import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public record CatalogItemUpdateRequest(
 
-    @Schema(description = "AI 원본 이름 대신 사용할 이름. null 또는 빈 값이면 AI 원본 이름을 그대로 쓴다(원복). "
-        + "도감 항목은 이름이 반드시 있어야 하므로 빈 값으로 비울 수는 없다.", example = "사자")
+    @Schema(description = "AI 원본 이름 대신 사용할 이름. null이면 AI 원본 이름을 그대로 쓴다(원복). "
+        + "앞뒤 공백은 제거되며, 도감 항목은 이름이 반드시 있어야 하므로 공백만으로는 채울 수 없다.",
+        example = "사자")
+    @Pattern(regexp = "(?s).*\\S.*", message = "이름은 공백만으로 채울 수 없습니다.")
     String nameOverride,
 
     @Schema(description = "AI 원본 설명 대신 사용할 특징 설명. null이면 AI 원본 설명을 그대로 쓰고(원복), "
-        + "빈 문자열(\"\")을 보내면 설명 없음으로 고정한다(AI 설명이 부적절할 때 사용).",
+        + "빈 문자열(\"\")을 보내면 설명 없음으로 고정한다(AI 설명이 부적절할 때 사용). 앞뒤 공백은 제거된다.",
         example = "무리를 지어 사는 대형 고양잇과 동물이다.")
     String featureOverride,
 
@@ -28,7 +31,7 @@ public record CatalogItemUpdateRequest(
 
     @Schema(description = "AI 원본 이미지 대신 사용할 이미지 URL. null이면 AI 원본 이미지를 그대로 쓰고(원복), "
         + "빈 문자열(\"\")을 보내면 이미지 없음으로 고정해 응답의 imageUrl이 null로 내려간다"
-        + "(AI 썸네일이 깨졌을 때 사용).",
+        + "(AI 썸네일이 깨졌을 때 사용). 앞뒤 공백은 제거된다.",
         example = "https://cdn.eodaego.com/animals/lion.png")
     String imageUrlOverride,
 
@@ -42,4 +45,13 @@ public record CatalogItemUpdateRequest(
 
 ) {
 
+  public CatalogItemUpdateRequest {
+    nameOverride = normalize(nameOverride);
+    featureOverride = normalize(featureOverride);
+    imageUrlOverride = normalize(imageUrlOverride);
+  }
+
+  private static String normalize(String value) {
+    return value == null ? null : value.strip();
+  }
 }

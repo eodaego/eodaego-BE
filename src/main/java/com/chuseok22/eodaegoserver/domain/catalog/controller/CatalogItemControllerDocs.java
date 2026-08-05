@@ -155,7 +155,13 @@ public interface CatalogItemControllerDocs {
       @ApiChangeLog(
           date = "2026-08-05",
           author = ChangeLogAuthor.KIM_JAEHYEON,
-          description = "featureOverride/imageUrlOverride에 빈 문자열을 보내면 AI 원본을 따르지 않고 '값 없음'으로 고정하도록 변경. AI 설명이 부적절하거나 썸네일이 깨졌을 때 비울 수 있다. nameOverride는 이름이 비어 있을 수 없어 빈 값을 원복과 동일하게 처리한다",
+          description = "featureOverride/imageUrlOverride에 빈 문자열을 보내면 AI 원본을 따르지 않고 '값 없음'으로 고정하도록 변경. AI 설명이 부적절하거나 썸네일이 깨졌을 때 비울 수 있다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-05",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "override 문자열의 앞뒤 공백을 저장 전에 제거하도록 변경. 공백만 보낸 경우 featureOverride/imageUrlOverride는 '비움'으로 처리되고, nameOverride는 400(INVALID_REQUEST)으로 거절된다(기존에는 조용히 원복으로 처리돼 관리자 의도와 다른 결과가 나갔음)",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
       )
   })
@@ -171,7 +177,9 @@ public interface CatalogItemControllerDocs {
             "값 없음"으로 고정된다. 즉 세 가지 상태를 표현할 수 있다.
             null = AI 원본 따르기 / "" = 비우기 / 값 = 그 값으로 고정.
             imageUrlOverride를 ""로 두면 응답의 imageUrl이 null로 내려간다.
-          - nameOverride는 이름이 비어 있을 수 없어 ""를 원복(null)과 동일하게 처리한다.
+          - 모든 override 문자열은 저장 전에 앞뒤 공백이 제거된다. 따라서 공백만 보내면 ""를 보낸 것과 같다.
+          - nameOverride는 이름이 비어 있을 수 없어, ""(또는 공백만)를 보내면 400으로 거절된다.
+            AI 원본으로 되돌리려면 null을 보내야 한다.
           - latitudeOverride/longitudeOverride는 숫자 타입이라 "비우기"를 표현할 수 없다.
             null(원복) 또는 값 지정만 가능하다.
           - 예를 들어 nameOverride만 채우고 imageUrlOverride를 null로 두면, 이름은 지정한 값으로 고정되고
@@ -185,7 +193,7 @@ public interface CatalogItemControllerDocs {
   )
   @ApiResponses({
       @ApiResponse(responseCode = "204", description = "수정 성공"),
-      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(childDescription 빈 값, status 누락 등). errorCode: INVALID_REQUEST",
+      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(nameOverride를 공백만으로 채움, childDescription 빈 값, status 누락 등). errorCode: INVALID_REQUEST",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
