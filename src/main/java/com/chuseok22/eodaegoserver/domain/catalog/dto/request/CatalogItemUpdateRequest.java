@@ -2,7 +2,6 @@ package com.chuseok22.eodaegoserver.domain.catalog.dto.request;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -19,9 +18,10 @@ public record CatalogItemUpdateRequest(
         example = "무리를 지어 사는 대형 고양잇과 동물이다.")
     String featureOverride,
 
-    @Schema(description = "어린이 눈높이 설명. AI가 제공하지 않는 값이라 관리자가 직접 작성한다.",
+    @Schema(description = "어린이 눈높이 설명. AI가 제공하지 않는 값이라 관리자가 직접 작성한다. "
+        + "아직 작성하지 않았다면 빈 문자열(\"\")을 보낸다. 동기화로 생성된 항목도 빈 문자열로 시작한다.",
         example = "사자는 갈기가 멋진 초원의 왕이에요!")
-    @NotBlank
+    @NotNull
     String childDescription,
 
     @Schema(description = "공개 상태. AVAILABLE(수집 가능), SUSPENDED(임시 중단), RETIRED(운영 종료)만 허용된다.",
