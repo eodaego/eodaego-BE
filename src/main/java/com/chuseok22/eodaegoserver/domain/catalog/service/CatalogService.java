@@ -158,8 +158,8 @@ public class CatalogService {
 
   private List<CatalogItem> findCollectedItemsByFilter(UUID memberId, CatalogCategory category, String name) {
     List<MemberCatalogCollection> collections = category != null
-        ? memberCatalogCollectionRepository.findByMemberIdAndCatalogItem_CategoryAndCatalogItem_NameContaining(memberId, category, name)
-        : memberCatalogCollectionRepository.findByMemberIdAndCatalogItem_NameContaining(memberId, name);
+        ? memberCatalogCollectionRepository.findCollectedByMemberIdAndCategoryAndName(memberId, category, name)
+        : memberCatalogCollectionRepository.findCollectedByMemberIdAndName(memberId, name);
 
     return collections.stream()
         .map(MemberCatalogCollection::getCatalogItem)

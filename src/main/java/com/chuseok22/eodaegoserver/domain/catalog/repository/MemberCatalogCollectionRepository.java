@@ -15,9 +15,26 @@ public interface MemberCatalogCollectionRepository extends JpaRepository<MemberC
 
   Optional<MemberCatalogCollection> findByMemberIdAndCatalogItemId(UUID memberId, UUID catalogItemId);
 
-  List<MemberCatalogCollection> findByMemberIdAndCatalogItem_NameContaining(UUID memberId, String name);
+  @Query("""
+      SELECT collection FROM MemberCatalogCollection collection
+      JOIN FETCH collection.catalogItem item
+      JOIN FETCH item.source source
+      WHERE collection.member.id = :memberId
+        AND COALESCE(item.nameOverride, source.name) LIKE CONCAT('%', :name, '%')
+      """)
+  List<MemberCatalogCollection> findCollectedByMemberIdAndName(
+      @Param("memberId") UUID memberId, @Param("name") String name);
 
-  List<MemberCatalogCollection> findByMemberIdAndCatalogItem_CategoryAndCatalogItem_NameContaining(UUID memberId, CatalogCategory category, String name);
+  @Query("""
+      SELECT collection FROM MemberCatalogCollection collection
+      JOIN FETCH collection.catalogItem item
+      JOIN FETCH item.source source
+      WHERE collection.member.id = :memberId
+        AND item.category = :category
+        AND COALESCE(item.nameOverride, source.name) LIKE CONCAT('%', :name, '%')
+      """)
+  List<MemberCatalogCollection> findCollectedByMemberIdAndCategoryAndName(
+      @Param("memberId") UUID memberId, @Param("category") CatalogCategory category, @Param("name") String name);
 
   long countByMemberId(UUID memberId);
 
