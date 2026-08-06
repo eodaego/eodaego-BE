@@ -151,6 +151,12 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "요청 필드명이 name/feature/imageUrl/latitude/longitude에서 nameOverride/featureOverride/imageUrlOverride/latitudeOverride/longitudeOverride로 변경됨. null을 보내면 해당 필드가 AI 원본 값으로 되돌아간다(기존에는 name/feature가 필수라 원복이 불가능했음)",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-06",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "childDescription 검증을 @NotBlank에서 @NotNull로 완화. 동기화는 childDescription을 빈 문자열로 생성하는데 수정 API만 빈 문자열을 거부해, 아직 설명을 작성하지 않은 항목의 이름·이미지만 고치는 것이 불가능했다. 이제 빈 문자열을 보낼 수 있다(필드 자체는 여전히 필수)",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/62"
       )
   })
   @Operation(
@@ -163,7 +169,9 @@ public interface CatalogItemControllerDocs {
             AI 원본 대신 표시되며, 이후 동기화로 덮어쓰이지 않는다.
           - 예를 들어 nameOverride만 채우고 imageUrlOverride를 null로 두면, 이름은 지정한 값으로 고정되고
             이미지는 AI가 바꿀 때마다 최신값을 따라간다.
-          - childDescription과 status는 AI가 제공하지 않는 관리자 전용 값이라 원복 개념이 없고 필수다.
+          - childDescription과 status는 AI가 제공하지 않는 관리자 전용 값이라 원복 개념이 없고 필드 자체는 필수다.
+            다만 childDescription은 아직 작성 전이면 빈 문자열("")을 보내면 된다. 동기화로 생성된 항목도
+            빈 문자열로 시작하므로, 설명을 쓰지 않은 상태에서 이름·이미지만 수정할 수 있다.
           - 이 API는 전체 교체 방식이다. 생략한 xxxOverride는 "유지"가 아니라 "null로 설정(원복)"으로
             처리되므로, 유지하려는 override 값도 함께 보내야 한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
@@ -172,7 +180,7 @@ public interface CatalogItemControllerDocs {
   )
   @ApiResponses({
       @ApiResponse(responseCode = "204", description = "수정 성공"),
-      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(childDescription 빈 값, status 누락 등). errorCode: INVALID_REQUEST",
+      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(childDescription 누락, status 누락 등). errorCode: INVALID_REQUEST",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
