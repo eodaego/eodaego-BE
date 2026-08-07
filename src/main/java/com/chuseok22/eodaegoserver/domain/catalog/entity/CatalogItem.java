@@ -7,11 +7,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,10 +32,7 @@ import lombok.Setter;
     uniqueConstraints = {
         @UniqueConstraint(
             name = "uk_catalog_item_category_sequence_number",
-            columnNames = {"category", "sequence_number"}),
-        @UniqueConstraint(
-            name = "uk_catalog_item_category_external_id",
-            columnNames = {"category", "external_id"})
+            columnNames = {"category", "sequence_number"})
     }
 )
 @Builder
@@ -42,18 +44,16 @@ public class CatalogItem extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
+  @OneToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "source_id", nullable = false, foreignKey = @ForeignKey(name = "fk_catalog_item_source"))
+  private CatalogSource source;
+
   @Column(nullable = false)
   private int sequenceNumber;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private CatalogCategory category;
-
-  @Column(nullable = false)
-  private String name;
-
-  @Column(nullable = false, columnDefinition = "TEXT")
-  private String feature;
 
   @Column(nullable = false, columnDefinition = "TEXT")
   private String childDescription;
@@ -62,34 +62,55 @@ public class CatalogItem extends BaseEntity {
   @Column(nullable = false)
   private CatalogItemStatus status;
 
-  private String imageUrl;
+  private String nameOverride;
 
-  private Double latitude;
+  private String imageUrlOverride;
 
-  private Double longitude;
+  @Column(columnDefinition = "TEXT")
+  private String featureOverride;
 
-  private Long externalId;
+  private Double latitudeOverride;
 
-  public void update(String name, String feature, String childDescription, CatalogItemStatus status, String imageUrl, Double latitude, Double longitude) {
-    this.name = name;
-    this.feature = feature;
+  private Double longitudeOverride;
+
+  // 아래 표시값 getter는 모두 같은 규칙을 따른다 — override가 null이면 AI 원본, 아니면 override.
+  public String getName() {
+    return nameOverride != null ? nameOverride : source.getName();
+  }
+
+  public String getImageUrl() {
+    return imageUrlOverride != null ? imageUrlOverride : source.getImageUrl();
+  }
+
+  public String getFeature() {
+    return featureOverride != null ? featureOverride : Objects.requireNonNullElse(source.getDescription(), "");
+  }
+
+  public Double getLatitude() {
+    return latitudeOverride != null ? latitudeOverride : source.getLatitude();
+  }
+
+  public Double getLongitude() {
+    return longitudeOverride != null ? longitudeOverride : source.getLongitude();
+  }
+
+  public Long getExternalId() {
+    return source.getExternalId();
+  }
+
+  public void update(
+      String nameOverride, String featureOverride, String childDescription, CatalogItemStatus status,
+      String imageUrlOverride, Double latitudeOverride, Double longitudeOverride) {
+    this.nameOverride = nameOverride;
+    this.featureOverride = featureOverride;
     this.childDescription = childDescription;
     this.status = status;
-    this.imageUrl = imageUrl;
-    this.latitude = latitude;
-    this.longitude = longitude;
+    this.imageUrlOverride = imageUrlOverride;
+    this.latitudeOverride = latitudeOverride;
+    this.longitudeOverride = longitudeOverride;
   }
 
   public void updateStatus(CatalogItemStatus status) {
     this.status = status;
   }
-
-  public void updateSyncedFields(String name, String imageUrl, Double latitude, Double longitude) {
-    this.name = name;
-    this.imageUrl = imageUrl;
-    this.latitude = latitude;
-    this.longitude = longitude;
-  }
-
 }
-

@@ -1,7 +1,9 @@
 package com.chuseok22.eodaegoserver.global.exception;
 
 import io.jsonwebtoken.JwtException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Slf4j
@@ -39,6 +42,33 @@ public class GlobalExceptionHandler {
             .errorMessage(ErrorCode.INVALID_REQUEST.getMessage())
             .fieldErrors(fieldErrors)
             .build());
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    log.warn("[MethodArgumentTypeMismatchException] 발생. parameter={}, value={}, requiredType={}",
+        e.getName(), e.getValue(), resolveTypeName(e.getRequiredType()));
+
+    return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus())
+        .body(ErrorResponse.builder()
+            .errorCode(ErrorCode.INVALID_REQUEST)
+            .errorMessage(ErrorCode.INVALID_REQUEST.getMessage())
+            .fieldErrors(List.of(new FieldErrorDetail(e.getName(), resolveMismatchReason(e.getRequiredType()))))
+            .build());
+  }
+
+  private String resolveMismatchReason(Class<?> requiredType) {
+    if (requiredType != null && requiredType.isEnum()) {
+      String allowedValues = Arrays.stream(requiredType.getEnumConstants())
+          .map(String::valueOf)
+          .collect(Collectors.joining(", "));
+      return "허용되지 않는 값입니다. 허용 값: " + allowedValues;
+    }
+    return "형식이 올바르지 않습니다. 필요한 형식: " + resolveTypeName(requiredType);
+  }
+
+  private String resolveTypeName(Class<?> requiredType) {
+    return requiredType != null ? requiredType.getSimpleName() : "알 수 없음";
   }
 
   @ExceptionHandler(JwtException.class)

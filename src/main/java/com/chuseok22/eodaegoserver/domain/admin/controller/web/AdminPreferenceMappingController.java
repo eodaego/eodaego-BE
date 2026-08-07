@@ -1,7 +1,7 @@
 package com.chuseok22.eodaegoserver.domain.admin.controller.web;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PreferenceCategoryMappingCreateRequest;
-import com.chuseok22.eodaegoserver.domain.admin.service.AdminAiCatalogService;
+import com.chuseok22.eodaegoserver.domain.admin.service.AdminFacilityService;
 import com.chuseok22.eodaegoserver.domain.admin.service.AdminPreferenceMappingService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -23,7 +23,7 @@ public class AdminPreferenceMappingController {
       "ANIMAL", "NATURE", "ACTIVITY", "PHOTO_SPOT", "RELAXATION", "CULTURE_EVENT", "LEARNING");
 
   private final AdminPreferenceMappingService adminPreferenceMappingService;
-  private final AdminAiCatalogService adminAiCatalogService;
+  private final AdminFacilityService adminFacilityService;
 
   @GetMapping("/admin/recommendation/preference-mappings")
   public String list(@RequestParam(required = false) String preferenceTag, Model model) {
@@ -37,7 +37,7 @@ public class AdminPreferenceMappingController {
   public String newForm(Model model) {
     model.addAttribute("request", new PreferenceCategoryMappingCreateRequest("", ""));
     model.addAttribute("preferenceTags", PREFERENCE_TAGS);
-    model.addAttribute("categories", adminAiCatalogService.listFacilityCategories());
+    model.addAttribute("categories", adminFacilityService.listFacilityCategories());
     return "admin/preference-mappings/form";
   }
 
@@ -49,7 +49,7 @@ public class AdminPreferenceMappingController {
   ) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("preferenceTags", PREFERENCE_TAGS);
-      model.addAttribute("categories", adminAiCatalogService.listFacilityCategories());
+      model.addAttribute("categories", adminFacilityService.listFacilityCategories());
       return "admin/preference-mappings/form";
     }
     adminPreferenceMappingService.create(request);

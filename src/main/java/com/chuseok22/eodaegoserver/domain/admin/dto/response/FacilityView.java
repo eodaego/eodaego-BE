@@ -10,6 +10,7 @@ public record FacilityView(
     Integer externalId,
     String category,
     String name,
+    String code,
     String intro,
     String description,
     Double latitude,

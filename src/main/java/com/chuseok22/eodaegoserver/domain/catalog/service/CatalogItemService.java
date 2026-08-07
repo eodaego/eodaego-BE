@@ -8,9 +8,13 @@ import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiPlantResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemStatusUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
+import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogSource;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
+import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogSourceRepository;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +22,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,44 +33,42 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CatalogItemService {
 
+  private static final String GATE_CATEGORY = "출입문";
+  private static final String INFORMATION_FACILITY_TYPE = "안내";
+
   private final CatalogItemRepository catalogItemRepository;
+  private final CatalogSourceRepository catalogSourceRepository;
   private final CatalogAiClient catalogAiClient;
+  private final Clock clock;
 
   @Transactional
   public CatalogSyncResult syncFromAiServer() {
-    List<AiAnimalResponse> animals = catalogAiClient.fetchAnimals();
-    List<AiPlantResponse> plants = catalogAiClient.fetchPlants();
-    List<AiFacilityResponse> facilities = catalogAiClient.fetchFacilities();
+    Map<CatalogCategory, List<ExternalCatalogData>> externalsByCategory = fetchExternals().stream()
+        .collect(Collectors.groupingBy(ExternalCatalogData::category));
 
-    List<Long> fetchedExternalIds = Stream.of(
-            animals.stream().map(AiAnimalResponse::id),
-            plants.stream().map(AiPlantResponse::id),
-            facilities.stream().map(AiFacilityResponse::id))
-        .flatMap(stream -> stream)
-        .toList();
-
-    List<CatalogItem> existingItems = catalogItemRepository.findByExternalIdIn(fetchedExternalIds);
-
-    CatalogSyncResult animalResult = syncAnimals(animals, extractExternalId(existingItems, CatalogCategory.ANIMAL));
-    CatalogSyncResult plantResult = syncPlants(plants, extractExternalId(existingItems, CatalogCategory.PLANT));
-    CatalogSyncResult facilityResult = syncFacilities(facilities, extractExternalId(existingItems, CatalogCategory.PLACE));
-
+    LocalDateTime lastSeenAt = LocalDateTime.now(clock);
     List<CatalogItem> createdItems = new ArrayList<>();
-    createdItems.addAll(animalResult.created());
-    createdItems.addAll(plantResult.created());
-    createdItems.addAll(facilityResult.created());
-
     List<CatalogItem> updatedItems = new ArrayList<>();
-    updatedItems.addAll(animalResult.updated());
-    updatedItems.addAll(plantResult.updated());
-    updatedItems.addAll(facilityResult.updated());
+    List<UUID> seenSourceIds = new ArrayList<>();
 
-    log.info("도감 항목 외부 동기화 완료. 신규 등록 {}건, 갱신 {}건", createdItems.size(), updatedItems.size());
+    for (CatalogCategory category : CatalogCategory.values()) {
+      syncCategory(category, externalsByCategory.getOrDefault(category, List.of()),
+          lastSeenAt, createdItems, updatedItems, seenSourceIds);
+    }
+
+    if (!seenSourceIds.isEmpty()) {
+      catalogSourceRepository.markLastSeen(seenSourceIds, lastSeenAt);
+    }
+
+    log.info("도감 항목 외부 동기화 완료. 신규 등록 {}건, 원본 갱신 {}건, 확인 {}건",
+        createdItems.size(), updatedItems.size(), seenSourceIds.size());
     return new CatalogSyncResult(createdItems, updatedItems);
   }
 
   public List<CatalogItem> getAllCatalogItems() {
-    return catalogItemRepository.findAll();
+    return catalogItemRepository.findAll().stream()
+        .sorted(CatalogItemComparators.DISPLAY_ORDER)
+        .toList();
   }
 
   public CatalogItem getCatalogItem(UUID catalogItemId) {
@@ -83,13 +84,13 @@ public class CatalogItemService {
     CatalogItem catalogItem = getCatalogItem(catalogItemId);
 
     catalogItem.update(
-        request.name(),
-        request.feature(),
+        request.nameOverride(),
+        request.featureOverride(),
         request.childDescription(),
         request.status(),
-        request.imageUrl(),
-        request.latitude(),
-        request.longitude()
+        request.imageUrlOverride(),
+        request.latitudeOverride(),
+        request.longitudeOverride()
     );
 
     log.info("도감 항목 수정 완료. catalogItemId={}", catalogItemId);
@@ -106,121 +107,130 @@ public class CatalogItemService {
   @Transactional
   public void deleteCatalogItem(UUID catalogItemId) {
     CatalogItem catalogItem = getCatalogItem(catalogItemId);
+    CatalogSource source = catalogItem.getSource();
+
     catalogItemRepository.delete(catalogItem);
+    catalogItemRepository.flush();
+    catalogSourceRepository.delete(source);
 
     log.info("도감 항목 삭제 완료. catalogItemId={}", catalogItemId);
   }
 
-  private CatalogSyncResult syncAnimals(List<AiAnimalResponse> externalAnimals, Map<Long, CatalogItem> existingByExternalId) {
-    int sequenceNumber = nextSequenceNumber(CatalogCategory.ANIMAL);
-    List<CatalogItem> created = new ArrayList<>();
-    List<CatalogItem> updated = new ArrayList<>();
+  private void syncCategory(
+      CatalogCategory category, List<ExternalCatalogData> externals, LocalDateTime lastSeenAt,
+      List<CatalogItem> createdItems, List<CatalogItem> updatedItems, List<UUID> seenSourceIds) {
 
-    for (AiAnimalResponse external : externalAnimals) {
+    if (externals.isEmpty()) {
+      return;
+    }
 
-      CatalogItem existing = existingByExternalId.get(external.id());
+    Map<Long, CatalogSource> sourcesByExternalId = catalogSourceRepository.findByCategory(category).stream()
+        .collect(Collectors.toMap(CatalogSource::getExternalId, Function.identity()));
+    Map<UUID, CatalogItem> itemsBySourceId = catalogItemRepository.findByCategory(category).stream()
+        .collect(Collectors.toMap(catalogItem -> catalogItem.getSource().getId(), Function.identity()));
 
-      if (existing != null) {
-        boolean changed = !Objects.equals(existing.getName(), external.name())
-                          || !Objects.equals(existing.getImageUrl(), external.thumbnailUrl());
-        if (changed) {
-          existing.updateSyncedFields(external.name(), external.thumbnailUrl(), existing.getLatitude(), existing.getLongitude());
-          updated.add(existing);
-        }
+    int sequenceNumber = nextSequenceNumber(category);
+
+    for (ExternalCatalogData external : externals) {
+      CatalogSource existingSource = sourcesByExternalId.get(external.externalId());
+
+      if (existingSource == null) {
+        CatalogSource source = catalogSourceRepository.save(toNewSource(external, lastSeenAt));
+        createdItems.add(catalogItemRepository.save(toNewCatalogItem(source, sequenceNumber++)));
         continue;
       }
 
-      created.add(catalogItemRepository.save(CatalogItem.builder()
-          .sequenceNumber(sequenceNumber++)
-          .category(CatalogCategory.ANIMAL)
-          .name(external.name())
-          .feature("")
-          .childDescription("")
-          .status(CatalogItemStatus.AVAILABLE)
-          .imageUrl(external.thumbnailUrl())
-          .externalId(external.id())
-          .build()));
+      seenSourceIds.add(existingSource.getId());
+
+      if (!hasChanged(existingSource, external)) {
+        continue;
+      }
+
+      existingSource.updateFromExternal(
+          external.name(), external.imageUrl(), external.latitude(), external.longitude(),
+          external.description(), external.intro(), external.facilityType());
+
+      CatalogItem catalogItem = itemsBySourceId.get(existingSource.getId());
+      if (catalogItem != null) {
+        updatedItems.add(catalogItem);
+      }
     }
-    return new CatalogSyncResult(created, updated);
   }
 
-  private CatalogSyncResult syncPlants(List<AiPlantResponse> externalPlants, Map<Long, CatalogItem> existingByExternalId) {
-    int sequenceNumber = nextSequenceNumber(CatalogCategory.PLANT);
-    List<CatalogItem> created = new ArrayList<>();
-    List<CatalogItem> updated = new ArrayList<>();
+  private List<ExternalCatalogData> fetchExternals() {
+    List<ExternalCatalogData> externals = new ArrayList<>();
 
-    for (AiPlantResponse external : externalPlants) {
+    for (AiAnimalResponse animal : catalogAiClient.fetchAnimals()) {
+      externals.add(new ExternalCatalogData(CatalogCategory.ANIMAL, animal.id(), animal.name(),
+          animal.thumbnailUrl(), null, null, null, null, null));
+    }
 
-      CatalogItem existing = existingByExternalId.get(external.id());
+    for (AiPlantResponse plant : catalogAiClient.fetchPlants()) {
+      externals.add(new ExternalCatalogData(CatalogCategory.PLANT, plant.id(), plant.name(),
+          plant.thumbnailUrl(), null, null, plant.description(), null, null));
+    }
 
-      if (existing != null) {
-
-        boolean changed = !Objects.equals(existing.getName(), external.name())
-                          || !Objects.equals(existing.getImageUrl(), external.thumbnailUrl());
-        if (changed) {
-          existing.updateSyncedFields(external.name(), external.thumbnailUrl(), existing.getLatitude(), existing.getLongitude());
-          updated.add(existing);
-        }
+    int excludedCount = 0;
+    for (AiFacilityResponse facility : catalogAiClient.fetchFacilities()) {
+      if (isExcludedFacility(facility)) {
+        excludedCount++;
         continue;
       }
-
-      created.add(catalogItemRepository.save(CatalogItem.builder()
-          .sequenceNumber(sequenceNumber++)
-          .category(CatalogCategory.PLANT)
-          .name(external.name())
-          .feature(Objects.requireNonNullElse(external.description(), ""))
-          .childDescription("")
-          .status(CatalogItemStatus.AVAILABLE)
-          .imageUrl(external.thumbnailUrl())
-          .externalId(external.id())
-          .build()));
+      externals.add(new ExternalCatalogData(CatalogCategory.PLACE, facility.id(), facility.name(),
+          null, facility.latitude(), facility.longitude(),
+          facility.description(), facility.intro(), facility.facilityType()));
     }
-    return new CatalogSyncResult(created, updated);
+    log.info("시설 동기화 대상 정리 완료. 도감 제외 {}건(출입문/안내시설)", excludedCount);
+
+    return externals;
   }
 
-  private CatalogSyncResult syncFacilities(List<AiFacilityResponse> externalFacilities, Map<Long, CatalogItem> existingByExternalId) {
-    int sequenceNumber = nextSequenceNumber(CatalogCategory.PLACE);
-    List<CatalogItem> created = new ArrayList<>();
-    List<CatalogItem> updated = new ArrayList<>();
+  private boolean hasChanged(CatalogSource source, ExternalCatalogData external) {
+    return !Objects.equals(source.getName(), external.name())
+           || !Objects.equals(source.getImageUrl(), external.imageUrl())
+           || !Objects.equals(source.getLatitude(), external.latitude())
+           || !Objects.equals(source.getLongitude(), external.longitude())
+           || !Objects.equals(source.getDescription(), external.description())
+           || !Objects.equals(source.getIntro(), external.intro())
+           || !Objects.equals(source.getFacilityType(), external.facilityType());
+  }
 
-    for (AiFacilityResponse external : externalFacilities) {
+  private CatalogSource toNewSource(ExternalCatalogData external, LocalDateTime lastSeenAt) {
+    return CatalogSource.builder()
+        .category(external.category())
+        .externalId(external.externalId())
+        .name(external.name())
+        .imageUrl(external.imageUrl())
+        .latitude(external.latitude())
+        .longitude(external.longitude())
+        .description(external.description())
+        .intro(external.intro())
+        .facilityType(external.facilityType())
+        .lastSeenAt(lastSeenAt)
+        .build();
+  }
 
-      CatalogItem existing = existingByExternalId.get(external.id());
-      if (existing != null) {
-        boolean changed = !Objects.equals(existing.getName(), external.name())
-                          || !Objects.equals(existing.getLatitude(), external.latitude())
-                          || !Objects.equals(existing.getLongitude(), external.longitude());
-        if (changed) {
-          existing.updateSyncedFields(external.name(), existing.getImageUrl(), external.latitude(), external.longitude());
-          updated.add(existing);
-        }
-        continue;
-      }
+  private CatalogItem toNewCatalogItem(CatalogSource source, int sequenceNumber) {
+    return CatalogItem.builder()
+        .source(source)
+        .sequenceNumber(sequenceNumber)
+        .category(source.getCategory())
+        .childDescription("")
+        .status(CatalogItemStatus.AVAILABLE)
+        .build();
+  }
 
-      created.add(catalogItemRepository.save(CatalogItem.builder()
-          .sequenceNumber(sequenceNumber++)
-          .category(CatalogCategory.PLACE)
-          .name(external.name())
-          .feature(Objects.requireNonNullElse(external.description(), ""))
-          .childDescription("")
-          .status(CatalogItemStatus.AVAILABLE)
-          .latitude(external.latitude())
-          .longitude(external.longitude())
-          .externalId(external.id())
-          .build()));
-    }
-    return new CatalogSyncResult(created, updated);
+  private boolean isExcludedFacility(AiFacilityResponse external) {
+    String category = external.category();
+    String facilityType = external.facilityType();
+
+    return (category != null && GATE_CATEGORY.equals(category.trim()))
+           || (facilityType != null && INFORMATION_FACILITY_TYPE.equals(facilityType.trim()));
   }
 
   private int nextSequenceNumber(CatalogCategory category) {
     return catalogItemRepository.findTopByCategoryOrderBySequenceNumberDesc(category)
                .map(CatalogItem::getSequenceNumber)
                .orElse(0) + 1;
-  }
-
-  private Map<Long, CatalogItem> extractExternalId(List<CatalogItem> catalogItems, CatalogCategory category) {
-    return catalogItems.stream()
-        .filter(catalogItem -> catalogItem.getCategory() == category)
-        .collect(Collectors.toMap(CatalogItem::getExternalId, Function.identity()));
   }
 }

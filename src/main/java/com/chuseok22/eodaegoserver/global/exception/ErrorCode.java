@@ -70,6 +70,10 @@ public enum ErrorCode {
 
   PROMPT_TEMPLATE_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 프롬프트 템플릿 이름입니다."),
 
+  FACILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 시설입니다."),
+
+  FACILITY_CODE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 시설 코드입니다."),
+
   // Member
 
   NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
