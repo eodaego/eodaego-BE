@@ -50,7 +50,7 @@ public class QuizService {
     }
 
     CatalogItem correctItem = catalogItemRepository
-        .findByCategoryAndExternalId(catalogType, recognition.catalogId())
+        .findByCategoryAndSource_ExternalId(catalogType, recognition.catalogId())
         .orElseThrow(() -> {
           log.warn("인식된 대상이 도감에 없음. catalogType={}, externalId={}, aiName={}", catalogType, recognition.catalogId(), recognition.name());
           return new CustomException(ErrorCode.RECOGNITION_FAILED);
@@ -104,8 +104,9 @@ public class QuizService {
   }
 
   private List<QuizChoiceResponse> buildChoices(CatalogCategory category, CatalogItem correctItem) {
-    List<CatalogItem> chosen = new ArrayList<>(
-        catalogItemRepository.findRandomDistractors(category.name(), correctItem.getId(), CHOICE_COUNT - 1));
+    List<UUID> distractorIds =
+        catalogItemRepository.findRandomDistractorIds(category.name(), correctItem.getId(), CHOICE_COUNT - 1);
+    List<CatalogItem> chosen = new ArrayList<>(catalogItemRepository.findAllById(distractorIds));
     chosen.add(correctItem);
     Collections.shuffle(chosen);
 
