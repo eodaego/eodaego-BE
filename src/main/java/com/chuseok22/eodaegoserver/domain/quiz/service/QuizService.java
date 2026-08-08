@@ -1,6 +1,7 @@
 package com.chuseok22.eodaegoserver.domain.quiz.service;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
+import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.MemberCatalogCollection;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
@@ -50,9 +51,10 @@ public class QuizService {
     }
 
     CatalogItem correctItem = catalogItemRepository
-        .findByCategoryAndSource_ExternalId(catalogType, recognition.catalogId())
+        .findByCategoryAndStatusAndSource_ExternalId(catalogType, CatalogItemStatus.AVAILABLE, recognition.catalogId())
         .orElseThrow(() -> {
-          log.warn("인식된 대상이 도감에 없음. catalogType={}, externalId={}, aiName={}", catalogType, recognition.catalogId(), recognition.name());
+          log.warn("인식된 대상이 도감에 없거나 수집 가능 상태가 아님. catalogType={}, externalId={}, aiName={}",
+              catalogType, recognition.catalogId(), recognition.name());
           return new CustomException(ErrorCode.RECOGNITION_FAILED);
         });
 

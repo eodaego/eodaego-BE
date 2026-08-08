@@ -28,6 +28,12 @@ public interface QuizControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "사진 인식 기반 퀴즈 생성 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/39"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-08",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "수집 가능 상태(AVAILABLE)가 아닌 항목은 퀴즈로 출제되지 않도록 변경. 관리자가 SUSPENDED/RETIRED로 내려둔 항목이 퀴즈를 통해 수집되던 문제 수정",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/39"
       )
   })
   @Operation(
@@ -38,7 +44,9 @@ public interface QuizControllerDocs {
           - multipart/form-data로 요청한다. catalogType(ANIMAL/PLANT/PLACE)은 사용자가 촬영 전에 고른 대상 종류이고, image는 촬영한 사진 파일이다.
           - 서버가 사진을 인식해 도감 항목을 찾고, 같은 카테고리에서 오답 2개를 뽑아 정답 1개와 함께 무작위 순서로 3개의 선택지를 반환한다.
           - 정답 정보는 응답에 포함되지 않는다(서버가 보관). 응답의 quizId를 정답 제출 API에 그대로 전달한다.
-          - 사진을 인식하지 못했거나 인식된 대상이 도감에 없으면 422(RECOGNITION_FAILED)를 반환한다.
+          - 출제 대상은 status가 AVAILABLE인 항목뿐이다. 관리자가 SUSPENDED(임시 중단)나 RETIRED(운영 종료)로 내려둔 항목은
+            사진 인식에 성공하더라도 퀴즈가 생성되지 않으며, 따라서 퀴즈로 수집할 수도 없다.
+          - 사진을 인식하지 못했거나, 인식된 대상이 도감에 없거나, 수집 가능 상태가 아니면 422(RECOGNITION_FAILED)를 반환한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
@@ -47,7 +55,7 @@ public interface QuizControllerDocs {
       @ApiResponse(responseCode = "200", description = "퀴즈 생성 성공"),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "422", description = "사진을 인식하지 못했거나 인식된 대상이 도감에 없음. errorCode: RECOGNITION_FAILED",
+      @ApiResponse(responseCode = "422", description = "사진을 인식하지 못했거나, 인식된 대상이 도감에 없거나, 수집 가능 상태(AVAILABLE)가 아님. errorCode: RECOGNITION_FAILED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "503", description = "AI 서버 호출 실패(연결 오류/타임아웃 등). errorCode: AI_SERVER_UNAVAILABLE",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))

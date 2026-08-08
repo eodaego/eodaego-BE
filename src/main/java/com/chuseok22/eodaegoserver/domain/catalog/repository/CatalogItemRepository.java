@@ -1,6 +1,7 @@
 package com.chuseok22.eodaegoserver.domain.catalog.repository;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
+import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,8 @@ public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> 
   List<CatalogItem> findByCategoryAndSource_ExternalIdIn(CatalogCategory category, List<Long> externalIds);
 
   @EntityGraph(attributePaths = "source")
-  Optional<CatalogItem> findByCategoryAndSource_ExternalId(CatalogCategory category, Long externalId);
+  Optional<CatalogItem> findByCategoryAndStatusAndSource_ExternalId(
+      CatalogCategory category, CatalogItemStatus status, Long externalId);
 
   @Query(value = "SELECT id FROM catalog_item WHERE category = :category AND id <> :excludeId ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
   List<UUID> findRandomDistractorIds(@Param("category") String category, @Param("excludeId") UUID excludeId, @Param("limit") int limit);
