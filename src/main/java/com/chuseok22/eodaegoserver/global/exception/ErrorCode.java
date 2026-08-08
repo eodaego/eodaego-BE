@@ -46,6 +46,12 @@ public enum ErrorCode {
 
   COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 코스입니다."),
 
+  // QUIZ
+
+  RECOGNITION_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "사진 속 대상을 인식하지 못했습니다."),
+
+  QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않거나 만료된 퀴즈입니다."),
+
   // AI
 
   AI_SERVER_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버에 연결할 수 없습니다."),
