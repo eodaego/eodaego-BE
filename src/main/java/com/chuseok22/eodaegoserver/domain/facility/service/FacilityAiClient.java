@@ -20,11 +20,13 @@ public class FacilityAiClient {
   private final RestClient aiServerRestClient;
 
   public List<AiFacilityResponse> fetchFacilities() {
-    return fetch("/api/v1/facility", new ParameterizedTypeReference<>() {});
+    return fetch("/api/v1/facility", new ParameterizedTypeReference<>() {
+    });
   }
 
   public List<AiOperatingHoursResponse> fetchOperatingHours() {
-    return fetch("/api/v1/facility/operating-hours", new ParameterizedTypeReference<>() {});
+    return fetch("/api/v1/facility/operating-hours", new ParameterizedTypeReference<>() {
+    });
   }
 
   private <T> List<T> fetch(
@@ -32,10 +34,17 @@ public class FacilityAiClient {
     ParameterizedTypeReference<List<T>> responseType
   ) {
     try {
-      return aiServerRestClient.get()
+      List<T> response = aiServerRestClient.get()
         .uri(uri)
         .retrieve()
         .body(responseType);
+
+      if (response == null) {
+        log.error("AI 서버 응답 본문이 비어 있습니다. uri={}", uri);
+        throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+      }
+
+      return response;
 
     } catch (RestClientException exception) {
       log.error("AI 서버 호출 실패. uri={}", uri, exception);
