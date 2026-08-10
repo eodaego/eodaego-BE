@@ -56,6 +56,12 @@ public interface CourseControllerDocs {
         author = ChangeLogAuthor.KIM_JAEHYEON,
         description = "응답 소요시간 필드명 변경(durationMinutes → estimatedDurationMinutes). AI 예상 소요시간(estimated_duration_minutes)을 정상 반영하도록 매핑 수정",
         issueUrl = "https://github.com/eodaego/eodaego-BE/issues/34"
+      ),
+      @ApiChangeLog(
+        date = "2026-08-10",
+        author = ChangeLogAuthor.KANG_JIYUN,
+        description = "코스 장소 응답에 도감 항목 ID 및 회원 수집 여부 추가",
+        issueUrl = "https://github.com/eodaego/eodaego-BE/issues/67"
       )
   })
   @Operation(
@@ -69,6 +75,10 @@ public interface CourseControllerDocs {
           - 응답 코스의 durationMinutes는 AI 서버가 실제로 계산해 응답한 값을 그대로 저장한 것이다(요청의 stayDurationMinutes를 그대로 저장하는 것이 아니다).
           - 응답 코스 수는 AI 서버 응답에 따라 달라지며 고정된 개수를 보장하지 않는다.
           - 각 코스의 장소(places)는 AI가 준 facilityId를 도감(catalog_item, category=PLACE)의 externalId와 매칭해 이름/좌표를 채운다.
+          - 각 장소에는 연결된 도감 항목의 catalogItemId와 현재 회원의 수집 여부인 collected가 포함된다.
+          - 도감에 동기화되지 않은 시설은 catalogItemId가 null이며 collected는 false다.
+          - places의 category는 화면 표시용으로 ANIMAL / PLANT / PLACE 값을 사용하며, 도감 연결에 사용하는 CatalogCategory.PLACE와는 별개의 값이다.
+          - 도감 연결은 places.category가 아니라 facilityId와 CatalogSource.externalId를 기준으로 한다.
           - places에는 입구/출구(출입문)는 포함되지 않는다. 입구/출구는 응답의 entrance/exit 필드로만 제공된다.
           - 장소 category는 AI 시설 원본 분류를 ANIMAL / PLANT / PLACE로 변환해 저장한다.
           - 아직 도감에 동기화되지 않은 시설이면 name/latitude/longitude를 AI가 준 시설 정보로 채운다(도감 우선, 없으면 AI 값 → null이 아니다). category도 AI 응답을 기준으로 채워진다.
@@ -87,7 +97,7 @@ public interface CourseControllerDocs {
       @ApiResponse(responseCode = "503", description = "외부 AI 서버 호출 실패. errorCode: AI_SERVER_UNAVAILABLE",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
-  ResponseEntity<List<CourseResponse>> recommendCourses(CourseRecommendationRequest request);
+  ResponseEntity<List<CourseResponse>> recommendCourses(UUID memberId, CourseRecommendationRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(
