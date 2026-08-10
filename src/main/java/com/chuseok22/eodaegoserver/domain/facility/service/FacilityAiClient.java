@@ -30,24 +30,24 @@ public class FacilityAiClient {
   }
 
   private <T> List<T> fetch(
-    String uri,
+    String requestUri,
     ParameterizedTypeReference<List<T>> responseType
   ) {
     try {
       List<T> response = aiServerRestClient.get()
-        .uri(uri)
+        .uri(requestUri)
         .retrieve()
         .body(responseType);
 
       if (response == null) {
-        log.error("AI 서버 응답 본문이 비어 있습니다. uri={}", uri);
+        log.error("AI 서버 응답 본문이 비어 있습니다. uri={}", requestUri);
         throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
       }
 
       return response;
 
     } catch (RestClientException exception) {
-      log.error("AI 서버 호출 실패. uri={}", uri, exception);
+      log.error("AI 서버 호출 실패. uri={}", requestUri, exception);
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
   }
