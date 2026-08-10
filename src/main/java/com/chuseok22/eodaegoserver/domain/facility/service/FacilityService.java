@@ -1,26 +1,27 @@
 package com.chuseok22.eodaegoserver.domain.facility.service;
 
-import com.chuseok22.eodaegoserver.domain.facility.dto.external.AiFacilityResponse;
 import com.chuseok22.eodaegoserver.domain.facility.dto.response.FacilityDetailResponse;
 import com.chuseok22.eodaegoserver.domain.facility.dto.response.FacilitySummaryResponse;
-import com.chuseok22.eodaegoserver.domain.facility.dto.response.OperatingHoursResponse;
+import com.chuseok22.eodaegoserver.domain.facility.entity.Facility;
+import com.chuseok22.eodaegoserver.domain.facility.repository.FacilityRepository;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FacilityService {
 
-  private final FacilityAiClient facilityAiClient;
+  private final FacilityRepository facilityRepository;
 
   public List<FacilitySummaryResponse> getFacilities() {
-    List<FacilitySummaryResponse> facilities =
-      facilityAiClient.fetchFacilities().stream()
+    List<FacilitySummaryResponse> facilities = facilityRepository.findAllByOrderByAiFacilityIdAsc().stream()
         .map(FacilitySummaryResponse::from)
         .toList();
 
@@ -30,20 +31,12 @@ public class FacilityService {
   }
 
   public FacilityDetailResponse getFacility(Long facilityId) {
+    Facility facility = facilityRepository.findByAiFacilityId(facilityId)
+        .orElseThrow(() -> {
+          log.warn("시설 상세 조회 실패. facilityId={}", facilityId);
+          return new CustomException(ErrorCode.FACILITY_NOT_FOUND);
+        });
 
-    AiFacilityResponse facility = facilityAiClient.fetchFacilities().stream()
-      .filter(item -> item.id().equals(facilityId))
-      .findFirst()
-      .orElseThrow(() -> {
-        log.warn("시설 상세 조회 실패. facilityId={}", facilityId);
-        return new CustomException(ErrorCode.FACILITY_NOT_FOUND);
-      });
-
-    List<OperatingHoursResponse> operatingHours =
-      facilityAiClient.fetchOperatingHours().stream()
-        .map(OperatingHoursResponse::from)
-        .toList();
-
-    return FacilityDetailResponse.from(facility, operatingHours);
+    return FacilityDetailResponse.from(facility);
   }
 }
