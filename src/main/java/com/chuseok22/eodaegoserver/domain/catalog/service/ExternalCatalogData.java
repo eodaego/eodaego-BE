@@ -12,15 +12,7 @@ public record ExternalCatalogData(
 
     String imageUrl,
 
-    Double latitude,
-
-    Double longitude,
-
-    String description,
-
-    String intro,
-
-    String facilityType
+    String description
 
 ) {
 

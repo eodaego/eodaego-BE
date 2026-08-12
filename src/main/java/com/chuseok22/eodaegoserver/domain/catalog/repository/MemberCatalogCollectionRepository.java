@@ -18,9 +18,10 @@ public interface MemberCatalogCollectionRepository extends JpaRepository<MemberC
   @Query("""
       SELECT collection FROM MemberCatalogCollection collection
       JOIN FETCH collection.catalogItem item
-      JOIN FETCH item.source source
+      LEFT JOIN FETCH item.source source
+      LEFT JOIN FETCH item.facility facility
       WHERE collection.member.id = :memberId
-        AND COALESCE(item.nameOverride, source.name) LIKE CONCAT('%', :name, '%')
+        AND COALESCE(item.nameOverride, source.name, facility.name) LIKE CONCAT('%', :name, '%')
       """)
   List<MemberCatalogCollection> findCollectedByMemberIdAndName(
       @Param("memberId") UUID memberId, @Param("name") String name);
@@ -28,10 +29,11 @@ public interface MemberCatalogCollectionRepository extends JpaRepository<MemberC
   @Query("""
       SELECT collection FROM MemberCatalogCollection collection
       JOIN FETCH collection.catalogItem item
-      JOIN FETCH item.source source
+      LEFT JOIN FETCH item.source source
+      LEFT JOIN FETCH item.facility facility
       WHERE collection.member.id = :memberId
         AND item.category = :category
-        AND COALESCE(item.nameOverride, source.name) LIKE CONCAT('%', :name, '%')
+        AND COALESCE(item.nameOverride, source.name, facility.name) LIKE CONCAT('%', :name, '%')
       """)
   List<MemberCatalogCollection> findCollectedByMemberIdAndCategoryAndName(
       @Param("memberId") UUID memberId, @Param("category") CatalogCategory category, @Param("name") String name);

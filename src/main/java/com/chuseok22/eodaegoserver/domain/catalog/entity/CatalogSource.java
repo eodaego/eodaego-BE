@@ -37,7 +37,6 @@ public class CatalogSource extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  // AI 서버는 동물/식물/시설마다 id를 각자 1부터 매기므로 externalId 단독으로는 유일하지 않다.
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private CatalogCategory category;
@@ -50,30 +49,15 @@ public class CatalogSource extends BaseEntity {
 
   private String imageUrl;
 
-  private Double latitude;
-
-  private Double longitude;
-
   @Column(columnDefinition = "TEXT")
   private String description;
-
-  @Column(columnDefinition = "TEXT")
-  private String intro;
-
-  private String facilityType;
 
   @Column(nullable = false)
   private LocalDateTime lastSeenAt;
 
-  public void updateFromExternal(
-      String name, String imageUrl, Double latitude, Double longitude,
-      String description, String intro, String facilityType) {
+  public void updateFromExternal(String name, String imageUrl, String description) {
     this.name = name;
     this.imageUrl = imageUrl;
-    this.latitude = latitude;
-    this.longitude = longitude;
     this.description = description;
-    this.intro = intro;
-    this.facilityType = facilityType;
   }
 }
