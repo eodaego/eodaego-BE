@@ -3,7 +3,6 @@ package com.chuseok22.eodaegoserver.domain.catalog.service;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiAnimalResponse;
-import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiFacilityResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiPlantResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemStatusUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemUpdateRequest;
@@ -11,6 +10,8 @@ import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogSource;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogSourceRepository;
+import com.chuseok22.eodaegoserver.domain.facility.entity.Facility;
+import com.chuseok22.eodaegoserver.domain.facility.service.FacilitySyncService;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.time.Clock;
@@ -35,10 +36,13 @@ public class CatalogItemService {
 
   private static final String GATE_CATEGORY = "출입문";
   private static final String INFORMATION_FACILITY_TYPE = "안내";
+  private static final List<CatalogCategory> SOURCE_BACKED_CATEGORIES =
+      List.of(CatalogCategory.ANIMAL, CatalogCategory.PLANT);
 
   private final CatalogItemRepository catalogItemRepository;
   private final CatalogSourceRepository catalogSourceRepository;
   private final CatalogAiClient catalogAiClient;
+  private final FacilitySyncService facilitySyncService;
   private final Clock clock;
 
   @Transactional
@@ -51,7 +55,7 @@ public class CatalogItemService {
     List<CatalogItem> updatedItems = new ArrayList<>();
     List<UUID> seenSourceIds = new ArrayList<>();
 
-    for (CatalogCategory category : CatalogCategory.values()) {
+    for (CatalogCategory category : SOURCE_BACKED_CATEGORIES) {
       syncCategory(category, externalsByCategory.getOrDefault(category, List.of()),
           lastSeenAt, createdItems, updatedItems, seenSourceIds);
     }
@@ -59,6 +63,8 @@ public class CatalogItemService {
     if (!seenSourceIds.isEmpty()) {
       catalogSourceRepository.markLastSeen(seenSourceIds, lastSeenAt);
     }
+
+    syncPlaceItems(createdItems);
 
     log.info("도감 항목 외부 동기화 완료. 신규 등록 {}건, 원본 갱신 {}건, 확인 {}건",
         createdItems.size(), updatedItems.size(), seenSourceIds.size());
@@ -111,7 +117,10 @@ public class CatalogItemService {
 
     catalogItemRepository.delete(catalogItem);
     catalogItemRepository.flush();
-    catalogSourceRepository.delete(source);
+
+    if (source != null) {
+      catalogSourceRepository.delete(source);
+    }
 
     log.info("도감 항목 삭제 완료. catalogItemId={}", catalogItemId);
   }
@@ -146,9 +155,7 @@ public class CatalogItemService {
         continue;
       }
 
-      existingSource.updateFromExternal(
-          external.name(), external.imageUrl(), external.latitude(), external.longitude(),
-          external.description(), external.intro(), external.facilityType());
+      existingSource.updateFromExternal(external.name(), external.imageUrl(), external.description());
 
       CatalogItem catalogItem = itemsBySourceId.get(existingSource.getId());
       if (catalogItem != null) {
@@ -157,30 +164,40 @@ public class CatalogItemService {
     }
   }
 
+  private void syncPlaceItems(List<CatalogItem> createdItems) {
+    Map<UUID, CatalogItem> itemsByFacilityId =
+        catalogItemRepository.findByCategory(CatalogCategory.PLACE).stream()
+            .collect(Collectors.toMap(catalogItem -> catalogItem.getFacility().getId(), Function.identity()));
+
+    int sequenceNumber = nextSequenceNumber(CatalogCategory.PLACE);
+    int excludedCount = 0;
+
+    for (Facility facility : facilitySyncService.sync()) {
+      if (isExcludedFacility(facility)) {
+        excludedCount++;
+        continue;
+      }
+      if (itemsByFacilityId.containsKey(facility.getId())) {
+        continue;
+      }
+      createdItems.add(catalogItemRepository.save(toNewPlaceCatalogItem(facility, sequenceNumber++)));
+    }
+
+    log.info("장소 도감 동기화 완료. 도감 제외 {}건(출입문/안내시설)", excludedCount);
+  }
+
   private List<ExternalCatalogData> fetchExternals() {
     List<ExternalCatalogData> externals = new ArrayList<>();
 
     for (AiAnimalResponse animal : catalogAiClient.fetchAnimals()) {
       externals.add(new ExternalCatalogData(CatalogCategory.ANIMAL, animal.id(), animal.name(),
-          animal.thumbnailUrl(), null, null, null, null, null));
+          animal.thumbnailUrl(), null));
     }
 
     for (AiPlantResponse plant : catalogAiClient.fetchPlants()) {
       externals.add(new ExternalCatalogData(CatalogCategory.PLANT, plant.id(), plant.name(),
-          plant.thumbnailUrl(), null, null, plant.description(), null, null));
+          plant.thumbnailUrl(), plant.description()));
     }
-
-    int excludedCount = 0;
-    for (AiFacilityResponse facility : catalogAiClient.fetchFacilities()) {
-      if (isExcludedFacility(facility)) {
-        excludedCount++;
-        continue;
-      }
-      externals.add(new ExternalCatalogData(CatalogCategory.PLACE, facility.id(), facility.name(),
-          null, facility.latitude(), facility.longitude(),
-          facility.description(), facility.intro(), facility.facilityType()));
-    }
-    log.info("시설 동기화 대상 정리 완료. 도감 제외 {}건(출입문/안내시설)", excludedCount);
 
     return externals;
   }
@@ -188,11 +205,7 @@ public class CatalogItemService {
   private boolean hasChanged(CatalogSource source, ExternalCatalogData external) {
     return !Objects.equals(source.getName(), external.name())
            || !Objects.equals(source.getImageUrl(), external.imageUrl())
-           || !Objects.equals(source.getLatitude(), external.latitude())
-           || !Objects.equals(source.getLongitude(), external.longitude())
-           || !Objects.equals(source.getDescription(), external.description())
-           || !Objects.equals(source.getIntro(), external.intro())
-           || !Objects.equals(source.getFacilityType(), external.facilityType());
+           || !Objects.equals(source.getDescription(), external.description());
   }
 
   private CatalogSource toNewSource(ExternalCatalogData external, LocalDateTime lastSeenAt) {
@@ -201,11 +214,7 @@ public class CatalogItemService {
         .externalId(external.externalId())
         .name(external.name())
         .imageUrl(external.imageUrl())
-        .latitude(external.latitude())
-        .longitude(external.longitude())
         .description(external.description())
-        .intro(external.intro())
-        .facilityType(external.facilityType())
         .lastSeenAt(lastSeenAt)
         .build();
   }
@@ -220,9 +229,19 @@ public class CatalogItemService {
         .build();
   }
 
-  private boolean isExcludedFacility(AiFacilityResponse external) {
-    String category = external.category();
-    String facilityType = external.facilityType();
+  private CatalogItem toNewPlaceCatalogItem(Facility facility, int sequenceNumber) {
+    return CatalogItem.builder()
+        .facility(facility)
+        .sequenceNumber(sequenceNumber)
+        .category(CatalogCategory.PLACE)
+        .childDescription("")
+        .status(CatalogItemStatus.AVAILABLE)
+        .build();
+  }
+
+  private boolean isExcludedFacility(Facility facility) {
+    String category = facility.getSourceCategory();
+    String facilityType = facility.getFacilityType();
 
     return (category != null && GATE_CATEGORY.equals(category.trim()))
            || (facilityType != null && INFORMATION_FACILITY_TYPE.equals(facilityType.trim()));

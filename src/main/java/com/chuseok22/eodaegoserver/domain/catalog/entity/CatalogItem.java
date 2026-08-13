@@ -2,6 +2,7 @@ package com.chuseok22.eodaegoserver.domain.catalog.entity;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
+import com.chuseok22.eodaegoserver.domain.facility.entity.Facility;
 import com.chuseok22.eodaegoserver.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,9 +45,13 @@ public class CatalogItem extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @OneToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "source_id", nullable = false, foreignKey = @ForeignKey(name = "fk_catalog_item_source"))
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "source_id", foreignKey = @ForeignKey(name = "fk_catalog_item_source"))
   private CatalogSource source;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "facility_id", foreignKey = @ForeignKey(name = "fk_catalog_item_facility"))
+  private Facility facility;
 
   @Column(nullable = false)
   private int sequenceNumber;
@@ -73,29 +78,44 @@ public class CatalogItem extends BaseEntity {
 
   private Double longitudeOverride;
 
-  // 아래 표시값 getter는 모두 같은 규칙을 따른다 — override가 null이면 AI 원본, 아니면 override.
   public String getName() {
-    return nameOverride != null ? nameOverride : source.getName();
+    if (nameOverride != null) {
+      return nameOverride;
+    }
+    return facility != null ? facility.getName() : source.getName();
   }
 
   public String getImageUrl() {
-    return imageUrlOverride != null ? imageUrlOverride : source.getImageUrl();
+    if (imageUrlOverride != null) {
+      return imageUrlOverride;
+    }
+    return facility != null ? null : source.getImageUrl();
   }
 
   public String getFeature() {
-    return featureOverride != null ? featureOverride : Objects.requireNonNullElse(source.getDescription(), "");
+    if (featureOverride != null) {
+      return featureOverride;
+    }
+    String description = facility != null ? facility.getDescription() : source.getDescription();
+    return Objects.requireNonNullElse(description, "");
   }
 
   public Double getLatitude() {
-    return latitudeOverride != null ? latitudeOverride : source.getLatitude();
+    if (latitudeOverride != null) {
+      return latitudeOverride;
+    }
+    return facility != null ? facility.getLatitude() : null;
   }
 
   public Double getLongitude() {
-    return longitudeOverride != null ? longitudeOverride : source.getLongitude();
+    if (longitudeOverride != null) {
+      return longitudeOverride;
+    }
+    return facility != null ? facility.getLongitude() : null;
   }
 
   public Long getExternalId() {
-    return source.getExternalId();
+    return facility != null ? facility.getAiFacilityId() : source.getExternalId();
   }
 
   public void update(

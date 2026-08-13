@@ -1,7 +1,6 @@
 package com.chuseok22.eodaegoserver.domain.catalog.service;
 
 import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiAnimalResponse;
-import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiFacilityResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiPlantResponse;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
@@ -27,10 +26,6 @@ public class CatalogAiClient {
 
   public List<AiPlantResponse> fetchPlants() {
     return fetch("/api/v1/catalog/plants", new ParameterizedTypeReference<>() {});
-  }
-
-  public List<AiFacilityResponse> fetchFacilities() {
-    return fetch("/api/v1/facility", new ParameterizedTypeReference<>() {});
   }
 
   private <T> List<T> fetch(String uri, ParameterizedTypeReference<List<T>> responseType) {

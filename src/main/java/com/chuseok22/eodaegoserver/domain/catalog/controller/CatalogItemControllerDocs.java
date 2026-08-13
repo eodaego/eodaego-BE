@@ -108,6 +108,12 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "재동기화가 관리자 수정값(name/imageUrl/위경도)을 AI 원본으로 되돌리던 문제 수정. 이제 AI 원본은 별도로 보관되고, 관리자가 수정하지 않은 필드만 AI 변경사항을 반영한다. 함께 수정되지 않던 식물/시설의 feature도 이제 갱신된다",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-11",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "시설 원본이 동식물과 분리된 전용 테이블로 옮겨졌다. 출입문·고객안내센터는 여전히 도감(PLACE)으로 등록되지 않지만, 이제 원본은 저장되어 GET /facilities로 조회된다(이전에는 원본조차 저장되지 않아 지도에서 볼 수 없었다). 응답의 updated 목록에는 더 이상 장소가 포함되지 않는다(created는 정상 포함)",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/65"
       )
   })
   @Operation(
@@ -124,14 +130,22 @@ public interface CatalogItemControllerDocs {
             AI가 childDescription을 제공하지 않기 때문이다.
           - name/feature/imageUrl/latitude/longitude는 관리자가 수정하기 전까지 AI 원본 값이 그대로 표시된다.
           - status는 AVAILABLE로 기본 생성되며, 재동기화로 바뀌지 않는다.
-          - 시설 중 출입문(정문/후문 등)과 고객안내센터는 회원이 수집하는 도감 대상이 아니므로
-            동기화에서 제외된다. 즉 시설 목록 전체가 PLACE로 등록되지는 않는다.
+
+          **시설(PLACE) 처리는 동식물과 다르다**
+          - 시설 원본은 동식물과 별도의 전용 테이블에 저장되며, **AI가 준 시설 전체(37건)가 저장된다.**
+          - 그중 출입문(정문/후문 등 11곳)과 고객안내센터는 회원이 수집하는 도감 대상이 아니므로
+            **도감 항목(PLACE)으로는 등록되지 않는다.** 즉 원본은 있고 도감 항목만 없는 상태가 된다.
+          - 이 12건도 `GET /facilities`(회원용 시설 조회)에서는 정상 조회된다. 지도에 출입문을
+            표시해야 하기 때문이다.
+          - 시설별 운영시간(openTime/closeTime/operatingNote)은 AI가 제공하지 않는 BE 고유 값이라
+            **이 동기화로 덮어쓰이지 않는다.**
+
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
   )
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "동기화 성공. created(신규 등록된 항목 목록)와 updated(AI 원본 값이 바뀐 항목 목록)를 함께 반환한다(둘 다 없으면 빈 배열). updated에 포함되어도 관리자가 수정해둔 필드는 바뀌지 않는다"),
+      @ApiResponse(responseCode = "200", description = "동기화 성공. created(신규 등록된 도감 항목 목록)와 updated(AI 원본 값이 바뀐 도감 항목 목록)를 함께 반환한다(둘 다 없으면 빈 배열). updated에 포함되어도 관리자가 수정해둔 필드는 바뀌지 않는다. updated에는 동물·식물만 포함되며 장소는 포함되지 않는다"),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "503", description = "외부 AI 서버 호출 실패. errorCode: AI_SERVER_UNAVAILABLE",
@@ -229,14 +243,25 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "도감 항목과 함께 그 AI 원본도 삭제하도록 변경. 원본만 남으면 다음 동기화가 '이미 있는 항목'으로 판단해 삭제한 항목이 되살아나지 않는 문제가 있었다",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/60"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-11",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "장소(PLACE)를 삭제할 때 AI 원본(시설)은 삭제하지 않도록 변경. 도감에서 빠져도 지도(GET /facilities)에는 계속 표시돼야 하기 때문이다. 동물·식물은 기존대로 원본까지 함께 삭제된다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/65"
       )
   })
   @Operation(
       summary = "도감 항목 삭제",
       description = """
-          도감 항목과 그 AI 원본 데이터를 함께 삭제한다.
-          따라서 다음 동기화 때 AI 서버가 같은 항목을 보내주면 새 항목으로 다시 등록된다
-          (관리자가 입력했던 childDescription과 override 값은 함께 사라진다).
+          도감 항목을 삭제한다. 관리자가 입력했던 childDescription과 override 값도 함께 사라진다.
+
+          **카테고리에 따라 AI 원본 처리가 다르다**
+          - 동물·식물(ANIMAL/PLANT): AI 원본까지 함께 삭제된다. 다음 동기화 때 AI 서버가 같은 항목을
+            보내주면 새 항목으로 다시 등록된다.
+          - 장소(PLACE): **AI 원본(시설)은 삭제되지 않고 남는다.** 도감에서 빠져도 지도
+            (`GET /facilities`)에는 계속 표시돼야 하기 때문이다. 다음 동기화 때 도감 항목만 다시
+            생성된다(출입문·고객안내센터처럼 제외 대상이면 다시 생성되지 않는다).
 
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
