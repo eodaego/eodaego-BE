@@ -39,11 +39,10 @@ public record CoursePlaceResponse(
 
 ) {
 
-  public static CoursePlaceResponse from(
-      CoursePlace coursePlace,
-      UUID catalogItemId,
-      boolean collected
-  ) {
+  public static CoursePlaceResponse from(CoursePlace coursePlace, CoursePlaceCatalogInfo catalogInfo) {
+    UUID catalogItemId = catalogInfo != null ? catalogInfo.catalogItemId() : null;
+    boolean collected = catalogInfo != null && catalogInfo.collected();
+
     return new CoursePlaceResponse(
         coursePlace.getVisitOrder(),
         coursePlace.getFacilityId(),

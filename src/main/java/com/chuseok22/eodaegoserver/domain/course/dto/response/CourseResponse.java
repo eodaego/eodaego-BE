@@ -1,13 +1,11 @@
 package com.chuseok22.eodaegoserver.domain.course.dto.response;
 
-import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
 import com.chuseok22.eodaegoserver.domain.course.EntranceGate;
 import com.chuseok22.eodaegoserver.domain.course.InterestType;
 import com.chuseok22.eodaegoserver.domain.course.entity.Course;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public record CourseResponse(
@@ -46,39 +44,23 @@ public record CourseResponse(
 
 ) {
 
-  public static CourseResponse from(Course course, boolean favorite) {
-    return from(
-      course,
-      favorite,
-      Map.of(),
-      Set.of()
-    );
-  }
-
   public static CourseResponse from(
-    Course course,
-    boolean favorite,
-    Map<Long, CatalogItem> catalogItemsByFacilityId,
-    Set<UUID> collectedCatalogItemIds
+      Course course,
+      boolean favorite,
+      Map<Long, CoursePlaceCatalogInfo> catalogInfoByFacilityId
   ) {
     return new CourseResponse(
-      course.getId(),
-      course.getTitle(),
-      List.copyOf(course.getInterestTypes()),
-      List.copyOf(course.getTagLabels()),
-      course.getEstimatedDurationMinutes(),
-      course.getEntrance(),
-      course.getExit(),
-      favorite,
-      course.getPlaces().stream()
-        .map(place -> {
-          CatalogItem catalogItem = catalogItemsByFacilityId.get(place.getFacilityId());
-          UUID catalogItemId = catalogItem != null ? catalogItem.getId() : null;
-          boolean collected = catalogItemId != null && collectedCatalogItemIds.contains(catalogItemId);
-
-          return CoursePlaceResponse.from(place, catalogItemId, collected);
-        })
-        .toList()
+        course.getId(),
+        course.getTitle(),
+        List.copyOf(course.getInterestTypes()),
+        List.copyOf(course.getTagLabels()),
+        course.getEstimatedDurationMinutes(),
+        course.getEntrance(),
+        course.getExit(),
+        favorite,
+        course.getPlaces().stream()
+            .map(place -> CoursePlaceResponse.from(place, catalogInfoByFacilityId.get(place.getFacilityId())))
+            .toList()
     );
   }
 }

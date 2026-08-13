@@ -11,6 +11,7 @@ import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteRecommendat
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteRecommendationResponse;
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteStop;
 import com.chuseok22.eodaegoserver.domain.course.dto.request.CourseRecommendationRequest;
+import com.chuseok22.eodaegoserver.domain.course.dto.response.CoursePlaceCatalogInfo;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseResponse;
 import com.chuseok22.eodaegoserver.domain.course.entity.Course;
 import com.chuseok22.eodaegoserver.domain.course.entity.CoursePlace;
@@ -29,8 +30,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.chuseok22.eodaegoserver.domain.catalog.repository.MemberCatalogCollectionRepository;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -44,7 +43,7 @@ public class CourseRecommendationService {
   private final CourseFavoriteRepository courseFavoriteRepository;
   private final CatalogItemRepository catalogItemRepository;
   private final CourseAiClient courseAiClient;
-  private final MemberCatalogCollectionRepository memberCatalogCollectionRepository;
+  private final CoursePlaceCatalogResolver catalogResolver;
 
   @Transactional
   public List<CourseResponse> recommendCourses(CourseRecommendationRequest request, UUID memberId) {
@@ -74,19 +73,16 @@ public class CourseRecommendationService {
 
     log.info("코스 추천 완료. 추천된 코스 수={}", savedCourses.size());
 
-    Set<UUID> collectedCatalogItemIds =
-      findCollectedCatalogItemIds(
-        memberId,
-        catalogItemsByFacilityId
-      );
+    List<Long> facilityIds = savedCourses.stream()
+        .flatMap(course -> course.getPlaces().stream())
+        .map(CoursePlace::getFacilityId)
+        .distinct()
+        .toList();
+
+    Map<Long, CoursePlaceCatalogInfo> catalogInfoByFacilityId = catalogResolver.resolve(memberId, facilityIds);
 
     return savedCourses.stream()
-        .map(course -> CourseResponse.from(
-          course,
-          false,
-          catalogItemsByFacilityId,
-          collectedCatalogItemIds
-        ))
+        .map(course -> CourseResponse.from(course, false, catalogInfoByFacilityId))
         .toList();
 
   }
@@ -100,15 +96,14 @@ public class CourseRecommendationService {
 
     boolean favorite = courseFavoriteRepository.existsByMemberIdAndCourseId(memberId, courseId);
 
-    Map<Long, CatalogItem> catalogItemsByFacilityId = findCatalogItemsByFacilityId(course);
-    Set<UUID> collectedCatalogItemIds = findCollectedCatalogItemIds(memberId, catalogItemsByFacilityId);
+    List<Long> facilityIds = course.getPlaces().stream()
+        .map(CoursePlace::getFacilityId)
+        .distinct()
+        .toList();
 
-    return CourseResponse.from(
-      course,
-      favorite,
-      catalogItemsByFacilityId,
-      collectedCatalogItemIds
-    );
+    Map<Long, CoursePlaceCatalogInfo> catalogInfoByFacilityId = catalogResolver.resolve(memberId, facilityIds);
+
+    return CourseResponse.from(course, favorite, catalogInfoByFacilityId);
   }
 
   private Map<Long, CatalogItem> findCatalogItemsByFacilityId(AiRouteRecommendationResponse response) {
@@ -222,32 +217,6 @@ public class CourseRecommendationService {
         yield CatalogCategory.PLACE;
       }
     };
-  }
-
-  private Set<UUID> findCollectedCatalogItemIds(UUID memberId, Map<Long, CatalogItem> catalogItemsByFacilityId) {
-    List<UUID> catalogItemIds = catalogItemsByFacilityId.values().stream()
-      .map(CatalogItem::getId)
-      .distinct()
-      .toList();
-
-    if (catalogItemIds.isEmpty()) {
-      return Set.of();
-    }
-
-    return memberCatalogCollectionRepository
-      .findByMemberIdAndCatalogItemIdIn(memberId, catalogItemIds)
-      .stream()
-      .map(collection -> collection.getCatalogItem().getId())
-      .collect(Collectors.toSet());
-  }
-
-  private Map<Long, CatalogItem> findCatalogItemsByFacilityId(Course course) {
-    List<Long> facilityIds = course.getPlaces().stream()
-      .map(CoursePlace::getFacilityId)
-      .distinct()
-      .toList();
-
-    return findCatalogItemsByFacilityIds(facilityIds);
   }
 
   private Map<Long, CatalogItem> findCatalogItemsByFacilityIds(List<Long> facilityIds) {
