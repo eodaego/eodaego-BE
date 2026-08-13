@@ -11,6 +11,7 @@ import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteRecommendat
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteRecommendationResponse;
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteStop;
 import com.chuseok22.eodaegoserver.domain.course.dto.request.CourseRecommendationRequest;
+import com.chuseok22.eodaegoserver.domain.course.dto.response.CoursePlaceCatalogInfo;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseResponse;
 import com.chuseok22.eodaegoserver.domain.course.entity.Course;
 import com.chuseok22.eodaegoserver.domain.course.entity.CoursePlace;
@@ -42,9 +43,10 @@ public class CourseRecommendationService {
   private final CourseFavoriteRepository courseFavoriteRepository;
   private final CatalogItemRepository catalogItemRepository;
   private final CourseAiClient courseAiClient;
+  private final CoursePlaceCatalogResolver catalogResolver;
 
   @Transactional
-  public List<CourseResponse> recommendCourses(CourseRecommendationRequest request) {
+  public List<CourseResponse> recommendCourses(CourseRecommendationRequest request, UUID memberId) {
 
     AiRouteRecommendationRequest aiRequest = new AiRouteRecommendationRequest(
         request.interestTypes(),
@@ -71,8 +73,16 @@ public class CourseRecommendationService {
 
     log.info("코스 추천 완료. 추천된 코스 수={}", savedCourses.size());
 
+    List<Long> facilityIds = savedCourses.stream()
+        .flatMap(course -> course.getPlaces().stream())
+        .map(CoursePlace::getFacilityId)
+        .distinct()
+        .toList();
+
+    Map<Long, CoursePlaceCatalogInfo> catalogInfoByFacilityId = catalogResolver.resolve(memberId, facilityIds);
+
     return savedCourses.stream()
-        .map(course -> CourseResponse.from(course, false))
+        .map(course -> CourseResponse.from(course, false, catalogInfoByFacilityId))
         .toList();
 
   }
@@ -86,7 +96,14 @@ public class CourseRecommendationService {
 
     boolean favorite = courseFavoriteRepository.existsByMemberIdAndCourseId(memberId, courseId);
 
-    return CourseResponse.from(course, favorite);
+    List<Long> facilityIds = course.getPlaces().stream()
+        .map(CoursePlace::getFacilityId)
+        .distinct()
+        .toList();
+
+    Map<Long, CoursePlaceCatalogInfo> catalogInfoByFacilityId = catalogResolver.resolve(memberId, facilityIds);
+
+    return CourseResponse.from(course, favorite, catalogInfoByFacilityId);
   }
 
   private Map<Long, CatalogItem> findCatalogItemsByFacilityId(AiRouteRecommendationResponse response) {
@@ -96,8 +113,7 @@ public class CourseRecommendationService {
         .distinct()
         .toList();
 
-    return catalogItemRepository.findByCategoryAndSource_ExternalIdIn(CatalogCategory.PLACE, facilityIds).stream()
-        .collect(Collectors.toMap(CatalogItem::getExternalId, Function.identity()));
+    return findCatalogItemsByFacilityIds(facilityIds);
   }
 
   private Course toCourse(
@@ -201,6 +217,12 @@ public class CourseRecommendationService {
         yield CatalogCategory.PLACE;
       }
     };
+  }
+
+  private Map<Long, CatalogItem> findCatalogItemsByFacilityIds(List<Long> facilityIds) {
+    return catalogItemRepository
+      .findByCategoryAndFacility_AiFacilityIdIn(CatalogCategory.PLACE, facilityIds).stream()
+      .collect(Collectors.toMap(CatalogItem::getExternalId, Function.identity()));
   }
 
 }

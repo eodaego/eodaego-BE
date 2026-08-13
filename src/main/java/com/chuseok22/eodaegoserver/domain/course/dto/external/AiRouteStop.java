@@ -1,6 +1,6 @@
 package com.chuseok22.eodaegoserver.domain.course.dto.external;
 
-import com.chuseok22.eodaegoserver.domain.catalog.dto.external.AiFacilityResponse;
+import com.chuseok22.eodaegoserver.domain.facility.dto.external.AiFacilityResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

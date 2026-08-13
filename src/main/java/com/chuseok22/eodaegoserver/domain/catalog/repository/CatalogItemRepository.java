@@ -15,17 +15,19 @@ public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> 
 
   Optional<CatalogItem> findTopByCategoryOrderBySequenceNumberDesc(CatalogCategory category);
 
-  @EntityGraph(attributePaths = "source")
+  @Override
+  @EntityGraph(attributePaths = {"source", "facility"})
   List<CatalogItem> findAll();
 
-  @EntityGraph(attributePaths = "source")
+  @EntityGraph(attributePaths = {"source", "facility"})
   List<CatalogItem> findByCategory(CatalogCategory category);
 
-  @EntityGraph(attributePaths = "source")
+  @Override
+  @EntityGraph(attributePaths = {"source", "facility"})
   Optional<CatalogItem> findById(UUID id);
 
-  @EntityGraph(attributePaths = "source")
-  List<CatalogItem> findByCategoryAndSource_ExternalIdIn(CatalogCategory category, List<Long> externalIds);
+  @EntityGraph(attributePaths = {"source", "facility"})
+  List<CatalogItem> findByCategoryAndFacility_AiFacilityIdIn(CatalogCategory category, List<Long> aiFacilityIds);
 
   @EntityGraph(attributePaths = "source")
   Optional<CatalogItem> findByCategoryAndStatusAndSource_ExternalId(
