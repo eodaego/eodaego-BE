@@ -36,8 +36,8 @@ public record CourseResponse(
 
     @Schema(description = "방문 순서대로 정렬된 장소 목록", example = """
         [
-          {"visitOrder": 1, "facilityId": 11, "name": "맹수마을", "category": "ANIMAL", "latitude": 37.5487, "longitude": 127.0812, "mapX": null, "mapY": null},
-          {"visitOrder": 2, "facilityId": 12, "name": "바다동물관", "category": "PLACE", "latitude": 37.5491, "longitude": 127.0825, "mapX": null, "mapY": null}
+          {"visitOrder": 1, "facilityId": 11, "catalogItemId": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "name": "맹수마을", "category": "ANIMAL", "collected": true, "latitude": 37.5487, "longitude": 127.0812, "mapX": null, "mapY": null},
+          {"visitOrder": 2, "facilityId": 12, "catalogItemId": null, "name": "바다동물관", "category": "PLACE", "collected": false, "latitude": 37.5491, "longitude": 127.0825, "mapX": null, "mapY": null}
         ]
         """)
     List<CoursePlaceResponse> places

@@ -74,11 +74,11 @@ public interface CourseControllerDocs {
           - interestTypes/stayDurationMinutes/companionType은 건너뛰면(null) AI 서버에도 null 그대로 전달된다(BE가 별도 기본값을 채우지 않는다).
           - 응답 코스의 durationMinutes는 AI 서버가 실제로 계산해 응답한 값을 그대로 저장한 것이다(요청의 stayDurationMinutes를 그대로 저장하는 것이 아니다).
           - 응답 코스 수는 AI 서버 응답에 따라 달라지며 고정된 개수를 보장하지 않는다.
-          - 각 코스의 장소(places)는 AI가 준 facilityId를 도감(catalog_item, category=PLACE)의 externalId와 매칭해 이름/좌표를 채운다.
+          - 각 코스의 장소(places)는 AI가 준 facilityId를 도감(catalog_item, category=PLACE)에 연결된 시설(facility)의 aiFacilityId와 매칭해 이름/좌표를 채운다.
           - 각 장소에는 연결된 도감 항목의 catalogItemId와 현재 회원의 수집 여부인 collected가 포함된다.
           - 도감에 동기화되지 않은 시설은 catalogItemId가 null이며 collected는 false다.
           - places의 category는 화면 표시용으로 ANIMAL / PLANT / PLACE 값을 사용하며, 도감 연결에 사용하는 CatalogCategory.PLACE와는 별개의 값이다.
-          - 도감 연결은 places.category가 아니라 facilityId와 CatalogSource.externalId를 기준으로 한다.
+          - 도감 연결은 places.category가 아니라 facilityId(도감 항목에 연결된 시설의 aiFacilityId)를 기준으로 한다.
           - places에는 입구/출구(출입문)는 포함되지 않는다. 입구/출구는 응답의 entrance/exit 필드로만 제공된다.
           - 장소 category는 AI 시설 원본 분류를 ANIMAL / PLANT / PLACE로 변환해 저장한다.
           - 아직 도감에 동기화되지 않은 시설이면 name/latitude/longitude를 AI가 준 시설 정보로 채운다(도감 우선, 없으면 AI 값 → null이 아니다). category도 AI 응답을 기준으로 채워진다.
@@ -111,6 +111,12 @@ public interface CourseControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "코스 응답 tagLabel(String)을 tagLabels(List)로 변경",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/34"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-10",
+          author = ChangeLogAuthor.KANG_JIYUN,
+          description = "코스 상세 응답의 각 장소에 연결된 도감 항목 ID(catalogItemId)와 현재 회원의 수집 여부(collected) 추가",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/67"
       )
   })
   @Operation(
@@ -119,6 +125,10 @@ public interface CourseControllerDocs {
           courseId로 코스 상세 정보를 조회한다. 응답의 favorite는 현재 인증된 회원이
           이 코스를 즐겨찾기했는지 여부를 나타낸다.
 
+          - 각 장소(places)에는 연결된 도감 항목의 catalogItemId와 현재 회원의 수집 여부인 collected가 포함된다.
+          - 도감에 동기화되지 않은 시설은 catalogItemId가 null이며 collected는 false다.
+          - 도감 연결은 facilityId(도감 항목에 연결된 시설의 aiFacilityId)를 기준으로 하며, 이름 매칭이 아니다.
+          - collected는 현재 인증된 회원 기준으로 계산되므로 회원마다 값이 다를 수 있다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
