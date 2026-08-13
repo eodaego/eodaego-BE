@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.chuseok22.eodaegoserver.domain.catalog.entity.MemberCatalogCollection;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.MemberCatalogCollectionRepository;
 import java.util.Set;
 
@@ -119,8 +118,7 @@ public class CourseRecommendationService {
         .distinct()
         .toList();
 
-    return catalogItemRepository.findByCategoryAndFacility_AiFacilityIdIn(CatalogCategory.PLACE, facilityIds).stream()
-        .collect(Collectors.toMap(CatalogItem::getExternalId, Function.identity()));
+    return findCatalogItemsByFacilityIds(facilityIds);
   }
 
   private Course toCourse(
@@ -249,16 +247,13 @@ public class CourseRecommendationService {
       .distinct()
       .toList();
 
+    return findCatalogItemsByFacilityIds(facilityIds);
+  }
+
+  private Map<Long, CatalogItem> findCatalogItemsByFacilityIds(List<Long> facilityIds) {
     return catalogItemRepository
-      .findByCategoryAndSource_ExternalIdIn(
-        CatalogCategory.PLACE,
-        facilityIds
-      )
-      .stream()
-      .collect(Collectors.toMap(
-        CatalogItem::getExternalId,
-        Function.identity()
-      ));
+      .findByCategoryAndFacility_AiFacilityIdIn(CatalogCategory.PLACE, facilityIds).stream()
+      .collect(Collectors.toMap(CatalogItem::getExternalId, Function.identity()));
   }
 
 }
