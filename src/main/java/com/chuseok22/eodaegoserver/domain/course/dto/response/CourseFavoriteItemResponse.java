@@ -3,6 +3,7 @@ package com.chuseok22.eodaegoserver.domain.course.dto.response;
 import com.chuseok22.eodaegoserver.domain.course.entity.CourseFavorite;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public record CourseFavoriteItemResponse(
 
@@ -14,10 +15,13 @@ public record CourseFavoriteItemResponse(
 
 ) {
 
-  public static CourseFavoriteItemResponse from(CourseFavorite courseFavorite) {
+  public static CourseFavoriteItemResponse from(
+      CourseFavorite courseFavorite,
+      Map<Long, CoursePlaceCatalogInfo> catalogInfoByFacilityId
+  ) {
     return new CourseFavoriteItemResponse(
         courseFavorite.getCreatedAt(),
-        CourseResponse.from(courseFavorite.getCourse(), true)
+        CourseResponse.from(courseFavorite.getCourse(), true, catalogInfoByFacilityId)
     );
   }
 

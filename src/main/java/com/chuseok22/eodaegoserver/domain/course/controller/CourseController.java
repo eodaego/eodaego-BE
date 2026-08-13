@@ -28,8 +28,10 @@ public class CourseController implements CourseControllerDocs {
   @LogMonitoring
   @PostMapping(path = "/recommendations", version = "1")
   public ResponseEntity<List<CourseResponse>> recommendCourses(
-      @Valid @RequestBody CourseRecommendationRequest request) {
-    return ResponseEntity.ok(courseRecommendationService.recommendCourses(request));
+      @AuthenticationPrincipal UUID memberId,
+      @Valid @RequestBody CourseRecommendationRequest request
+  ) {
+    return ResponseEntity.ok(courseRecommendationService.recommendCourses(request, memberId));
   }
 
   @Override

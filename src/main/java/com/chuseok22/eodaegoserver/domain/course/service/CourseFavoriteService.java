@@ -4,8 +4,10 @@ import com.chuseok22.eodaegoserver.domain.course.CourseFavoriteSortType;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteItemResponse;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteListResponse;
 import com.chuseok22.eodaegoserver.domain.course.dto.response.CourseFavoriteResponse;
+import com.chuseok22.eodaegoserver.domain.course.dto.response.CoursePlaceCatalogInfo;
 import com.chuseok22.eodaegoserver.domain.course.entity.Course;
 import com.chuseok22.eodaegoserver.domain.course.entity.CourseFavorite;
+import com.chuseok22.eodaegoserver.domain.course.entity.CoursePlace;
 import com.chuseok22.eodaegoserver.domain.course.repository.CourseFavoriteRepository;
 import com.chuseok22.eodaegoserver.domain.course.repository.CourseRepository;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
@@ -13,6 +15,7 @@ import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,7 @@ public class CourseFavoriteService {
   private final CourseFavoriteRepository courseFavoriteRepository;
   private final CourseRepository courseRepository;
   private final MemberRepository memberRepository;
+  private final CoursePlaceCatalogResolver catalogResolver;
 
   @Transactional
   public CourseFavoriteResponse addFavorite(UUID memberId, UUID courseId) {
@@ -65,9 +69,18 @@ public class CourseFavoriteService {
   }
 
   public CourseFavoriteListResponse getFavorites(UUID memberId, CourseFavoriteSortType sortType) {
-    List<CourseFavoriteItemResponse> items = courseFavoriteRepository.findByMemberId(memberId, sortType.getSort())
-        .stream()
-        .map(CourseFavoriteItemResponse::from)
+    List<CourseFavorite> favorites = courseFavoriteRepository.findByMemberId(memberId, sortType.getSort());
+
+    List<Long> facilityIds = favorites.stream()
+        .flatMap(favorite -> favorite.getCourse().getPlaces().stream())
+        .map(CoursePlace::getFacilityId)
+        .distinct()
+        .toList();
+
+    Map<Long, CoursePlaceCatalogInfo> catalogInfoByFacilityId = catalogResolver.resolve(memberId, facilityIds);
+
+    List<CourseFavoriteItemResponse> items = favorites.stream()
+        .map(favorite -> CourseFavoriteItemResponse.from(favorite, catalogInfoByFacilityId))
         .toList();
 
     return CourseFavoriteListResponse.from(items);

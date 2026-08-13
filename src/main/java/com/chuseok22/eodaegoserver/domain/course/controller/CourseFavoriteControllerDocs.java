@@ -109,6 +109,12 @@ public interface CourseFavoriteControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "sort 값이 잘못됐을 때의 400 응답 reason에 허용 값 목록을 함께 내려주도록 변경",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/43"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-13",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "즐겨찾기 목록의 각 장소에도 연결된 도감 항목 ID(catalogItemId)와 회원 수집 여부(collected)를 채워서 반환",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/67"
       )
   })
   @Operation(
@@ -134,6 +140,9 @@ public interface CourseFavoriteControllerDocs {
           `totalCount`(즐겨찾기 총 개수)와 `items`(정렬된 목록)를 담은 객체를 반환한다.
           즐겨찾기한 코스가 없으면 `totalCount`는 0, `items`는 빈 배열이다.
           페이지네이션은 아직 적용하지 않으므로 `totalCount`는 항상 `items`의 길이와 같다.
+
+          각 항목의 `course.places`에는 코스 추천/상세 응답과 동일하게 연결된 도감 항목의 catalogItemId와
+          현재 회원의 수집 여부인 collected가 포함된다. 도감에 동기화되지 않은 시설은 catalogItemId가 null이며 collected는 false다.
 
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
