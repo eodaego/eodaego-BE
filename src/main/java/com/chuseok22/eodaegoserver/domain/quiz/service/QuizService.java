@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,13 +51,7 @@ public class QuizService {
       throw new CustomException(ErrorCode.RECOGNITION_FAILED);
     }
 
-    CatalogItem correctItem = catalogItemRepository
-        .findByCategoryAndStatusAndSource_ExternalId(catalogType, CatalogItemStatus.AVAILABLE, recognition.catalogId())
-        .orElseThrow(() -> {
-          log.warn("인식된 대상이 도감에 없거나 수집 가능 상태가 아님. catalogType={}, externalId={}, aiName={}",
-              catalogType, recognition.catalogId(), recognition.name());
-          return new CustomException(ErrorCode.RECOGNITION_FAILED);
-        });
+    CatalogItem correctItem = findAvailableItem(catalogType, recognition);
 
     List<QuizChoiceResponse> choices = buildChoices(catalogType, correctItem);
 
@@ -103,6 +98,23 @@ public class QuizService {
 
     quizAnswerStore.delete(quizId);
     return QuizAnswerResponse.correct(correctCatalogItemId);
+  }
+
+
+  private CatalogItem findAvailableItem(CatalogCategory catalogType, AiPhotoRecognitionResponse recognition) {
+    Long catalogId = recognition.catalogId();
+
+    Optional<CatalogItem> found = catalogType == CatalogCategory.PLACE
+        ? catalogItemRepository.findByCategoryAndStatusAndFacility_AiFacilityId(
+            catalogType, CatalogItemStatus.AVAILABLE, catalogId)
+        : catalogItemRepository.findByCategoryAndStatusAndSource_ExternalId(
+            catalogType, CatalogItemStatus.AVAILABLE, catalogId);
+
+    return found.orElseThrow(() -> {
+      log.warn("인식된 대상이 도감에 없거나 수집 가능 상태가 아님. catalogType={}, catalogId={}, aiName={}",
+          catalogType, catalogId, recognition.name());
+      return new CustomException(ErrorCode.RECOGNITION_FAILED);
+    });
   }
 
   private List<QuizChoiceResponse> buildChoices(CatalogCategory category, CatalogItem correctItem) {
