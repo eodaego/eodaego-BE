@@ -36,9 +36,9 @@ public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> 
   @EntityGraph(attributePaths = {"source", "facility"})
   Optional<CatalogItem> findByCategoryAndStatusAndFacility_AiFacilityId(
       CatalogCategory category, CatalogItemStatus status, Long aiFacilityId);
-
+  
   @Query(value = "SELECT id FROM catalog_item WHERE category = :category AND id <> :excludeId ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
-  List<UUID> findRandomDistractorIds(@Param("category") String category, @Param("excludeId") UUID excludeId, @Param("limit") int limit);
+  List<UUID> findRandomIdsByCategoryExcluding(@Param("category") String category, @Param("excludeId") UUID excludeId, @Param("limit") int limit);
 
   // PLACE 항목은 facility_id가 채워져 있어 프록시가 생성된다. facility를 함께 fetch하지 않으면
   // 트랜잭션 밖에서 실행되는 퀴즈 선택지 생성(getName())에서 LazyInitializationException이 발생한다.

@@ -119,7 +119,7 @@ public class QuizService {
 
   private List<QuizChoiceResponse> buildChoices(CatalogCategory category, CatalogItem correctItem) {
     List<UUID> distractorIds =
-        catalogItemRepository.findRandomDistractorIds(category.name(), correctItem.getId(), CHOICE_COUNT - 1);
+        catalogItemRepository.findRandomIdsByCategoryExcluding(category.name(), correctItem.getId(), CHOICE_COUNT - 1);
     List<CatalogItem> chosen = new ArrayList<>(catalogItemRepository.findAllById(distractorIds));
     chosen.add(correctItem);
     Collections.shuffle(chosen);
