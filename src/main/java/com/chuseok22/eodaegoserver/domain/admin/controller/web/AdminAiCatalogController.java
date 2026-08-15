@@ -20,18 +20,6 @@ public class AdminAiCatalogController {
     return "admin/operating-hours/list";
   }
 
-  @GetMapping("/admin/catalog/animals")
-  public String animalList(Model model) {
-    model.addAttribute("animals", adminAiCatalogService.listAnimals());
-    return "admin/catalog/animals";
-  }
-
-  @GetMapping("/admin/catalog/plants")
-  public String plantList(Model model) {
-    model.addAttribute("plants", adminAiCatalogService.listPlants());
-    return "admin/catalog/plants";
-  }
-
   @GetMapping("/admin/congestion")
   public String congestionList(Model model) {
     model.addAttribute("congestionSnapshots", adminAiCatalogService.listCongestion());

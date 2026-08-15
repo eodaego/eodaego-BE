@@ -1,11 +1,9 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
-import com.chuseok22.eodaegoserver.domain.admin.dto.response.AnimalView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CatalogCrawlResultView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CongestionView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.OperatingHoursView;
-import com.chuseok22.eodaegoserver.domain.admin.dto.response.PlantView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.WeatherSnapshotView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
@@ -28,14 +26,6 @@ public class AdminAiCatalogService {
 
   public List<OperatingHoursView> listOperatingHours() {
     return get("/api/v1/facility/operating-hours", new ParameterizedTypeReference<List<OperatingHoursView>>() {});
-  }
-
-  public List<AnimalView> listAnimals() {
-    return get("/api/v1/catalog/animals", new ParameterizedTypeReference<List<AnimalView>>() {});
-  }
-
-  public List<PlantView> listPlants() {
-    return get("/api/v1/catalog/plants", new ParameterizedTypeReference<List<PlantView>>() {});
   }
 
   public List<CongestionView> listCongestion() {
