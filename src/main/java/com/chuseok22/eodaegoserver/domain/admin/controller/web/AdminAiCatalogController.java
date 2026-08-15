@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -46,9 +45,9 @@ public class AdminAiCatalogController {
   }
 
   @PostMapping("/admin/catalog/crawl")
-  public String triggerCatalogCrawl(@RequestParam String redirectTo, RedirectAttributes redirectAttributes) {
+  public String triggerCatalogCrawl(RedirectAttributes redirectAttributes) {
     redirectAttributes.addFlashAttribute("catalogCrawlResult", adminAiCatalogService.triggerCatalogCrawl());
-    return "plants".equals(redirectTo) ? "redirect:/admin/catalog/plants" : "redirect:/admin/catalog/animals";
+    return "redirect:/admin/catalog/items";
   }
 
   @PostMapping("/admin/facility/operating-hours/crawl")
