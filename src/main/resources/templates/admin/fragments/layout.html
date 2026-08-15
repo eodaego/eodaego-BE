@@ -11,8 +11,7 @@
     <li class="menu-title mt-2">공원 데이터</li>
     <li><a th:href="@{/admin/facility}" th:classappend="${activePage == 'facility'} ? 'active' : ''">시설 관리</a></li>
     <li><a th:href="@{/admin/facility/operating-hours}" th:classappend="${activePage == 'operating-hours'} ? 'active' : ''">운영시간 조회</a></li>
-    <li><a th:href="@{/admin/catalog/animals}" th:classappend="${activePage == 'animals'} ? 'active' : ''">동물도감 조회</a></li>
-    <li><a th:href="@{/admin/catalog/plants}" th:classappend="${activePage == 'plants'} ? 'active' : ''">식물도감 조회</a></li>
+    <li><a th:href="@{/admin/catalog/items}" th:classappend="${activePage == 'catalog-items'} ? 'active' : ''">도감 관리</a></li>
     <li><a th:href="@{/admin/congestion}" th:classappend="${activePage == 'congestion'} ? 'active' : ''">혼잡도 조회</a></li>
     <li><a th:href="@{/admin/weather}" th:classappend="${activePage == 'weather'} ? 'active' : ''">날씨 조회</a></li>
     <li><a th:href="@{/admin/events}" th:classappend="${activePage == 'events'} ? 'active' : ''">행사·공연 관리</a></li>
