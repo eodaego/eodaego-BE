@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminCatalogItemService {
@@ -58,11 +60,13 @@ public class AdminCatalogItemService {
 
   public void updateItem(UUID catalogItemId, CatalogItemUpdateRequest request) {
     catalogItemService.updateCatalogItem(catalogItemId, normalize(request));
+    log.info("관리자 도감 항목 override 수정 완료. catalogItemId={}", catalogItemId);
   }
 
   public CrawlResultView triggerSync() {
     CatalogSyncResult result = catalogItemService.syncFromAiServer();
     int totalCount = result.created().size() + result.updated().size();
+    log.info("관리자 도감 동기화 트리거 완료. 생성 {}건, 갱신 {}건", result.created().size(), result.updated().size());
     return new CrawlResultView(true, totalCount, "동기화 완료");
   }
 
