@@ -22,6 +22,7 @@
     <li class="menu-title mt-2">AI 설정</li>
     <li><a th:href="@{/admin/prompts}" th:classappend="${activePage == 'prompts'} ? 'active' : ''">프롬프트 템플릿 관리</a></li>
     <li><a th:href="@{/admin/recommendation/preference-mappings}" th:classappend="${activePage == 'preference-mappings'} ? 'active' : ''">취향 매핑 관리</a></li>
+    <li><a th:href="@{/admin/recommendation/failures}" th:classappend="${activePage == 'recommendation-failures'} ? 'active' : ''">AI 추천 실패 로그</a></li>
     <li class="mt-auto pt-4 border-t border-base-300">
       <form th:action="@{/admin/logout}" method="post">
         <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
