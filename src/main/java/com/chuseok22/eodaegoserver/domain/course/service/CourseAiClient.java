@@ -1,5 +1,6 @@
 package com.chuseok22.eodaegoserver.domain.course.service;
 
+import com.chuseok22.eodaegoserver.domain.course.CourseRecommendationFailureType;
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRecommendedCourse;
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteRecommendationRequest;
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRouteRecommendationResponse;
@@ -21,6 +22,7 @@ public class CourseAiClient {
   private static final String ROUTE_RECOMMENDATION_URI = "/api/v1/recommendation/routes";
 
   private final RestClient aiServerRestClient;
+  private final CourseRecommendationFailureLogService courseRecommendationFailureLogService;
 
   public AiRouteRecommendationResponse recommendRoutes(AiRouteRecommendationRequest request) {
     AiRouteRecommendationResponse response;
@@ -33,6 +35,8 @@ public class CourseAiClient {
           .body(AiRouteRecommendationResponse.class);
     } catch (RestClientException exception) {
       log.error("AI 서버 코스 추천 호출 실패", exception);
+      courseRecommendationFailureLogService.record(
+          CourseRecommendationFailureType.AI_COMMUNICATION_FAILURE, exception.getMessage());
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
 
@@ -46,12 +50,16 @@ public class CourseAiClient {
         || response.courses() == null
         || response.courses().isEmpty()) {
       log.warn("AI 코스 추천 응답이 비어 있습니다.");
+      courseRecommendationFailureLogService.record(
+          CourseRecommendationFailureType.EMPTY_RESPONSE, "AI 코스 추천 응답이 비어 있습니다.");
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
 
     for (AiRecommendedCourse course : response.courses()) {
       if (course == null) {
         log.warn("AI 코스 항목이 null입니다.");
+        courseRecommendationFailureLogService.record(
+            CourseRecommendationFailureType.NULL_COURSE_ITEM, "AI 코스 항목이 null입니다.");
         throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
       }
 
@@ -62,6 +70,8 @@ public class CourseAiClient {
           || course.stops() == null
           || course.stops().isEmpty()) {
         log.warn("AI 코스 필수값 누락. title={}", course.title());
+        courseRecommendationFailureLogService.record(
+            CourseRecommendationFailureType.MISSING_REQUIRED_FIELD, "AI 코스 필수값 누락. title=" + course.title());
         throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
       }
 
@@ -70,6 +80,8 @@ public class CourseAiClient {
             || stop.facility() == null
             || stop.facility().id() == null) {
           log.warn("AI 코스 시설정보 누락. title={}", course.title());
+          courseRecommendationFailureLogService.record(
+              CourseRecommendationFailureType.MISSING_FACILITY_INFO, "AI 코스 시설정보 누락. title=" + course.title());
           throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
         }
       }
