@@ -27,17 +27,27 @@ public class AdminMemberService {
   private final MemberRepository memberRepository;
 
   public Page<MemberListView> searchMembers(String keyword, SocialType socialType, int page) {
-    Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE,
-        Sort.by(Sort.Direction.DESC, "createdAt").and(Sort.by(Sort.Direction.DESC, "id")));
     Specification<Member> specification = buildSpecification(keyword, socialType);
-    log.debug("회원 목록 조회. keyword={}, socialType={}, page={}", keyword, socialType, page);
-    return memberRepository.findAll(specification, pageable).map(MemberListView::from);
+    Page<Member> result = memberRepository.findAll(specification, buildPageable(Math.max(page, 0)));
+
+    if (page > 0 && result.getTotalPages() > 0 && page >= result.getTotalPages()) {
+      result = memberRepository.findAll(specification, buildPageable(result.getTotalPages() - 1));
+    }
+
+    log.debug("회원 목록 조회. hasKeyword={}, socialType={}, page={}",
+        keyword != null && !keyword.isBlank(), socialType, page);
+    return result.map(MemberListView::from);
   }
 
   public MemberDetailView getMemberDetail(UUID memberId) {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     return MemberDetailView.from(member);
+  }
+
+  private Pageable buildPageable(int page) {
+    return PageRequest.of(page, PAGE_SIZE,
+        Sort.by(Sort.Direction.DESC, "createdAt").and(Sort.by(Sort.Direction.DESC, "id")));
   }
 
   private Specification<Member> buildSpecification(String keyword, SocialType socialType) {
