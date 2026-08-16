@@ -1,5 +1,6 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
+import com.chuseok22.eodaegoserver.domain.admin.CrawlJobType;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.FacilityCreateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.FacilityUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
@@ -26,6 +27,7 @@ public class AdminFacilityService {
   private static final String BASE_URI = "/api/v1/facility";
 
   private final RestClient aiServerRestClient;
+  private final CrawlExecutionLogService crawlExecutionLogService;
 
   public List<FacilityView> listFacilities() {
     try {
@@ -97,19 +99,24 @@ public class AdminFacilityService {
 
   public CrawlResultView triggerFacilityImport() {
     try {
-      return aiServerRestClient.post()
+      CrawlResultView result = aiServerRestClient.post()
           .uri(BASE_URI + "/import")
           .retrieve()
           .body(CrawlResultView.class);
+      crawlExecutionLogService.record(CrawlJobType.FACILITY_IMPORT, result.success(), result.collectedCount(), result.message());
+      return result;
     } catch (RestClientResponseException e) {
       if (e.getStatusCode().value() == HttpStatus.CONFLICT.value()) {
         log.info("[AdminFacilityService] 이미 실행 중인 시설 임포트 작업");
+        crawlExecutionLogService.record(CrawlJobType.FACILITY_IMPORT, false, 0, "이미 실행 중입니다");
         return new CrawlResultView(false, 0, "이미 실행 중입니다");
       }
       log.warn("[AdminFacilityService] 시설 임포트 트리거 실패: {}", e.getMessage());
+      crawlExecutionLogService.record(CrawlJobType.FACILITY_IMPORT, false, 0, ErrorCode.AI_SERVER_UNAVAILABLE.getMessage());
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     } catch (RestClientException e) {
       log.warn("[AdminFacilityService] 시설 임포트 트리거 실패: {}", e.getMessage());
+      crawlExecutionLogService.record(CrawlJobType.FACILITY_IMPORT, false, 0, ErrorCode.AI_SERVER_UNAVAILABLE.getMessage());
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
   }

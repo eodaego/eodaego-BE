@@ -12,6 +12,16 @@
   <div class="drawer-content flex flex-col">
     <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
     <main class="p-8">
+  <div class="card bg-base-100 shadow-xl mb-4">
+    <div class="card-body">
+      <h2 class="card-title">AI 서버 상태</h2>
+      <div class="flex items-center gap-2">
+        <span class="badge" th:classappend="${aiHealth.status() == 'UP'} ? 'badge-success' : 'badge-error'"
+              th:text="${aiHealth.status()}"></span>
+        <span class="text-sm text-base-content/70" th:text="'마지막 확인: ' + ${aiHealth.checkedAt()}"></span>
+      </div>
+    </div>
+  </div>
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body">
       <h2 class="card-title">관리자 대시보드</h2>
