@@ -18,6 +18,7 @@
     <li class="menu-title mt-2">운영 관리</li>
     <li><a th:href="@{/admin/facility/amusement-rides}" th:classappend="${activePage == 'amusement-rides'} ? 'active' : ''">놀이기구 관리</a></li>
     <li><a th:href="@{/admin/crawling/schedules}" th:classappend="${activePage == 'crawling-schedules'} ? 'active' : ''">크롤링 스케줄</a></li>
+    <li><a th:href="@{/admin/crawling/history}" th:classappend="${activePage == 'crawling-history'} ? 'active' : ''">크롤링 실행 이력</a></li>
     <li class="menu-title mt-2">AI 설정</li>
     <li><a th:href="@{/admin/prompts}" th:classappend="${activePage == 'prompts'} ? 'active' : ''">프롬프트 템플릿 관리</a></li>
     <li><a th:href="@{/admin/recommendation/preference-mappings}" th:classappend="${activePage == 'preference-mappings'} ? 'active' : ''">취향 매핑 관리</a></li>
