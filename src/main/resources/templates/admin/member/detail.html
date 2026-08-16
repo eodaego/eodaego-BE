@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>회원 상세 - 어대고 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="min-h-screen bg-base-200">
+<div class="drawer lg:drawer-open">
+  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
+  <div class="drawer-content flex flex-col">
+    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
+    <main class="p-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">회원 상세</h2>
+        <a th:href="@{/admin/members}" class="btn btn-outline btn-sm">목록으로</a>
+      </div>
+      <div class="card bg-base-100 shadow mb-4">
+        <div class="card-body">
+          <h3 class="card-title text-base">회원 정보</h3>
+          <table class="table">
+            <tbody>
+            <tr>
+              <th class="w-40">닉네임</th>
+              <td th:text="${member.nickname()}"></td>
+            </tr>
+            <tr>
+              <th>이메일</th>
+              <td th:text="${member.email()}"></td>
+            </tr>
+            <tr>
+              <th>소셜타입</th>
+              <td th:text="${member.socialType()}"></td>
+            </tr>
+            <tr>
+              <th>기기타입</th>
+              <td th:text="${member.deviceType()}"></td>
+            </tr>
+            <tr>
+              <th>가입일</th>
+              <td th:text="${member.createdAt()}"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <h3 class="card-title text-base">약관/마케팅 동의 이력</h3>
+          <table class="table">
+            <thead>
+            <tr>
+              <th>항목</th>
+              <th>동의 여부</th>
+              <th>동의 일시</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>개인정보 처리방침</td>
+              <td th:text="${member.privacyPolicyAgreed()} ? '동의' : '미동의'"></td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>위치정보 이용약관</td>
+              <td th:text="${member.locationInfoAgreed()} ? '동의' : '미동의'"></td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>서비스 이용약관</td>
+              <td th:text="${member.termsOfServiceAgreed()} ? '동의' : '미동의'"></td>
+              <td th:text="${member.termsAgreedAt()} ?: '-'"></td>
+            </tr>
+            <tr>
+              <td>마케팅 정보 수신</td>
+              <td th:text="${member.marketingAgreed()} ? '동의' : '미동의'"></td>
+              <td th:text="${member.marketingAgreedAt()} ?: '-'"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='member-list')}"></div>
+</div>
+</body>
+</html>

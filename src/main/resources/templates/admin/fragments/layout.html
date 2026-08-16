@@ -8,6 +8,8 @@
       <a th:href="@{/admin/dashboard}" class="text-lg font-bold">어대GO 관리자</a>
     </li>
     <li><a th:href="@{/admin/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">대시보드</a></li>
+    <li class="menu-title mt-2">회원 관리</li>
+    <li><a th:href="@{/admin/members}" th:classappend="${activePage == 'member-list'} ? 'active' : ''">회원 목록</a></li>
     <li class="menu-title mt-2">공원 데이터</li>
     <li><a th:href="@{/admin/facility}" th:classappend="${activePage == 'facility'} ? 'active' : ''">시설 관리</a></li>
     <li><a th:href="@{/admin/facility/operating-hours}" th:classappend="${activePage == 'operating-hours'} ? 'active' : ''">운영시간 조회</a></li>
