@@ -4,6 +4,7 @@ import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
 import com.chuseok22.eodaegoserver.domain.course.CompanionType;
+import com.chuseok22.eodaegoserver.domain.course.CourseRecommendationFailureType;
 import com.chuseok22.eodaegoserver.domain.course.EntranceGate;
 import com.chuseok22.eodaegoserver.domain.course.InterestType;
 import com.chuseok22.eodaegoserver.domain.course.dto.external.AiRecommendedCourse;
@@ -44,6 +45,7 @@ public class CourseRecommendationService {
   private final CatalogItemRepository catalogItemRepository;
   private final CourseAiClient courseAiClient;
   private final CoursePlaceCatalogResolver catalogResolver;
+  private final CourseRecommendationFailureLogService courseRecommendationFailureLogService;
 
   @Transactional
   public List<CourseResponse> recommendCourses(CourseRecommendationRequest request, UUID memberId) {
@@ -68,6 +70,9 @@ public class CourseRecommendationService {
 
     if (savedCourses.isEmpty()) {
       log.warn("방문 가능한 장소를 가진 코스가 없습니다. AI 추천 코스 수={}", aiResponse.courses().size());
+      courseRecommendationFailureLogService.record(
+          CourseRecommendationFailureType.NO_VISITABLE_COURSE,
+          "방문 가능한 장소를 가진 코스가 없습니다. AI 추천 코스 수=" + aiResponse.courses().size());
       throw new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
     }
 
