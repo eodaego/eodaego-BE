@@ -1,8 +1,10 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
+import com.chuseok22.eodaegoserver.domain.admin.CrawlJobType;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CatalogItemEditView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
+import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class AdminCatalogItemService {
 
   private final CatalogItemService catalogItemService;
+  private final CrawlExecutionLogService crawlExecutionLogService;
 
   public List<CatalogItemResponse> listItems(String category) {
     CatalogCategory categoryFilter = parseCategory(category);
@@ -64,10 +67,17 @@ public class AdminCatalogItemService {
   }
 
   public CrawlResultView triggerSync() {
-    CatalogSyncResult result = catalogItemService.syncFromAiServer();
-    int totalCount = result.created().size() + result.updated().size();
-    log.info("관리자 도감 동기화 트리거 완료. 생성 {}건, 갱신 {}건", result.created().size(), result.updated().size());
-    return new CrawlResultView(true, totalCount, "동기화 완료");
+    try {
+      CatalogSyncResult result = catalogItemService.syncFromAiServer();
+      int totalCount = result.created().size() + result.updated().size();
+      log.info("관리자 도감 동기화 트리거 완료. 생성 {}건, 갱신 {}건", result.created().size(), result.updated().size());
+      crawlExecutionLogService.record(CrawlJobType.CATALOG_SYNC, true, totalCount, "동기화 완료");
+      return new CrawlResultView(true, totalCount, "동기화 완료");
+    } catch (CustomException e) {
+      log.warn("관리자 도감 동기화 트리거 실패: {}", e.getMessage());
+      crawlExecutionLogService.record(CrawlJobType.CATALOG_SYNC, false, 0, e.getErrorCode().getMessage());
+      throw e;
+    }
   }
 
   private CatalogItemUpdateRequest normalize(CatalogItemUpdateRequest request) {
