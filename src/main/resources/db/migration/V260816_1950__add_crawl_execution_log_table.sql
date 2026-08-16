@@ -7,3 +7,6 @@ CREATE TABLE crawl_execution_log (
     created_at       TIMESTAMP,
     updated_at       TIMESTAMP
 );
+
+CREATE INDEX idx_crawl_execution_log_created_at
+    ON crawl_execution_log (created_at DESC);
