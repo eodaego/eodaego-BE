@@ -36,10 +36,6 @@ public class QuizAnswerStore {
     return Optional.of(new QuizAnswer(UUID.fromString(parts[0]), UUID.fromString(parts[1])));
   }
 
-  public void delete(UUID quizId) {
-    redisTemplate.delete(key(quizId));
-  }
-
   private String key(UUID quizId) {
     return KEY_PREFIX + quizId;
   }

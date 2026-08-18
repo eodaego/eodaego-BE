@@ -3,11 +3,8 @@ package com.chuseok22.eodaegoserver.domain.quiz.service;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
-import com.chuseok22.eodaegoserver.domain.catalog.entity.MemberCatalogCollection;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.MemberCatalogCollectionRepository;
-import com.chuseok22.eodaegoserver.domain.member.entity.Member;
-import com.chuseok22.eodaegoserver.domain.member.repository.MemberRepository;
 import com.chuseok22.eodaegoserver.domain.quiz.dto.external.AiPhotoRecognitionResponse;
 import com.chuseok22.eodaegoserver.domain.quiz.dto.request.QuizAnswerRequest;
 import com.chuseok22.eodaegoserver.domain.quiz.dto.response.QuizAnswerResponse;
@@ -40,7 +37,6 @@ public class QuizService {
   private final QuizAnswerStore quizAnswerStore;
   private final CatalogItemRepository catalogItemRepository;
   private final MemberCatalogCollectionRepository memberCatalogCollectionRepository;
-  private final MemberRepository memberRepository;
   private final Clock clock;
 
 
@@ -78,25 +74,16 @@ public class QuizService {
       return QuizAnswerResponse.wrong();
     }
 
-    boolean alreadyCollected = memberCatalogCollectionRepository
-        .findByMemberIdAndCatalogItemId(memberId, correctCatalogItemId)
-        .isPresent();
-    if (!alreadyCollected) {
-      CatalogItem catalogItem = catalogItemRepository.findById(correctCatalogItemId)
-          .orElseThrow(() -> new CustomException(ErrorCode.CATALOG_ITEM_NOT_FOUND));
-      Member member = memberRepository.findById(memberId)
-          .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-      memberCatalogCollectionRepository.save(MemberCatalogCollection.builder()
-          .member(member)
-          .catalogItem(catalogItem)
-          .collectedAt(LocalDateTime.now(clock))
-          .build());
-      log.info("퀴즈 정답. 도감 획득 완료. memberId={}, catalogItemId={}", memberId, correctCatalogItemId);
-    } else {
+    // 정답 기록은 여기서 지우지 않고 TTL로 만료시킨다. 즉시 지우면 응답이 유실된 뒤의 재시도가
+    // QUIZ_NOT_FOUND(404)를 받는다. 중복 수집은 insertIfAbsent가 DB 유니크 제약으로 막는다.
+    int inserted = memberCatalogCollectionRepository
+        .insertIfAbsent(memberId, correctCatalogItemId, LocalDateTime.now(clock));
+    if (inserted == 0) {
       log.info("퀴즈 정답. 이미 수집한 항목이라 획득 스킵. memberId={}, catalogItemId={}", memberId, correctCatalogItemId);
+    } else {
+      log.info("퀴즈 정답. 도감 획득 완료. memberId={}, catalogItemId={}", memberId, correctCatalogItemId);
     }
 
-    quizAnswerStore.delete(quizId);
     return QuizAnswerResponse.correct(correctCatalogItemId);
   }
 

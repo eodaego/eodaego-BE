@@ -68,6 +68,12 @@ public interface QuizControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "퀴즈 정답 제출 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/39"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-16",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "같은 quizId로 정답을 여러 번 제출해도 항상 같은 200 응답을 반환하도록 변경(멱등). 기존에는 더블탭 시 한 요청이 409로 실패하고, 응답이 유실된 뒤 재시도하면 404 QUIZ_NOT_FOUND가 났다. 정답 처리 경로에서 CATALOG_ITEM_NOT_FOUND / MEMBER_NOT_FOUND를 더 이상 반환하지 않으며, 해당 상황은 409 DATA_INTEGRITY_VIOLATION으로 내려간다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/39"
       )
   })
   @Operation(
@@ -77,6 +83,8 @@ public interface QuizControllerDocs {
 
           - 오답도 에러가 아닌 200 정상 응답으로 내려간다(correct=false). 같은 quizId로 다른 선택지를 다시 제출할 수 있다(재시도 가능).
           - 정답이면 해당 도감 항목을 수집 처리하고(이미 수집한 항목이면 획득은 스킵) correct=true와 collectedCatalogItemId를 반환한다.
+          - 정답 제출은 멱등하다. 더블탭으로 동시에 보내든, 응답이 유실돼 재시도하든 같은 200 응답을 받으며 수집은 1회만 기록된다.
+          - 정답 제출 후에도 quizId는 만료(30분) 전까지 유효하다. 오답과 동일하게 재제출이 가능하며, 중복 수집은 발생하지 않는다.
           - 만료되었거나 존재하지 않는 quizId이거나, 퀴즈를 생성한 회원 본인이 아니면 404(QUIZ_NOT_FOUND)를 반환한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
@@ -88,11 +96,9 @@ public interface QuizControllerDocs {
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = """
-          다음 중 하나:
-          - QUIZ_NOT_FOUND: 만료/미존재 quizId이거나 퀴즈를 생성한 회원 본인이 아님
-          - CATALOG_ITEM_NOT_FOUND: 정답 항목이 도감에서 삭제된 경우
-          - MEMBER_NOT_FOUND: 존재하지 않는 회원""",
+      @ApiResponse(responseCode = "404", description = "만료/미존재 quizId이거나 퀴즈를 생성한 회원 본인이 아님. errorCode: QUIZ_NOT_FOUND",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "409", description = "정답 처리 중 대상 도감 항목이 삭제되었거나 회원이 존재하지 않아 수집 기록을 남길 수 없음. errorCode: DATA_INTEGRITY_VIOLATION",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   ResponseEntity<QuizAnswerResponse> submitAnswer(UUID memberId, UUID quizId, QuizAnswerRequest request);
