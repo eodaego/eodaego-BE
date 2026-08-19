@@ -26,6 +26,12 @@ public interface CourseFavoriteControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "코스 즐겨찾기 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/29"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-19",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "동시 요청(더블탭)에도 멱등이 보장되도록 등록 처리를 원자적 INSERT로 교체. 경합 시 409가 나가던 문제 제거. 회원이 존재하지 않는 경우의 응답이 404 MEMBER_NOT_FOUND에서 409 DATA_INTEGRITY_VIOLATION으로 변경",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/77"
       )
   })
   @Operation(
@@ -35,6 +41,9 @@ public interface CourseFavoriteControllerDocs {
 
           - 몇 번을 호출해도 결과가 같아야 하는 액션이라(좋아요/북마크류와 동일한 성격),
             이미 즐겨찾기된 코스를 다시 등록 요청해도 에러 없이 최초 등록 시점의 정보를 그대로 반환한다.
+          - 순차 재호출뿐 아니라 **동시 요청(별표 더블탭)에도 안전하다.** 같은 코스에 대한 등록 요청이 동시에
+            여러 건 도착해도 모두 200으로 응답하며, 모든 응답의 id와 favoritedAt은 동일한 값이다.
+            즐겨찾기는 1건만 기록된다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
@@ -43,10 +52,15 @@ public interface CourseFavoriteControllerDocs {
       @ApiResponse(responseCode = "200", description = "등록 성공(이미 등록되어 있었다면 기존 즐겨찾기 정보 반환)"),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = """
-          존재하지 않는 코스 또는 회원.
-          - COURSE_NOT_FOUND: 존재하지 않는 코스
-          - MEMBER_NOT_FOUND: 존재하지 않는 회원
+      @ApiResponse(responseCode = "404", description = "존재하지 않는 코스. errorCode: COURSE_NOT_FOUND",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "409", description = """
+          즐겨찾기 기록을 남길 수 없음. errorCode: DATA_INTEGRITY_VIOLATION
+          - 회원 또는 코스가 실제로는 존재하지 않아 외래키 제약을 만족하지 못하는 경우 발생한다.
+          - 대부분은 탈퇴한 회원의 accessToken이 만료 전에 사용된 경우다.
+            탈퇴 시 회원 정보는 삭제되지만 이미 발급된 accessToken은 만료 전까지 유효하기 때문이다.
+            드물게 존재 확인 직후 코스가 삭제된 경우에도 발생할 수 있다.
+          - 재시도해도 동일한 응답이면 재로그인을 유도한다.
           """,
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
@@ -64,6 +78,12 @@ public interface CourseFavoriteControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "삭제를 멱등(idempotent) 처리로 변경. 즐겨찾기되어 있지 않은 코스를 삭제 요청해도 404 대신 204로 성공 응답",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/29"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-19",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "동시 요청(더블탭)에도 멱등이 보장되도록 삭제 처리를 조건부 삭제로 교체. 경합 시 500이 나가던 문제 제거",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/77"
       )
   })
   @Operation(
@@ -73,7 +93,9 @@ public interface CourseFavoriteControllerDocs {
 
           - 멱등(idempotent) 동작이다. 이미 즐겨찾기되어 있지 않은(또는 존재하지 않는) 코스를 삭제 요청해도
             에러 없이 204로 응답한다. 클라이언트 의도가 "이 코스를 즐겨찾기에서 제외"이므로 이미 제외된 상태도 성공으로 본다.
-            등록(addFavorite)이 멱등인 것과 대칭이며, 더블클릭/재시도 시에도 안전하다.
+            등록(addFavorite)이 멱등인 것과 대칭이다.
+          - 순차 재호출뿐 아니라 **동시 요청(별표 더블탭)에도 안전하다.** 같은 코스에 대한 삭제 요청이 동시에
+            여러 건 도착해도 모두 204로 응답한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
       security = @SecurityRequirement(name = "Bearer Token")
