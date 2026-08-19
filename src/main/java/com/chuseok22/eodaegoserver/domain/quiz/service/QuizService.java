@@ -13,6 +13,7 @@ import com.chuseok22.eodaegoserver.domain.quiz.dto.response.QuizResponse;
 import com.chuseok22.eodaegoserver.domain.quiz.service.QuizAnswerStore.QuizAnswer;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import com.chuseok22.eodaegoserver.global.properties.QuizProperties;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,10 +38,13 @@ public class QuizService {
   private final QuizAnswerStore quizAnswerStore;
   private final CatalogItemRepository catalogItemRepository;
   private final MemberCatalogCollectionRepository memberCatalogCollectionRepository;
+  private final QuizProperties quizProperties;
   private final Clock clock;
 
 
   public QuizResponse generateQuiz(UUID memberId, CatalogCategory catalogType, MultipartFile image) {
+    validateImage(memberId, image);
+
     AiPhotoRecognitionResponse recognition = quizAiClient.identify(catalogType, image);
     if (recognition.catalogId() == null) {
       log.warn("사진 인식 실패. memberId={}, catalogType={}", memberId, catalogType);
@@ -87,13 +91,33 @@ public class QuizService {
     return QuizAnswerResponse.correct(correctCatalogItemId);
   }
 
+  private void validateImage(UUID memberId, MultipartFile image) {
+    if (image.isEmpty()) {
+      log.warn("퀴즈 생성 실패. 이미지가 비어 있음. memberId={}", memberId);
+      throw new CustomException(ErrorCode.INVALID_REQUEST);
+    }
+
+    String contentType = image.getContentType();
+    if (contentType == null || !contentType.startsWith("image/")) {
+      log.warn("퀴즈 생성 실패. 이미지 파일이 아님. memberId={}, contentType={}, size={}",
+          memberId, contentType, image.getSize());
+      throw new CustomException(ErrorCode.INVALID_IMAGE_FORMAT);
+    }
+
+    long maxImageSizeBytes = quizProperties.maxImageSize().toBytes();
+    if (image.getSize() > maxImageSizeBytes) {
+      log.warn("퀴즈 생성 실패. 이미지 크기 초과. memberId={}, size={}, limit={}",
+          memberId, image.getSize(), maxImageSizeBytes);
+      throw new CustomException(ErrorCode.IMAGE_TOO_LARGE);
+    }
+  }
 
   private CatalogItem findAvailableItem(CatalogCategory catalogType, AiPhotoRecognitionResponse recognition) {
     Long catalogId = recognition.catalogId();
 
     Optional<CatalogItem> found = catalogType == CatalogCategory.PLACE
         ? catalogItemRepository.findByCategoryAndStatusAndFacility_AiFacilityId(
-            catalogType, CatalogItemStatus.AVAILABLE, catalogId)
+        catalogType, CatalogItemStatus.AVAILABLE, catalogId)
         : catalogItemRepository.findByCategoryAndStatusAndSource_ExternalId(
             catalogType, CatalogItemStatus.AVAILABLE, catalogId);
 

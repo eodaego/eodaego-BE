@@ -34,6 +34,12 @@ public interface QuizControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "수집 가능 상태(AVAILABLE)가 아닌 항목은 퀴즈로 출제되지 않도록 변경. 관리자가 SUSPENDED/RETIRED로 내려둔 항목이 퀴즈를 통해 수집되던 문제 수정",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/39"
+      ),
+      @ApiChangeLog(
+          date = "2026-08-19",
+          author = ChangeLogAuthor.KIM_JAEHYEON,
+          description = "image 검증 추가. 비어 있으면 400(INVALID_REQUEST), Content-Type이 image/*가 아니면 415(INVALID_IMAGE_FORMAT), 10MB를 초과하면 413(IMAGE_TOO_LARGE)을 반환한다. 기존에는 이 경우들이 모두 AI 서버에서 거부돼 503(AI_SERVER_UNAVAILABLE)으로 내려가 원인을 구분할 수 없었다",
+          issueUrl = "https://github.com/eodaego/eodaego-BE/issues/39"
       )
   })
   @Operation(
@@ -46,6 +52,7 @@ public interface QuizControllerDocs {
           - 정답 정보는 응답에 포함되지 않는다(서버가 보관). 응답의 quizId를 정답 제출 API에 그대로 전달한다.
           - 출제 대상은 status가 AVAILABLE인 항목뿐이다. 관리자가 SUSPENDED(임시 중단)나 RETIRED(운영 종료)로 내려둔 항목은
             사진 인식에 성공하더라도 퀴즈가 생성되지 않으며, 따라서 퀴즈로 수집할 수도 없다.
+          - image는 비어 있지 않아야 하고, Content-Type이 image/*여야 하며, 크기가 10MB 이하여야 한다. 위반 시 AI 서버를 호출하지 않고 400/415/413으로 거절한다.
           - 사진을 인식하지 못했거나, 인식된 대상이 도감에 없거나, 수집 가능 상태가 아니면 422(RECOGNITION_FAILED)를 반환한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
           """,
@@ -53,7 +60,13 @@ public interface QuizControllerDocs {
   )
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "퀴즈 생성 성공"),
+      @ApiResponse(responseCode = "400", description = "image가 비어 있음. errorCode: INVALID_REQUEST",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "413", description = "image 크기가 10MB를 초과함. errorCode: IMAGE_TOO_LARGE",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "415", description = "image의 Content-Type이 image/*가 아님. errorCode: INVALID_IMAGE_FORMAT",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "422", description = "사진을 인식하지 못했거나, 인식된 대상이 도감에 없거나, 수집 가능 상태(AVAILABLE)가 아님. errorCode: RECOGNITION_FAILED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),

@@ -36,6 +36,7 @@ chuseok22:
 
 quiz:
   answer-ttl-millis: 1800000 # 생성된 퀴즈 정답의 Redis 보관 시간(30분)
+  max-image-size: 10MB
 
 springdoc:
   servers:
