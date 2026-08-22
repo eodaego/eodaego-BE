@@ -119,18 +119,6 @@ public class AdminPromptService {
     }
   }
 
-  public List<PromptTemplateProviderView> listProviders(Integer promptId) {
-    try {
-      return aiServerRestClient.get()
-          .uri(BASE_URI + "/{promptId}/providers", promptId)
-          .retrieve()
-          .body(new ParameterizedTypeReference<List<PromptTemplateProviderView>>() {});
-    } catch (RestClientException e) {
-      log.warn("[AdminPromptService] provider 목록 조회 실패: promptId={}, message={}", promptId, e.getMessage());
-      throw toCustomException(e);
-    }
-  }
-
   public PromptTemplateProviderView createProvider(Integer promptId, PromptTemplateProviderCreateRequest request) {
     try {
       return aiServerRestClient.post()
@@ -147,11 +135,20 @@ public class AdminPromptService {
 
   public PromptTemplateProviderView updateProvider(
       Integer promptId, Integer providerId, PromptTemplateProviderUpdateRequest request) {
+    String provider = request.provider() != null && request.provider().isBlank()
+        ? null : request.provider();
+    String model = request.model() != null && request.model().isBlank()
+        ? null : request.model();
+    if (provider != null && !provider.matches("^(SUH_AIDER|GEMINI)$")) {
+      throw new CustomException(ErrorCode.INVALID_REQUEST);
+    }
+    PromptTemplateProviderUpdateRequest normalizedRequest = new PromptTemplateProviderUpdateRequest(
+        provider, model, request.priority(), request.enabled());
     try {
       return aiServerRestClient.patch()
           .uri(BASE_URI + "/{promptId}/providers/{providerId}", promptId, providerId)
           .contentType(MediaType.APPLICATION_JSON)
-          .body(request)
+          .body(normalizedRequest)
           .retrieve()
           .body(PromptTemplateProviderView.class);
     } catch (RestClientException e) {
