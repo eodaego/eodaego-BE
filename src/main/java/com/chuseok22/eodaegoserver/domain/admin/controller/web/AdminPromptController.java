@@ -34,7 +34,7 @@ public class AdminPromptController {
   @GetMapping("/admin/prompts/new")
   public String newForm(Model model) {
     model.addAttribute("mode", "create");
-    model.addAttribute("request", new PromptTemplateCreateRequest("", "recommendation", "", true));
+    model.addAttribute("request", new PromptTemplateCreateRequest("", "recommendation", "", false));
     model.addAttribute("purposes", PURPOSES);
     return "admin/prompts/form";
   }

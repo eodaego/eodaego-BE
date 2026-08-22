@@ -66,6 +66,8 @@ public enum ErrorCode {
 
   PROMPT_TEMPLATE_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 프롬프트 템플릿 이름입니다."),
 
+  PROMPT_TEMPLATE_ACTIVATION_REQUIRES_PROVIDER(HttpStatus.CONFLICT, "활성화하려면 최소 하나 이상의 LLM provider가 등록되어 있어야 합니다."),
+
   FACILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 시설입니다."),
 
   FACILITY_CODE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 시설 코드입니다."),

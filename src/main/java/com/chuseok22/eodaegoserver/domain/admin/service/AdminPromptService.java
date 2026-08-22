@@ -55,11 +55,15 @@ public class AdminPromptService {
     if (nameExists) {
       throw new CustomException(ErrorCode.PROMPT_TEMPLATE_NAME_ALREADY_EXISTS);
     }
+    // 생성 시점에는 provider가 하나도 없으므로, 요청 값과 무관하게 항상 비활성으로 생성한다.
+    // 그렇지 않으면 provider 0개인 채로 활성화된 템플릿이 만들어져 해당 purpose의 API가 즉시 503을 반환한다.
+    PromptTemplateCreateRequest inactiveRequest = new PromptTemplateCreateRequest(
+        request.name(), request.purpose(), request.templateText(), false);
     try {
       return aiServerRestClient.post()
           .uri(BASE_URI)
           .contentType(MediaType.APPLICATION_JSON)
-          .body(request)
+          .body(inactiveRequest)
           .retrieve()
           .body(PromptTemplateView.class);
     } catch (RestClientException e) {
@@ -69,6 +73,10 @@ public class AdminPromptService {
   }
 
   public PromptTemplateView update(Integer promptId, PromptTemplateUpdateRequest request) {
+    // provider가 하나도 등록/활성화되지 않은 템플릿이 활성화되면 해당 purpose의 API가 즉시 503을 반환하므로 사전에 차단한다.
+    if (Boolean.TRUE.equals(request.active()) && !hasEnabledProvider(promptId)) {
+      throw new CustomException(ErrorCode.PROMPT_TEMPLATE_ACTIVATION_REQUIRES_PROVIDER);
+    }
     try {
       return aiServerRestClient.patch()
           .uri(BASE_URI + "/{promptId}", promptId)
@@ -92,6 +100,10 @@ public class AdminPromptService {
       log.warn("[AdminPromptService] 프롬프트 템플릿 삭제 실패: promptId={}, message={}", promptId, e.getMessage());
       throw toCustomException(e);
     }
+  }
+
+  private boolean hasEnabledProvider(Integer promptId) {
+    return findById(promptId).providers().stream().anyMatch(PromptTemplateProviderView::enabled);
   }
 
   public PromptTemplateView activate(Integer promptId) {

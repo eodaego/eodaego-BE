@@ -33,11 +33,14 @@
       <textarea th:field="*{templateText}" class="textarea textarea-bordered h-48"></textarea>
       <span class="text-error text-sm" th:if="${#fields.hasErrors('templateText')}" th:errors="*{templateText}"></span>
     </div>
-    <div class="form-control mb-4">
+    <div th:if="${mode == 'edit'}" class="form-control mb-4">
       <label class="label cursor-pointer justify-start gap-2">
         <input type="checkbox" th:field="*{active}" class="checkbox"/>
         <span class="label-text">활성화</span>
       </label>
+    </div>
+    <div th:if="${mode == 'create'}" class="text-sm text-warning mb-4">
+      새 프롬프트는 항상 비활성 상태로 생성됩니다. Provider를 최소 1개 이상 등록한 후 활성화할 수 있습니다.
     </div>
     <button type="submit" class="btn btn-primary">저장</button>
   </form>
