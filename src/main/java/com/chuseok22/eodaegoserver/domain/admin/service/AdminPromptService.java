@@ -1,9 +1,12 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.AiModelListResponseView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.AiModelSummaryView;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.PromptTemplateProviderView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.PromptTemplateView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
@@ -94,7 +97,7 @@ public class AdminPromptService {
   public PromptTemplateView activate(Integer promptId) {
     PromptTemplateView current = findById(promptId);
     PromptTemplateUpdateRequest request = new PromptTemplateUpdateRequest(
-        current.name(), current.model(), current.purpose(), current.templateText(), true);
+        current.name(), current.purpose(), current.templateText(), true);
     return update(promptId, request);
   }
 
@@ -116,10 +119,77 @@ public class AdminPromptService {
     }
   }
 
+  public List<PromptTemplateProviderView> listProviders(Integer promptId) {
+    try {
+      return aiServerRestClient.get()
+          .uri(BASE_URI + "/{promptId}/providers", promptId)
+          .retrieve()
+          .body(new ParameterizedTypeReference<List<PromptTemplateProviderView>>() {});
+    } catch (RestClientException e) {
+      log.warn("[AdminPromptService] provider 목록 조회 실패: promptId={}, message={}", promptId, e.getMessage());
+      throw toCustomException(e);
+    }
+  }
+
+  public PromptTemplateProviderView createProvider(Integer promptId, PromptTemplateProviderCreateRequest request) {
+    try {
+      return aiServerRestClient.post()
+          .uri(BASE_URI + "/{promptId}/providers", promptId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(request)
+          .retrieve()
+          .body(PromptTemplateProviderView.class);
+    } catch (RestClientException e) {
+      log.warn("[AdminPromptService] provider 생성 실패: promptId={}, message={}", promptId, e.getMessage());
+      throw toCustomException(e);
+    }
+  }
+
+  public PromptTemplateProviderView updateProvider(
+      Integer promptId, Integer providerId, PromptTemplateProviderUpdateRequest request) {
+    try {
+      return aiServerRestClient.patch()
+          .uri(BASE_URI + "/{promptId}/providers/{providerId}", promptId, providerId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(request)
+          .retrieve()
+          .body(PromptTemplateProviderView.class);
+    } catch (RestClientException e) {
+      log.warn("[AdminPromptService] provider 수정 실패: promptId={}, providerId={}, message={}",
+          promptId, providerId, e.getMessage());
+      throw toProviderCustomException(e);
+    }
+  }
+
+  public void deleteProvider(Integer promptId, Integer providerId) {
+    try {
+      aiServerRestClient.delete()
+          .uri(BASE_URI + "/{promptId}/providers/{providerId}", promptId, providerId)
+          .retrieve()
+          .toBodilessEntity();
+    } catch (RestClientException e) {
+      log.warn("[AdminPromptService] provider 삭제 실패: promptId={}, providerId={}, message={}",
+          promptId, providerId, e.getMessage());
+      throw toProviderCustomException(e);
+    }
+  }
+
   private CustomException toCustomException(RestClientException e) {
     if (e instanceof RestClientResponseException responseException) {
       if (responseException.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
         return new CustomException(ErrorCode.PROMPT_TEMPLATE_NOT_FOUND);
+      }
+      if (responseException.getStatusCode().is4xxClientError()) {
+        return new CustomException(ErrorCode.INVALID_REQUEST);
+      }
+    }
+    return new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+  }
+
+  private CustomException toProviderCustomException(RestClientException e) {
+    if (e instanceof RestClientResponseException responseException) {
+      if (responseException.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
+        return new CustomException(ErrorCode.PROMPT_TEMPLATE_PROVIDER_NOT_FOUND);
       }
       if (responseException.getStatusCode().is4xxClientError()) {
         return new CustomException(ErrorCode.INVALID_REQUEST);
