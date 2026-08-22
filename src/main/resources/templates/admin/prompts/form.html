@@ -22,13 +22,6 @@
       <span class="text-error text-sm" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
     </div>
     <div class="form-control mb-3">
-      <label class="label"><span class="label-text">모델</span></label>
-      <select th:field="*{model}" class="select select-bordered">
-        <option th:each="aiModel : ${models}" th:value="${aiModel}" th:text="${aiModel}"></option>
-      </select>
-      <span class="text-error text-sm" th:if="${#fields.hasErrors('model')}" th:errors="*{model}"></span>
-    </div>
-    <div class="form-control mb-3">
       <label class="label"><span class="label-text">용도</span></label>
       <select th:field="*{purpose}" class="select select-bordered">
         <option th:each="purposeOption : ${purposes}" th:value="${purposeOption}" th:text="${purposeOption}"></option>
@@ -40,14 +33,84 @@
       <textarea th:field="*{templateText}" class="textarea textarea-bordered h-48"></textarea>
       <span class="text-error text-sm" th:if="${#fields.hasErrors('templateText')}" th:errors="*{templateText}"></span>
     </div>
-    <div class="form-control mb-4">
+    <div th:if="${mode == 'edit'}" class="form-control mb-4">
       <label class="label cursor-pointer justify-start gap-2">
         <input type="checkbox" th:field="*{active}" class="checkbox"/>
         <span class="label-text">활성화</span>
       </label>
     </div>
+    <div th:if="${mode == 'create'}" class="text-sm text-warning mb-4">
+      새 프롬프트는 항상 비활성 상태로 생성됩니다. Provider를 최소 1개 이상 등록한 후 활성화할 수 있습니다.
+    </div>
     <button type="submit" class="btn btn-primary">저장</button>
   </form>
+
+  <div th:if="${mode == 'edit'}" class="card bg-base-100 shadow-xl p-6 max-w-2xl mt-6">
+    <h3 class="font-bold mb-3">LLM Provider</h3>
+    <div th:if="${#lists.isEmpty(providers)}" class="text-sm text-warning mb-3">
+      등록된 provider가 없습니다 — 이 상태로는 해당 purpose의 API가 503을 반환합니다.
+    </div>
+    <div th:each="provider : ${providers}" class="mb-2">
+      <form th:action="@{'/admin/prompts/' + ${promptId} + '/providers/' + ${provider.id()}}" method="post"
+            class="flex gap-2 items-end flex-wrap p-2 bg-base-200 rounded">
+        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="form-control">
+          <label class="label"><span class="label-text text-xs">Provider</span></label>
+          <select name="provider" class="select select-bordered select-xs">
+            <option value="SUH_AIDER" th:selected="${provider.provider() == 'SUH_AIDER'}">SUH_AIDER</option>
+            <option value="GEMINI" th:selected="${provider.provider() == 'GEMINI'}">GEMINI</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text text-xs">모델</span></label>
+          <input type="text" name="model" th:value="${provider.model()}" class="input input-bordered input-xs w-32"/>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text text-xs">우선순위</span></label>
+          <input type="number" name="priority" th:value="${provider.priority()}" class="input input-bordered input-xs w-16"/>
+        </div>
+        <div class="form-control">
+          <label class="label cursor-pointer gap-1">
+            <input type="hidden" name="_enabled" value="on"/>
+            <input type="checkbox" name="enabled" th:checked="${provider.enabled()}" class="checkbox checkbox-xs"/>
+            <span class="label-text text-xs">활성</span>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-outline btn-xs">저장</button>
+        <button type="submit"
+                th:formaction="@{'/admin/prompts/' + ${promptId} + '/providers/' + ${provider.id()} + '/delete'}"
+                class="btn btn-outline btn-error btn-xs">삭제</button>
+      </form>
+    </div>
+
+    <h4 class="text-sm font-semibold mb-2 mt-4">Provider 추가</h4>
+    <form th:action="@{'/admin/prompts/' + ${promptId} + '/providers'}" th:object="${newProviderRequest}"
+          method="post" class="flex gap-2 items-end flex-wrap">
+      <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <div class="form-control">
+        <label class="label"><span class="label-text text-xs">Provider</span></label>
+        <select th:field="*{provider}" class="select select-bordered select-sm">
+          <option value="SUH_AIDER">SUH_AIDER</option>
+          <option value="GEMINI">GEMINI</option>
+        </select>
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text text-xs">모델</span></label>
+        <input type="text" th:field="*{model}" class="input input-bordered input-sm w-32"/>
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text text-xs">우선순위</span></label>
+        <input type="number" th:field="*{priority}" class="input input-bordered input-sm w-16"/>
+      </div>
+      <div class="form-control">
+        <label class="label cursor-pointer gap-1">
+          <input type="checkbox" th:field="*{enabled}" class="checkbox checkbox-sm"/>
+          <span class="label-text text-xs">활성</span>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">추가</button>
+    </form>
+  </div>
     </main>
   </div>
   <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='prompts')}"></div>

@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Pattern;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record PromptTemplateCreateRequest(
     @NotBlank(message = "템플릿 이름은 필수입니다.") String name,
-    @NotBlank(message = "모델은 필수입니다.") String model,
     @NotBlank(message = "용도는 필수입니다.")
     @Pattern(regexp = "^(chat|recommendation|photo_recognition)$",
         message = "용도는 chat, recommendation, photo_recognition 중 하나여야 합니다.")

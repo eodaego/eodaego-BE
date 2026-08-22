@@ -1,9 +1,12 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.AiModelListResponseView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.AiModelSummaryView;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.PromptTemplateProviderView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.PromptTemplateView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
@@ -52,11 +55,15 @@ public class AdminPromptService {
     if (nameExists) {
       throw new CustomException(ErrorCode.PROMPT_TEMPLATE_NAME_ALREADY_EXISTS);
     }
+    // 생성 시점에는 provider가 하나도 없으므로, 요청 값과 무관하게 항상 비활성으로 생성한다.
+    // 그렇지 않으면 provider 0개인 채로 활성화된 템플릿이 만들어져 해당 purpose의 API가 즉시 503을 반환한다.
+    PromptTemplateCreateRequest inactiveRequest = new PromptTemplateCreateRequest(
+        request.name(), request.purpose(), request.templateText(), false);
     try {
       return aiServerRestClient.post()
           .uri(BASE_URI)
           .contentType(MediaType.APPLICATION_JSON)
-          .body(request)
+          .body(inactiveRequest)
           .retrieve()
           .body(PromptTemplateView.class);
     } catch (RestClientException e) {
@@ -66,6 +73,10 @@ public class AdminPromptService {
   }
 
   public PromptTemplateView update(Integer promptId, PromptTemplateUpdateRequest request) {
+    // provider가 하나도 등록/활성화되지 않은 템플릿이 활성화되면 해당 purpose의 API가 즉시 503을 반환하므로 사전에 차단한다.
+    if (Boolean.TRUE.equals(request.active()) && !hasEnabledProvider(promptId)) {
+      throw new CustomException(ErrorCode.PROMPT_TEMPLATE_ACTIVATION_REQUIRES_PROVIDER);
+    }
     try {
       return aiServerRestClient.patch()
           .uri(BASE_URI + "/{promptId}", promptId)
@@ -91,10 +102,14 @@ public class AdminPromptService {
     }
   }
 
+  private boolean hasEnabledProvider(Integer promptId) {
+    return findById(promptId).providers().stream().anyMatch(PromptTemplateProviderView::enabled);
+  }
+
   public PromptTemplateView activate(Integer promptId) {
     PromptTemplateView current = findById(promptId);
     PromptTemplateUpdateRequest request = new PromptTemplateUpdateRequest(
-        current.name(), current.model(), current.purpose(), current.templateText(), true);
+        current.name(), current.purpose(), current.templateText(), true);
     return update(promptId, request);
   }
 
@@ -116,10 +131,74 @@ public class AdminPromptService {
     }
   }
 
+  public PromptTemplateProviderView createProvider(Integer promptId, PromptTemplateProviderCreateRequest request) {
+    try {
+      return aiServerRestClient.post()
+          .uri(BASE_URI + "/{promptId}/providers", promptId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(request)
+          .retrieve()
+          .body(PromptTemplateProviderView.class);
+    } catch (RestClientException e) {
+      log.warn("[AdminPromptService] provider 생성 실패: promptId={}, message={}", promptId, e.getMessage());
+      throw toCustomException(e);
+    }
+  }
+
+  public PromptTemplateProviderView updateProvider(
+      Integer promptId, Integer providerId, PromptTemplateProviderUpdateRequest request) {
+    String provider = request.provider() != null && request.provider().isBlank()
+        ? null : request.provider();
+    String model = request.model() != null && request.model().isBlank()
+        ? null : request.model();
+    if (provider != null && !provider.matches("^(SUH_AIDER|GEMINI)$")) {
+      throw new CustomException(ErrorCode.INVALID_REQUEST);
+    }
+    PromptTemplateProviderUpdateRequest normalizedRequest = new PromptTemplateProviderUpdateRequest(
+        provider, model, request.priority(), request.enabled());
+    try {
+      return aiServerRestClient.patch()
+          .uri(BASE_URI + "/{promptId}/providers/{providerId}", promptId, providerId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(normalizedRequest)
+          .retrieve()
+          .body(PromptTemplateProviderView.class);
+    } catch (RestClientException e) {
+      log.warn("[AdminPromptService] provider 수정 실패: promptId={}, providerId={}, message={}",
+          promptId, providerId, e.getMessage());
+      throw toProviderCustomException(e);
+    }
+  }
+
+  public void deleteProvider(Integer promptId, Integer providerId) {
+    try {
+      aiServerRestClient.delete()
+          .uri(BASE_URI + "/{promptId}/providers/{providerId}", promptId, providerId)
+          .retrieve()
+          .toBodilessEntity();
+    } catch (RestClientException e) {
+      log.warn("[AdminPromptService] provider 삭제 실패: promptId={}, providerId={}, message={}",
+          promptId, providerId, e.getMessage());
+      throw toProviderCustomException(e);
+    }
+  }
+
   private CustomException toCustomException(RestClientException e) {
     if (e instanceof RestClientResponseException responseException) {
       if (responseException.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
         return new CustomException(ErrorCode.PROMPT_TEMPLATE_NOT_FOUND);
+      }
+      if (responseException.getStatusCode().is4xxClientError()) {
+        return new CustomException(ErrorCode.INVALID_REQUEST);
+      }
+    }
+    return new CustomException(ErrorCode.AI_SERVER_UNAVAILABLE);
+  }
+
+  private CustomException toProviderCustomException(RestClientException e) {
+    if (e instanceof RestClientResponseException responseException) {
+      if (responseException.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
+        return new CustomException(ErrorCode.PROMPT_TEMPLATE_PROVIDER_NOT_FOUND);
       }
       if (responseException.getStatusCode().is4xxClientError()) {
         return new CustomException(ErrorCode.INVALID_REQUEST);

@@ -1,6 +1,8 @@
 package com.chuseok22.eodaegoserver.domain.admin.controller.web;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.PromptTemplateView;
 import com.chuseok22.eodaegoserver.domain.admin.service.AdminPromptService;
@@ -32,8 +34,7 @@ public class AdminPromptController {
   @GetMapping("/admin/prompts/new")
   public String newForm(Model model) {
     model.addAttribute("mode", "create");
-    model.addAttribute("request", new PromptTemplateCreateRequest("", "", "recommendation", "", true));
-    model.addAttribute("models", adminPromptService.listModels());
+    model.addAttribute("request", new PromptTemplateCreateRequest("", "recommendation", "", false));
     model.addAttribute("purposes", PURPOSES);
     return "admin/prompts/form";
   }
@@ -46,12 +47,11 @@ public class AdminPromptController {
   ) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("mode", "create");
-      model.addAttribute("models", adminPromptService.listModels());
       model.addAttribute("purposes", PURPOSES);
       return "admin/prompts/form";
     }
-    adminPromptService.create(request);
-    return "redirect:/admin/prompts";
+    PromptTemplateView created = adminPromptService.create(request);
+    return "redirect:/admin/prompts/" + created.id() + "/edit";
   }
 
   @GetMapping("/admin/prompts/{promptId}/edit")
@@ -60,9 +60,10 @@ public class AdminPromptController {
     model.addAttribute("mode", "edit");
     model.addAttribute("promptId", promptId);
     model.addAttribute("request", new PromptTemplateUpdateRequest(
-        prompt.name(), prompt.model(), prompt.purpose(), prompt.templateText(), prompt.active()));
-    model.addAttribute("models", adminPromptService.listModels());
+        prompt.name(), prompt.purpose(), prompt.templateText(), prompt.active()));
     model.addAttribute("purposes", PURPOSES);
+    model.addAttribute("providers", prompt.providers());
+    model.addAttribute("newProviderRequest", new PromptTemplateProviderCreateRequest("SUH_AIDER", "", 1, true));
     return "admin/prompts/form";
   }
 
@@ -76,8 +77,10 @@ public class AdminPromptController {
     if (bindingResult.hasErrors()) {
       model.addAttribute("mode", "edit");
       model.addAttribute("promptId", promptId);
-      model.addAttribute("models", adminPromptService.listModels());
       model.addAttribute("purposes", PURPOSES);
+      PromptTemplateView prompt = adminPromptService.findById(promptId);
+      model.addAttribute("providers", prompt.providers());
+      model.addAttribute("newProviderRequest", new PromptTemplateProviderCreateRequest("SUH_AIDER", "", 1, true));
       return "admin/prompts/form";
     }
     adminPromptService.update(promptId, request);
@@ -94,5 +97,42 @@ public class AdminPromptController {
   public String activate(@PathVariable Integer promptId) {
     adminPromptService.activate(promptId);
     return "redirect:/admin/prompts";
+  }
+
+  @PostMapping("/admin/prompts/{promptId}/providers")
+  public String createProvider(
+      @PathVariable Integer promptId,
+      @Valid @ModelAttribute("newProviderRequest") PromptTemplateProviderCreateRequest request,
+      BindingResult bindingResult,
+      Model model
+  ) {
+    if (bindingResult.hasErrors()) {
+      PromptTemplateView prompt = adminPromptService.findById(promptId);
+      model.addAttribute("mode", "edit");
+      model.addAttribute("promptId", promptId);
+      model.addAttribute("purposes", PURPOSES);
+      model.addAttribute("request", new PromptTemplateUpdateRequest(
+          prompt.name(), prompt.purpose(), prompt.templateText(), prompt.active()));
+      model.addAttribute("providers", prompt.providers());
+      return "admin/prompts/form";
+    }
+    adminPromptService.createProvider(promptId, request);
+    return "redirect:/admin/prompts/" + promptId + "/edit";
+  }
+
+  @PostMapping("/admin/prompts/{promptId}/providers/{providerId}")
+  public String updateProvider(
+      @PathVariable Integer promptId,
+      @PathVariable Integer providerId,
+      @ModelAttribute PromptTemplateProviderUpdateRequest request
+  ) {
+    adminPromptService.updateProvider(promptId, providerId, request);
+    return "redirect:/admin/prompts/" + promptId + "/edit";
+  }
+
+  @PostMapping("/admin/prompts/{promptId}/providers/{providerId}/delete")
+  public String deleteProvider(@PathVariable Integer promptId, @PathVariable Integer providerId) {
+    adminPromptService.deleteProvider(promptId, providerId);
+    return "redirect:/admin/prompts/" + promptId + "/edit";
   }
 }

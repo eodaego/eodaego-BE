@@ -21,7 +21,7 @@
       <thead>
       <tr>
         <th>이름</th>
-        <th>모델</th>
+        <th>Provider</th>
         <th>용도</th>
         <th>활성 여부</th>
         <th>수정일시</th>
@@ -31,7 +31,14 @@
       <tbody>
       <tr th:each="prompt : ${prompts}">
         <td th:text="${prompt.name()}"></td>
-        <td th:text="${prompt.model()}"></td>
+        <td>
+          <span th:if="${#lists.isEmpty(prompt.providers())}" class="badge badge-error badge-outline">
+            provider 없음
+          </span>
+          <span th:each="provider : ${prompt.providers()}" class="badge badge-outline mr-1"
+                th:classappend="${provider.enabled()} ? '' : 'opacity-40'"
+                th:text="${provider.provider()} + ':' + ${provider.model()}"></span>
+        </td>
         <td th:text="${prompt.purpose()}"></td>
         <td>
           <span class="badge" th:classappend="${prompt.active()} ? 'badge-success' : 'badge-ghost'"
