@@ -62,6 +62,8 @@ public enum ErrorCode {
 
   PROMPT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프롬프트 템플릿입니다."),
 
+  PROMPT_TEMPLATE_PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 LLM provider입니다."),
+
   PROMPT_TEMPLATE_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 프롬프트 템플릿 이름입니다."),
 
   FACILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 시설입니다."),
