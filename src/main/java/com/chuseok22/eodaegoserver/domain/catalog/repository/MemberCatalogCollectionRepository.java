@@ -2,10 +2,12 @@ package com.chuseok22.eodaegoserver.domain.catalog.repository;
 
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.MemberCatalogCollection;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,6 +16,19 @@ public interface MemberCatalogCollectionRepository extends JpaRepository<MemberC
   List<MemberCatalogCollection> findByMemberIdAndCatalogItemIdIn(UUID memberId, List<UUID> catalogItemIds);
 
   Optional<MemberCatalogCollection> findByMemberIdAndCatalogItemId(UUID memberId, UUID catalogItemId);
+
+  /**
+   * 수집 기록을 넣되 이미 있으면 아무것도 하지 않는다. 반환값은 실제 삽입된 행 수(0 또는 1).
+   */
+  @Modifying
+  @Query(value = """
+      INSERT INTO member_catalog_collection (id, member_id, catalog_item_id, collected_at, created_at, updated_at)
+      VALUES (gen_random_uuid(), :memberId, :catalogItemId, :collectedAt, :collectedAt, :collectedAt)
+      ON CONFLICT (member_id, catalog_item_id) DO NOTHING
+      """, nativeQuery = true)
+  int insertIfAbsent(@Param("memberId") UUID memberId,
+                     @Param("catalogItemId") UUID catalogItemId,
+                     @Param("collectedAt") LocalDateTime collectedAt);
 
   @Query("""
       SELECT collection FROM MemberCatalogCollection collection
