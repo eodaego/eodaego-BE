@@ -54,7 +54,7 @@ public enum ErrorCode {
 
   IMAGE_TOO_LARGE(HttpStatus.CONTENT_TOO_LARGE, "허용된 사진 크기를 초과했습니다."),
 
-  INVALID_IMAGE_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "이미지 파일만 업로드할 수 있습니다."),
+  INVALID_IMAGE_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "jpeg, png, webp, heic, heif 형식의 사진만 업로드할 수 있습니다."),
 
   // AI
 

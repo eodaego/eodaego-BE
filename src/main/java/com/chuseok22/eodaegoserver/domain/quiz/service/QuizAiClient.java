@@ -6,10 +6,14 @@ import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -25,9 +29,16 @@ public class QuizAiClient {
   private final RestClient aiServerRestClient;
 
   public AiPhotoRecognitionResponse identify(CatalogCategory catalogType, MultipartFile image) {
+    MediaType parsedType = MediaType.parseMediaType(image.getContentType());
+    String filename = StringUtils.hasText(image.getOriginalFilename()) ? image.getOriginalFilename() : "image";
+
+    HttpHeaders imageHeaders = new HttpHeaders();
+    imageHeaders.setContentType(new MediaType(parsedType.getType(), parsedType.getSubtype()));
+    imageHeaders.setContentDisposition(ContentDisposition.formData().name("image").filename(filename).build());
+
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("catalog_type", catalogType.name());
-    body.add("image", image.getResource());
+    body.add("image", new HttpEntity<>(image.getResource(), imageHeaders));
 
     try {
       AiPhotoRecognitionResponse response = aiServerRestClient.post()

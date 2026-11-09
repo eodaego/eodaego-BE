@@ -20,9 +20,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.InvalidMediaTypeException;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +36,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class QuizService {
 
   private static final int CHOICE_COUNT = 3;
+  private static final Set<String> ALLOWED_IMAGE_TYPES =
+      Set.of("image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif");
 
   private final QuizAiClient quizAiClient;
   private final QuizAnswerStore quizAnswerStore;
@@ -91,6 +96,18 @@ public class QuizService {
     return QuizAnswerResponse.correct(correctCatalogItemId);
   }
 
+  private boolean isAllowedImageType(String contentType) {
+    if (contentType == null) {
+      return false;
+    }
+    try {
+      MediaType mediaType = MediaType.parseMediaType(contentType);
+      return ALLOWED_IMAGE_TYPES.contains(mediaType.getType() + "/" + mediaType.getSubtype());
+    } catch (InvalidMediaTypeException exception) {
+      return false;
+    }
+  }
+
   private void validateImage(UUID memberId, MultipartFile image) {
     if (image.isEmpty()) {
       log.warn("퀴즈 생성 실패. 이미지가 비어 있음. memberId={}", memberId);
@@ -98,8 +115,8 @@ public class QuizService {
     }
 
     String contentType = image.getContentType();
-    if (contentType == null || !contentType.startsWith("image/")) {
-      log.warn("퀴즈 생성 실패. 이미지 파일이 아님. memberId={}, contentType={}, size={}",
+    if (!isAllowedImageType(contentType)) {
+      log.warn("퀴즈 생성 실패. 허용되지 않은 이미지 형식. memberId={}, contentType={}, size={}",
           memberId, contentType, image.getSize());
       throw new CustomException(ErrorCode.INVALID_IMAGE_FORMAT);
     }
