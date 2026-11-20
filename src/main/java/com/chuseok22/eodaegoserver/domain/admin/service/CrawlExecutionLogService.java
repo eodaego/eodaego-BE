@@ -4,7 +4,13 @@ import com.chuseok22.eodaegoserver.domain.admin.CrawlJobType;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlExecutionLogView;
 import com.chuseok22.eodaegoserver.domain.admin.entity.CrawlExecutionLog;
 import com.chuseok22.eodaegoserver.domain.admin.repository.CrawlExecutionLogRepository;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,7 +49,36 @@ public class CrawlExecutionLogService {
   }
 
   public Page<CrawlExecutionLogView> listLogs(int page) {
-    Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
-    return crawlExecutionLogRepository.findAll(pageable).map(CrawlExecutionLogView::from);
+    Page<CrawlExecutionLog> result = crawlExecutionLogRepository.findAll(buildPageable(Math.max(page, 0)));
+    // 마지막 페이지를 넘어선 요청은 빈 화면 대신 마지막 페이지를 보여 준다.
+    if (page > 0 && result.getTotalPages() > 0 && page >= result.getTotalPages()) {
+      result = crawlExecutionLogRepository.findAll(buildPageable(result.getTotalPages() - 1));
+    }
+    return result.map(CrawlExecutionLogView::from);
+  }
+
+  public List<CrawlExecutionLogView> listLatestPerJobType() {
+    return Arrays.stream(CrawlJobType.values())
+        .map(crawlExecutionLogRepository::findTopByJobTypeOrderByCreatedAtDesc)
+        .flatMap(Optional::stream)
+        .map(CrawlExecutionLogView::from)
+        .toList();
+  }
+
+  public boolean isRetryable(CrawlJobType jobType) {
+    return crawlExecutionLogRepository.findTopByJobTypeOrderByCreatedAtDesc(jobType)
+        .map(latest -> !latest.isSuccess())
+        .orElse(false);
+  }
+
+  public Set<UUID> retryableLogIds() {
+    return listLatestPerJobType().stream()
+        .filter(latest -> !latest.success())
+        .map(CrawlExecutionLogView::id)
+        .collect(Collectors.toSet());
+  }
+
+  private Pageable buildPageable(int page) {
+    return PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
   }
 }
