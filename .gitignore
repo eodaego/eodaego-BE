@@ -43,5 +43,6 @@ application-*.yml
 /.docs
 .report
 .superpowers
+.playwright-mcp
 firebase-adminsdk.json
 /.blog-drafts
