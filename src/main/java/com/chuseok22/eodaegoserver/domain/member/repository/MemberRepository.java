@@ -2,6 +2,7 @@ package com.chuseok22.eodaegoserver.domain.member.repository;
 
 import com.chuseok22.eodaegoserver.domain.member.SocialType;
 import com.chuseok22.eodaegoserver.domain.member.entity.Member;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,6 @@ public interface MemberRepository extends JpaRepository<Member, UUID>, JpaSpecif
   Optional<Member> findBySocialTypeAndProviderId(SocialType socialType, String providerId);
 
   boolean existsByNicknameAndIdNot(String nickname, UUID memberId);
+
+  long countByCreatedAtGreaterThanEqual(LocalDateTime threshold);
 }

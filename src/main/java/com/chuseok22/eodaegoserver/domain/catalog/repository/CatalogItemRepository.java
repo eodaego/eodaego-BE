@@ -48,4 +48,9 @@ public interface CatalogItemRepository extends JpaRepository<CatalogItem, UUID> 
 
   @Query(value = "SELECT category AS category, COUNT(*) AS count FROM catalog_item GROUP BY category", nativeQuery = true)
   List<CategoryCountProjection> countGroupByCategory();
+
+  // 관리자 도감 목록의 "미작성" 필터(AdminCatalogItemService.isChildDescriptionMissing: null 또는 공백뿐)와
+  // 같은 정의여야 대시보드 수치와 목록 건수가 일치한다. 한쪽을 바꾸면 반드시 함께 수정한다.
+  @Query(value = "SELECT COUNT(*) FROM catalog_item WHERE child_description IS NULL OR child_description ~ '^\\s*$'", nativeQuery = true)
+  long countMissingChildDescription();
 }
