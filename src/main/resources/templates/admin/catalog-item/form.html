@@ -1,77 +1,73 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>도감 항목 수정 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-      <h2 class="text-xl font-bold mb-1">도감 항목 수정</h2>
-      <p class="text-sm text-base-content/60 mb-4">
-        <span th:text="'현재 표시 이름: ' + ${item.name()}"></span> ·
-        <span th:text="'카테고리: ' + ${item.category()}"></span>
-      </p>
-      <div class="mb-4 p-4 bg-base-100 rounded-box shadow text-sm max-w-lg">
-        <p class="font-semibold mb-2">AI 원본 값 (참고용, override와 무관하게 항상 원본 그대로 표시)</p>
-        <p>이름: <span th:text="${originalName}"></span></p>
-        <p>특징: <span th:text="${originalFeature}"></span></p>
-        <p th:if="${originalImageUrl != null}">이미지 URL: <span th:text="${originalImageUrl}"></span></p>
-        <p th:if="${originalLatitude != null}">
-          위도: <span th:text="${originalLatitude}"></span> / 경도: <span th:text="${originalLongitude}"></span>
-        </p>
-      </div>
-      <form th:action="@{'/admin/catalog/items/' + ${catalogItemId}}" th:object="${request}" method="post"
-            class="card bg-base-100 shadow-xl p-6 max-w-lg">
-        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <div class="form-control mb-3">
-          <label for="nameOverride" class="label"><span class="label-text">이름 override</span></label>
-          <input id="nameOverride" type="text" th:field="*{nameOverride}" class="input input-bordered"/>
-          <span class="text-xs text-base-content/60">비워두고 저장하면 AI 원본 값을 따릅니다.</span>
-        </div>
-        <div class="form-control mb-3">
-          <label for="featureOverride" class="label"><span class="label-text">특징 override</span></label>
-          <textarea id="featureOverride" th:field="*{featureOverride}" class="textarea textarea-bordered"></textarea>
-          <span class="text-xs text-base-content/60">비워두고 저장하면 AI 원본 값을 따릅니다.</span>
-        </div>
-        <div class="form-control mb-3">
-          <label for="childDescription" class="label"><span class="label-text">어린이 눈높이 설명</span></label>
-          <textarea id="childDescription" th:field="*{childDescription}" class="textarea textarea-bordered"></textarea>
-          <span class="text-error text-sm" th:if="${#fields.hasErrors('childDescription')}" th:errors="*{childDescription}"></span>
-        </div>
-        <div class="form-control mb-3">
-          <label for="status" class="label"><span class="label-text">상태</span></label>
-          <select id="status" th:field="*{status}" class="select select-bordered">
-            <option value="AVAILABLE">AVAILABLE (수집 가능)</option>
-            <option value="SUSPENDED">SUSPENDED (임시 중단)</option>
-            <option value="RETIRED">RETIRED (운영 종료)</option>
-          </select>
-          <span class="text-error text-sm" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
-        </div>
-        <div class="form-control mb-3">
-          <label for="imageUrlOverride" class="label"><span class="label-text">이미지 URL override</span></label>
-          <input id="imageUrlOverride" type="text" th:field="*{imageUrlOverride}" class="input input-bordered"/>
-          <span class="text-xs text-base-content/60">비워두고 저장하면 AI 원본 값을 따릅니다.</span>
-        </div>
-        <div class="form-control mb-3">
-          <label for="latitudeOverride" class="label"><span class="label-text">위도 override (장소 전용)</span></label>
-          <input id="latitudeOverride" type="number" step="any" th:field="*{latitudeOverride}" class="input input-bordered"/>
-        </div>
-        <div class="form-control mb-4">
-          <label for="longitudeOverride" class="label"><span class="label-text">경도 override (장소 전용)</span></label>
-          <input id="longitudeOverride" type="number" step="any" th:field="*{longitudeOverride}" class="input input-bordered"/>
-        </div>
-        <button type="submit" class="btn btn-primary">저장</button>
-      </form>
-    </main>
+<html th:replace="~{admin/fragments/layout :: page('도감 항목 수정', 'catalog-items', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>도감 항목 수정</h1>
+    <div class="spacer"></div>
+    <a th:href="@{/admin/catalog/items}" class="btn">목록으로</a>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='catalog-items')}"></div>
-</div>
+  <p class="subtitle">
+    <span th:text="'현재 표시 이름: ' + ${item.name()}"></span> ·
+    <span th:text="'카테고리: ' + ${item.category()}"></span>
+  </p>
+  <section class="card form-card">
+    <h2>AI 원본 값 (참고용, override와 무관하게 항상 원본 그대로 표시)</h2>
+    <div class="stack">
+      <div>이름: <span th:text="${originalName}"></span></div>
+      <div>특징: <span th:text="${originalFeature}"></span></div>
+      <div th:if="${originalImageUrl != null}">이미지 URL: <span th:text="${originalImageUrl}"></span></div>
+      <div th:if="${originalLatitude != null}">
+        위도: <span th:text="${originalLatitude}"></span> / 경도: <span th:text="${originalLongitude}"></span>
+      </div>
+    </div>
+  </section>
+  <form th:action="@{'/admin/catalog/items/' + ${catalogItemId}}" th:object="${request}" method="post"
+        class="card form-card">
+    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <div class="field">
+      <label for="nameOverride">이름 override</label>
+      <input id="nameOverride" type="text" th:field="*{nameOverride}"/>
+      <span class="hint">비워두고 저장하면 AI 원본 값을 따릅니다.</span>
+    </div>
+    <div class="field">
+      <label for="featureOverride">특징 override</label>
+      <textarea id="featureOverride" th:field="*{featureOverride}" rows="4"></textarea>
+      <span class="hint">비워두고 저장하면 AI 원본 값을 따릅니다.</span>
+    </div>
+    <div class="field">
+      <label for="childDescription">어린이 눈높이 설명</label>
+      <textarea id="childDescription" th:field="*{childDescription}" rows="4"></textarea>
+      <span class="error-text" th:if="${#fields.hasErrors('childDescription')}" th:errors="*{childDescription}"></span>
+    </div>
+    <div class="field">
+      <label for="status">상태</label>
+      <select id="status" th:field="*{status}">
+        <option value="AVAILABLE">AVAILABLE (수집 가능)</option>
+        <option value="SUSPENDED">SUSPENDED (임시 중단)</option>
+        <option value="RETIRED">RETIRED (운영 종료)</option>
+      </select>
+      <span class="error-text" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
+    </div>
+    <div class="field">
+      <label for="imageUrlOverride">이미지 URL override</label>
+      <input id="imageUrlOverride" type="text" th:field="*{imageUrlOverride}"/>
+      <span class="hint">비워두고 저장하면 AI 원본 값을 따릅니다.</span>
+    </div>
+    <div class="field">
+      <label for="latitudeOverride">위도 override (장소 전용)</label>
+      <input id="latitudeOverride" type="number" step="any" th:field="*{latitudeOverride}"/>
+    </div>
+    <div class="field">
+      <label for="longitudeOverride">경도 override (장소 전용)</label>
+      <input id="longitudeOverride" type="number" step="any" th:field="*{longitudeOverride}"/>
+    </div>
+    <div class="form-actions">
+      <a th:href="@{/admin/catalog/items}" class="btn">취소</a>
+      <button type="submit" class="btn primary">저장</button>
+    </div>
+  </form>
+</main>
 </body>
 </html>

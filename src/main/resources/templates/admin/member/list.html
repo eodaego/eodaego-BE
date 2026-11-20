@@ -1,68 +1,72 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>회원 목록 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">회원 목록</h2>
+<html th:replace="~{admin/fragments/layout :: page('회원 목록', 'member-list', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head"><h1>회원 목록</h1></div>
+  <div class="toolbar">
+    <form id="member-search" th:action="@{/admin/members}" method="get">
+      <label class="search" style="min-width:220px">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" name="keyword" th:value="${query.keyword}" placeholder="닉네임 또는 이메일 검색" aria-label="닉네임 또는 이메일 검색"
+               hx-get="/admin/members" hx-target="#member-list" hx-push-url="true"
+               hx-trigger="input changed delay:300ms, search" hx-include="#member-filter-state"/>
+      </label>
+    </form>
+  </div>
+  <div id="member-list">
+    <th:block th:fragment="listRegion"
+              th:with="socialTypeValue=${query.socialType != null ? query.socialType.name() : ''},
+                       deviceTypeValue=${query.deviceType != null ? query.deviceType.name() : ''},
+                       keywordValue=${query.keyword ?: ''}, sortValue=${query.sort ?: ''}, directionValue=${query.direction ?: ''}">
+      <div id="member-filter-state">
+        <input type="hidden" form="member-search" name="socialType" th:value="${socialTypeValue}"/>
+        <input type="hidden" form="member-search" name="deviceType" th:value="${deviceTypeValue}"/>
+        <input type="hidden" form="member-search" name="sort" th:value="${sortValue}"/>
+        <input type="hidden" form="member-search" name="direction" th:value="${directionValue}"/>
       </div>
-      <form th:action="@{/admin/members}" method="get" class="flex gap-2 mb-4">
-        <input type="text" name="keyword" th:value="${keyword}" placeholder="닉네임 또는 이메일 검색"
-               class="input input-bordered input-sm w-64"/>
-        <select name="socialType" class="select select-bordered select-sm">
-          <option value="" th:selected="${socialType == null}">전체 소셜타입</option>
-          <option value="GOOGLE" th:selected="${socialType == T(com.chuseok22.eodaegoserver.domain.member.SocialType).GOOGLE}">GOOGLE</option>
-          <option value="APPLE" th:selected="${socialType == T(com.chuseok22.eodaegoserver.domain.member.SocialType).APPLE}">APPLE</option>
-        </select>
-        <button type="submit" class="btn btn-primary btn-sm">검색</button>
-      </form>
-      <div class="overflow-x-auto bg-base-100 rounded-box shadow">
-        <table class="table">
+      <div class="tools">
+        <a th:each="chip : ${ {{'', '전체 소셜'}, {'GOOGLE', 'GOOGLE'}, {'APPLE', 'APPLE'}} }"
+           class="chip" th:classappend="${socialTypeValue == chip[0]} ? 'on'" th:text="${chip[1]}"
+           th:href="@{/admin/members(socialType=${chip[0]}, deviceType=${deviceTypeValue}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}"
+           th:attr="hx-get=@{/admin/members(socialType=${chip[0]}, deviceType=${deviceTypeValue}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}"
+           hx-target="#member-list" hx-push-url="true"></a>
+        <a th:each="chip : ${ {{'', '전체 기기'}, {'IOS', 'IOS'}, {'ANDROID', 'ANDROID'}} }"
+           class="chip" th:classappend="${deviceTypeValue == chip[0]} ? 'on'" th:text="${chip[1]}"
+           th:href="@{/admin/members(socialType=${socialTypeValue}, deviceType=${chip[0]}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}"
+           th:attr="hx-get=@{/admin/members(socialType=${socialTypeValue}, deviceType=${chip[0]}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}"
+           hx-target="#member-list" hx-push-url="true"></a>
+        <div class="spacer"></div>
+        <span class="subtitle" th:text="'총 ' + ${memberPage.totalElements} + '명'"></span>
+        <a class="btn sm"
+           th:href="@{/admin/members/export(socialType=${socialTypeValue}, deviceType=${deviceTypeValue}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}">CSV 내보내기</a>
+      </div>
+      <div class="tablewrap">
+        <table>
           <thead>
           <tr>
-            <th>닉네임</th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('닉네임', 'nickname')}"></th>
             <th>이메일</th>
-            <th>소셜타입</th>
-            <th>기기타입</th>
-            <th>가입일</th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('소셜타입', 'socialType')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('기기타입', 'deviceType')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('가입일', 'createdAt')}"></th>
           </tr>
           </thead>
           <tbody>
           <tr th:each="entry : ${memberPage.content}">
-            <td>
-              <a th:href="@{'/admin/members/' + ${entry.id()}}" class="link link-primary" th:text="${entry.nickname()}"></a>
-            </td>
+            <td><a th:href="@{'/admin/members/' + ${entry.id()}}" th:text="${entry.nickname()}"></a></td>
             <td th:text="${entry.email()}"></td>
             <td th:text="${entry.socialType()}"></td>
             <td th:text="${entry.deviceType()}"></td>
-            <td th:text="${entry.createdAt()}"></td>
+            <td th:text="${#temporals.format(entry.createdAt(), 'yyyy-MM-dd HH:mm')}"></td>
           </tr>
           </tbody>
         </table>
+        <div class="empty" th:if="${memberPage.content.isEmpty()}">조건에 맞는 회원이 없습니다.</div>
       </div>
-      <div class="flex justify-center items-center gap-2 mt-4">
-        <a th:if="${memberPage.hasPrevious()}"
-           th:href="@{/admin/members(keyword=${keyword}, socialType=${socialType}, page=${memberPage.number - 1})}"
-           class="btn btn-outline btn-sm">이전</a>
-        <span class="btn btn-ghost btn-sm no-animation"
-              th:text="${memberPage.number + 1} + ' / ' + ${memberPage.totalPages == 0 ? 1 : memberPage.totalPages}"></span>
-        <a th:if="${memberPage.hasNext()}"
-           th:href="@{/admin/members(keyword=${keyword}, socialType=${socialType}, page=${memberPage.number + 1})}"
-           class="btn btn-outline btn-sm">다음</a>
-      </div>
-    </main>
+      <div th:replace="~{admin/fragments/components :: pager(${memberPage})}"></div>
+    </th:block>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='member-list')}"></div>
-</div>
+</main>
 </body>
 </html>

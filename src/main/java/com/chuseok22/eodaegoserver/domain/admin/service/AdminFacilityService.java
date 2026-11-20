@@ -3,11 +3,14 @@ package com.chuseok22.eodaegoserver.domain.admin.service;
 import com.chuseok22.eodaegoserver.domain.admin.CrawlJobType;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.FacilityCreateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.FacilityUpdateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminPageView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.FacilityView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +28,25 @@ import org.springframework.web.client.RestClientResponseException;
 public class AdminFacilityService {
 
   private static final String BASE_URI = "/api/v1/facility";
+  private static final Map<String, Comparator<FacilityView>> SORT_COMPARATORS = Map.of(
+      "name", AdminSortResolver.caseInsensitive(FacilityView::name),
+      "category", AdminSortResolver.caseInsensitive(FacilityView::category),
+      "code", AdminSortResolver.caseInsensitive(FacilityView::code),
+      "facilityType", AdminSortResolver.caseInsensitive(FacilityView::facilityType),
+      "updatedAt", AdminSortResolver.nullsLast(FacilityView::updatedAt)
+  );
 
   private final RestClient aiServerRestClient;
   private final CrawlExecutionLogService crawlExecutionLogService;
 
-  public List<FacilityView> listFacilities() {
+  public AdminPageView<FacilityView> searchFacilities(String keyword, String sort, String direction, int page) {
+    return AdminListSupport.paginate(
+        listFacilities(),
+        AdminListSupport.keywordFilter(keyword, FacilityView::name, FacilityView::code),
+        SORT_COMPARATORS, sort, direction, page);
+  }
+
+  private List<FacilityView> listFacilities() {
     try {
       return aiServerRestClient.get()
           .uri(BASE_URI)

@@ -1,57 +1,72 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title>크롤링 스케줄 관리 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold">크롤링 스케줄 관리</h2>
-    <a th:href="@{/admin/crawling/schedules/new}" class="btn btn-primary btn-sm">스케줄 등록</a>
+<html th:replace="~{admin/fragments/layout :: page('크롤링 스케줄 관리', 'crawling-schedules', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>크롤링 스케줄 관리</h1>
+    <div class="spacer"></div>
+    <a th:href="@{/admin/crawling/schedules/new}" class="btn primary">스케줄 등록</a>
   </div>
-  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
-    <table class="table">
-      <thead>
-      <tr>
-        <th>작업 ID</th>
-        <th>트리거 유형</th>
-        <th>트리거 설정값</th>
-        <th>활성화</th>
-        <th>수정일시</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="schedule : ${schedules}">
-        <td th:text="${schedule.jobId()}"></td>
-        <td th:text="${schedule.triggerType()}"></td>
-        <td th:text="${schedule.triggerConfig()}"></td>
-        <td>
-          <span class="badge" th:classappend="${schedule.active()} ? 'badge-success' : 'badge-ghost'"
-                th:text="${schedule.active()} ? '활성' : '비활성'"></span>
-        </td>
-        <td th:text="${schedule.updatedAt()}"></td>
-        <td class="flex gap-2">
-          <a th:href="@{'/admin/crawling/schedules/' + ${schedule.id()} + '/edit'}" class="btn btn-outline btn-xs">수정</a>
-          <form th:action="@{'/admin/crawling/schedules/' + ${schedule.id()} + '/delete'}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-outline btn-error btn-xs">삭제</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+  <div class="toolbar">
+    <form id="crawling-schedules-search" th:action="@{/admin/crawling/schedules}" method="get">
+      <label class="search" style="min-width:220px">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" name="keyword" th:value="${keyword}" placeholder="작업 ID 검색" aria-label="작업 ID 검색"
+               hx-get="/admin/crawling/schedules" hx-target="#crawling-schedules-list" hx-push-url="true"
+               hx-trigger="input changed delay:300ms, search" hx-include="#crawling-schedules-sort-state"/>
+      </label>
+    </form>
   </div>
-    </main>
+  <div id="crawling-schedules-list">
+    <th:block th:fragment="listRegion">
+      <div id="crawling-schedules-sort-state">
+        <input type="hidden" form="crawling-schedules-search" name="sort" th:value="${sort ?: ''}"/>
+        <input type="hidden" form="crawling-schedules-search" name="direction" th:value="${direction ?: ''}"/>
+      </div>
+      <div class="tools">
+        <span class="subtitle" th:text="'총 ' + ${page.totalElements} + '건'"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+          <tr>
+            <th th:replace="~{admin/fragments/components :: sortHeader('작업 ID', 'jobId')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('트리거 유형', 'triggerType')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('트리거 설정값', 'triggerConfig')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('활성화', 'active')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('수정일시', 'updatedAt')}"></th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="schedule : ${page.content}">
+            <td th:text="${schedule.jobId()}"></td>
+            <td th:text="${schedule.triggerType()}"></td>
+            <td th:text="${schedule.triggerConfig()}"></td>
+            <td>
+              <span class="badge" th:classappend="${schedule.active()} ? 'badge-ok' : 'badge-warn'"
+                    th:text="${schedule.active()} ? '활성' : '비활성'"></span>
+            </td>
+            <td th:text="${#temporals.format(schedule.updatedAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+              <div class="actions">
+                <a th:href="@{'/admin/crawling/schedules/' + ${schedule.id()} + '/edit'}" class="btn sm">수정</a>
+                <form th:action="@{'/admin/crawling/schedules/' + ${schedule.id()} + '/delete'}" method="post"
+                      th:attr="data-confirm='스케줄 ' + ${schedule.jobId()} + '을(를) 삭제합니다. 되돌릴 수 없습니다.'">
+                  <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                  <button type="submit" class="btn sm danger">삭제</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="empty" th:if="${#lists.isEmpty(page.content)}">조건에 맞는 스케줄이 없습니다.</div>
+      </div>
+      <div th:replace="~{admin/fragments/components :: pager(${page})}"></div>
+    </th:block>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='crawling-schedules')}"></div>
-</div>
+</main>
 </body>
 </html>

@@ -82,6 +82,8 @@ public enum ErrorCode {
 
   FACILITY_CODE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 시설 코드입니다."),
 
+  CRAWL_RETRY_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "재실행할 수 없는 크롤링 작업입니다. 최근 실행이 실패한 작업만 재실행할 수 있습니다."),
+
   // Member
 
   NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),

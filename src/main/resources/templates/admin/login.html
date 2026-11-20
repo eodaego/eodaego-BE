@@ -2,22 +2,30 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
-  <title>어대고 관리자 로그인</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>로그인 - 어대GO 관리자</title>
+  <link rel="stylesheet" th:href="@{/admin/assets/admin.css}"/>
+  <script th:src="@{/admin/assets/admin.js}"></script>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-base-200">
-<div class="card w-96 bg-base-100 shadow-xl">
-  <div class="card-body">
-    <h2 class="card-title">관리자 로그인</h2>
-    <form th:action="@{/admin/login}" method="post" class="flex flex-col gap-3">
+<body data-admin-login>
+<main class="login-wrap">
+  <div class="login-card">
+    <h1>어대<span class="accent">GO</span> 관리자</h1>
+    <p class="subtitle">관리자 계정으로 로그인하세요.</p>
+    <form th:action="@{/admin/login}" method="post">
       <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-      <input type="text" name="username" placeholder="아이디" class="input input-bordered w-full" required/>
-      <input type="password" name="password" placeholder="비밀번호" class="input input-bordered w-full" required/>
-      <p th:if="${param.error}" class="text-error text-sm">아이디 또는 비밀번호가 올바르지 않습니다.</p>
-      <button type="submit" class="btn btn-primary w-full">로그인</button>
+      <div class="field">
+        <label for="username">아이디</label>
+        <input type="text" id="username" name="username" autocomplete="username" required autofocus/>
+      </div>
+      <div class="field">
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required/>
+      </div>
+      <p th:if="${param.error}" class="form-error" role="alert">아이디 또는 비밀번호가 올바르지 않습니다.</p>
+      <button type="submit" class="btn primary">로그인</button>
     </form>
   </div>
-</div>
+</main>
 </body>
 </html>

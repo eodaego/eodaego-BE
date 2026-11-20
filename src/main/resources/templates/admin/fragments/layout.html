@@ -1,50 +1,110 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="sidebarNav(activePage)" class="drawer-side z-20">
-  <label for="admin-drawer" aria-label="사이드바 닫기" class="drawer-overlay"></label>
-  <ul class="menu bg-base-100 min-h-full w-72 p-4 text-base-content flex flex-col flex-nowrap">
-    <li class="mb-4 px-2">
-      <a th:href="@{/admin/dashboard}" class="text-lg font-bold">어대GO 관리자</a>
-    </li>
-    <li><a th:href="@{/admin/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">대시보드</a></li>
-    <li class="menu-title mt-2">회원 관리</li>
-    <li><a th:href="@{/admin/members}" th:classappend="${activePage == 'member-list'} ? 'active' : ''">회원 목록</a></li>
-    <li class="menu-title mt-2">공원 데이터</li>
-    <li><a th:href="@{/admin/facility}" th:classappend="${activePage == 'facility'} ? 'active' : ''">시설 관리</a></li>
-    <li><a th:href="@{/admin/facility/operating-hours}" th:classappend="${activePage == 'operating-hours'} ? 'active' : ''">운영시간 조회</a></li>
-    <li><a th:href="@{/admin/catalog/items}" th:classappend="${activePage == 'catalog-items'} ? 'active' : ''">도감 관리</a></li>
-    <li><a th:href="@{/admin/congestion}" th:classappend="${activePage == 'congestion'} ? 'active' : ''">혼잡도 조회</a></li>
-    <li><a th:href="@{/admin/weather}" th:classappend="${activePage == 'weather'} ? 'active' : ''">날씨 조회</a></li>
-    <li><a th:href="@{/admin/events}" th:classappend="${activePage == 'events'} ? 'active' : ''">행사·공연 관리</a></li>
-    <li class="menu-title mt-2">운영 관리</li>
-    <li><a th:href="@{/admin/facility/amusement-rides}" th:classappend="${activePage == 'amusement-rides'} ? 'active' : ''">놀이기구 관리</a></li>
-    <li><a th:href="@{/admin/crawling/schedules}" th:classappend="${activePage == 'crawling-schedules'} ? 'active' : ''">크롤링 스케줄</a></li>
-    <li><a th:href="@{/admin/crawling/history}" th:classappend="${activePage == 'crawling-history'} ? 'active' : ''">크롤링 실행 이력</a></li>
-    <li class="menu-title mt-2">AI 설정</li>
-    <li><a th:href="@{/admin/prompts}" th:classappend="${activePage == 'prompts'} ? 'active' : ''">프롬프트 템플릿 관리</a></li>
-    <li><a th:href="@{/admin/recommendation/preference-mappings}" th:classappend="${activePage == 'preference-mappings'} ? 'active' : ''">취향 매핑 관리</a></li>
-    <li><a th:href="@{/admin/recommendation/failures}" th:classappend="${activePage == 'recommendation-failures'} ? 'active' : ''">AI 추천 실패 로그</a></li>
-    <li class="mt-auto pt-4 border-t border-base-300">
+<!--/* 공통 페이지 레이아웃. 호출 페이지는 <main class="page">를 content로 넘기고, 페이지 전용 스크립트가 있으면 scripts로 넘긴다(없으면 ~{}). */-->
+<html lang="ko" th:fragment="page(title, activePage, content, scripts)">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="htmx-config" content='{"historyCacheSize":0,"refreshOnHistoryMiss":true}'/>
+  <meta name="_csrf" th:if="${_csrf}" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:if="${_csrf}" th:content="${_csrf.headerName}"/>
+  <title th:text="${title} + ' - 어대GO 관리자'">어대GO 관리자</title>
+  <link rel="stylesheet" th:href="@{/admin/assets/admin.css}"/>
+  <script th:src="@{/admin/assets/admin.js}"></script>
+  <script th:src="@{/admin/assets/vendor/htmx.min.js}" defer></script>
+</head>
+<body>
+<div class="app" data-admin-layout>
+  <aside class="side" id="side">
+    <div class="brandrow">
+      <a class="brand" th:href="@{/admin/dashboard}">어대<span>GO</span> 관리자</a>
+      <button type="button" class="railbtn" id="railbtn" aria-label="사이드바 접기/펼치기" title="사이드바 접기/펼치기">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+      </button>
+    </div>
+    <input type="search" class="sidebar-filter" id="sidebar-search" placeholder="메뉴 검색" aria-label="메뉴 검색" autocomplete="off"/>
+
+    <a th:replace="~{admin/fragments/layout :: navItem('/admin/dashboard', 'dashboard', '대시보드', 'dashboard', 0)}"></a>
+
+    <button type="button" class="sidebar-group" data-group="회원" aria-expanded="true"><span>회원</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="items">
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/members', 'member-list', '회원 목록', 'users', 0)}"></a>
+    </div>
+
+    <button type="button" class="sidebar-group" data-group="공원 데이터" aria-expanded="true"><span>공원 데이터</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="items">
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/facility', 'facility', '시설 관리', 'building', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/facility/operating-hours', 'operating-hours', '운영시간 조회', 'clock', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/catalog/items', 'catalog-items', '도감 관리', 'book', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/congestion', 'congestion', '혼잡도 조회', 'pulse', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/weather', 'weather', '날씨 조회', 'cloud', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/events', 'events', '행사·공연 관리', 'calendar', 0)}"></a>
+    </div>
+
+    <button type="button" class="sidebar-group" data-group="운영" aria-expanded="true"><span>운영</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="items">
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/facility/amusement-rides', 'amusement-rides', '놀이기구 관리', 'ride', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/crawling/schedules', 'crawling-schedules', '크롤링 스케줄', 'repeat', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/crawling/history', 'crawling-history', '크롤링 실행 이력', 'list', 0)}"></a>
+    </div>
+
+    <button type="button" class="sidebar-group" data-group="AI 설정" aria-expanded="true"><span>AI 설정</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="items">
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/prompts', 'prompts', '프롬프트 템플릿 관리', 'spark', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/recommendation/preference-mappings', 'preference-mappings', '취향 매핑 관리', 'tag', 0)}"></a>
+      <a th:replace="~{admin/fragments/layout :: navItem('/admin/recommendation/failures', 'recommendation-failures', 'AI 추천 실패 로그', 'alert', ${recommendationFailureBadge != null ? recommendationFailureBadge : 0})}"></a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar" th:text="${adminAccountName != null and !#strings.isEmpty(adminAccountName)} ? ${#strings.toUpperCase(#strings.substring(adminAccountName, 0, 1))} : ''"></div>
+      <div class="who"><span th:text="${adminAccountName}"></span><small>관리자</small></div>
       <form th:action="@{/admin/logout}" method="post">
         <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <button type="submit" class="btn btn-outline btn-sm w-full">로그아웃</button>
+        <button type="submit" class="btn sm">로그아웃</button>
       </form>
-    </li>
-  </ul>
-</div>
+    </div>
+  </aside>
+  <div class="sidescrim" id="sidescrim"></div>
 
-<div th:fragment="mobileTopbar" class="navbar bg-base-100 shadow-sm lg:hidden">
-  <div class="flex-none">
-    <label for="admin-drawer" aria-label="메뉴 열기" class="btn btn-square btn-ghost">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
-    </label>
-  </div>
-  <div class="flex-1">
-    <span class="text-lg font-bold">어대GO 관리자</span>
+  <div class="main">
+    <header class="top">
+      <button type="button" class="btn menu" id="menu" aria-label="메뉴 열기">☰</button>
+      <div class="crumb">관리자 / <b th:text="${title}">제목</b></div>
+      <div class="spacer"></div>
+      <button type="button" class="btn" id="theme" aria-label="테마 전환">라이트 / 다크</button>
+    </header>
+
+    <th:block th:replace="${content}"></th:block>
   </div>
 </div>
+<div id="layer"></div>
+<div th:if="${actionResult != null}" class="toast" role="status"
+     th:classappend="${actionResult.success()} ? 'ok' : 'bad'" th:text="${actionResult.message()}"></div>
+<th:block th:replace="${scripts}"></th:block>
+</body>
+</html>
+
+<a th:fragment="navItem(href, key, label, icon, badge)" class="nav" th:href="@{${href}}" th:title="${label}"
+   th:classappend="${activePage == key} ? 'on' : ''" th:attr="aria-current=${activePage == key} ? 'page' : null">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" th:switch="${icon}">
+    <g th:case="'dashboard'"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></g>
+    <g th:case="'users'"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 5a3.5 3.5 0 0 1 0 7M18 14c2.2.6 3.5 2.6 3.5 6"/></g>
+    <g th:case="'building'"><path d="M4 21V5l8-2 8 2v16M9 9h1M14 9h1M9 13h1M14 13h1M10 21v-4h4v4"/></g>
+    <g th:case="'clock'"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></g>
+    <g th:case="'book'"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></g>
+    <g th:case="'pulse'"><path d="M3 12h4l3-8 4 16 3-8h4"/></g>
+    <g th:case="'cloud'"><path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 4.5 4.5 0 0 1 17 18z"/></g>
+    <g th:case="'calendar'"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></g>
+    <g th:case="'ride'"><circle cx="12" cy="10" r="6"/><path d="M12 4v12M6 10h12M8 21l4-5 4 5"/></g>
+    <g th:case="'repeat'"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2M20 4v5h-5M4 20v-5h5"/></g>
+    <g th:case="'list'"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></g>
+    <g th:case="'spark'"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g>
+    <g th:case="'tag'"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1"/></g>
+    <g th:case="'alert'"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></g>
+  </svg>
+  <span class="nav-label" th:text="${label}">메뉴</span>
+  <span class="count-badge" th:if="${badge > 0}" th:text="${badge}">0</span>
+</a>
 </body>
 </html>

@@ -1,36 +1,153 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title>어대고 관리자 대시보드</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-  <div class="card bg-base-100 shadow-xl mb-4">
-    <div class="card-body">
-      <h2 class="card-title">AI 서버 상태</h2>
-      <div class="flex items-center gap-2">
-        <span class="badge" th:classappend="${aiHealth.status() == 'UP'} ? 'badge-success' : 'badge-error'"
-              th:text="${aiHealth.status()}"></span>
-        <span class="text-sm text-base-content/70" th:text="'마지막 확인: ' + ${aiHealth.checkedAt()}"></span>
+<html th:replace="~{admin/fragments/layout :: page('대시보드', 'dashboard', ~{::main}, ~{::script})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>대시보드</h1>
+    <span class="badge" th:classappend="${dashboard.aiHealth().status() == 'UP'} ? 'badge-ok' : 'badge-bad'"
+          th:text="'AI 서버 ' + ${dashboard.aiHealth().status()}"></span>
+    <span class="subtitle" th:text="'마지막 확인 ' + ${#temporals.format(dashboard.aiHealth().checkedAt(), 'yyyy-MM-dd HH:mm')}"></span>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-label">전체 회원</div>
+      <div class="kpi-value" th:text="${dashboard.memberTotalCount()}">0</div>
+      <div class="kpi-delta up" th:text="'최근 7일 +' + ${dashboard.memberNewLastSevenDaysCount()}"></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">도감 항목</div>
+      <div class="kpi-value" th:text="${dashboard.catalogTotalCount()}">0</div>
+      <div class="kpi-delta" th:classappend="${dashboard.catalogMissingChildDescriptionCount() > 0} ? 'down'"
+           th:text="'어린이 설명 미작성 ' + ${dashboard.catalogMissingChildDescriptionCount()}"></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">크롤링 정상 작업</div>
+      <div class="kpi-value" th:text="${dashboard.latestCrawlLogs().size() - dashboard.retryableLogIds().size()} + '/' + ${dashboard.latestCrawlLogs().size()}">0/0</div>
+      <div class="kpi-delta" th:classappend="${!dashboard.retryableLogIds().isEmpty()} ? 'down'"
+           th:text="'최근 실행 실패 ' + ${dashboard.retryableLogIds().size()} + '건'"></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">AI 추천 실패 (7일)</div>
+      <div class="kpi-value" th:text="${dashboard.recommendationFailureLastSevenDaysCount()}">0</div>
+      <div class="kpi-delta"><a th:href="@{/admin/recommendation/failures}">실패 로그 보기</a></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>AI 추천 실패 추이 <span class="subtitle">최근 7일</span></h2>
+      <div class="chartbox">
+        <canvas id="failure-chart" role="img"
+                th:attr="data-labels=${#strings.listJoin(#temporals.listFormat(dashboard.recommendationFailureDailyCounts().![date], 'MM/dd'), ',')},
+                         data-values=${#strings.listJoin(dashboard.recommendationFailureDailyCounts().![count], ',')},
+                         aria-label='최근 7일 AI 추천 실패 건수 추이. 합계 ' + ${dashboard.recommendationFailureLastSevenDaysCount()} + '건'"></canvas>
       </div>
+      <noscript>
+        <table>
+          <thead><tr><th>날짜</th><th>실패 건수</th></tr></thead>
+          <tbody>
+          <tr th:each="daily : ${dashboard.recommendationFailureDailyCounts()}">
+            <td th:text="${#temporals.format(daily.date(), 'MM/dd')}"></td>
+            <td th:text="${daily.count()}"></td>
+          </tr>
+          </tbody>
+        </table>
+      </noscript>
+    </section>
+
+    <section class="card">
+      <h2>크롤링 최근 상태</h2>
+      <div class="list">
+        <div class="row" th:each="crawlLog : ${dashboard.latestCrawlLogs()}">
+          <div class="row-title">
+            <span th:text="${crawlLog.jobType()}"></span>
+            <small th:text="${#temporals.format(crawlLog.createdAt(), 'yyyy-MM-dd HH:mm')} + ' 실행'"></small>
+          </div>
+          <span class="badge" th:classappend="${crawlLog.success()} ? 'badge-ok' : 'badge-bad'" th:text="${crawlLog.success()} ? '성공' : '실패'"></span>
+          <form th:if="${dashboard.retryableLogIds().contains(crawlLog.id())}"
+                th:action="@{'/admin/crawling/retry/' + ${crawlLog.jobType()}}" method="post"
+                th:attr="data-confirm=${crawlLog.jobType()} + ' 작업을 다시 실행합니다.'">
+            <input type="hidden" name="returnTo" value="dashboard"/>
+            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn sm">재실행</button>
+          </form>
+        </div>
+        <div class="empty" th:if="${dashboard.latestCrawlLogs().isEmpty()}">크롤링 실행 이력이 없습니다.</div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>도감 어린이 설명 작성률
+      <span class="subtitle" th:text="${dashboard.childDescriptionCompletionPercent()} + '% · ' + ${dashboard.catalogMissingChildDescriptionCount()} + '건 남음'"></span>
+    </h2>
+    <div class="bar" role="progressbar" aria-label="도감 어린이 설명 작성률" aria-valuemin="0" aria-valuemax="100"
+         th:attr="aria-valuenow=${dashboard.childDescriptionCompletionPercent()}"><i th:style="'width:' + ${dashboard.childDescriptionCompletionPercent()} + '%'"></i></div>
+    <div class="tools">
+      <a class="btn sm" th:href="@{/admin/catalog/items(onlyMissingChildDescription=true)}">미작성 항목만 보기</a>
+      <span class="subtitle">
+        카테고리별 항목:
+        <th:block th:each="categoryCount, status : ${dashboard.catalogCategoryCounts()}">
+          <span th:text="(${categoryCount.category().name() == 'ANIMAL'} ? '동물' : (${categoryCount.category().name() == 'PLANT'} ? '식물' : '장소')) + ' ' + ${categoryCount.count()}"></span><span th:unless="${status.last}"> · </span>
+        </th:block>
+      </span>
     </div>
-  </div>
-  <div class="card bg-base-100 shadow-xl">
-    <div class="card-body">
-      <h2 class="card-title">관리자 대시보드</h2>
-      <p>왼쪽 사이드바에서 놀이기구/크롤링 스케줄 관리 및 콘텐츠 조회 화면으로 이동할 수 있습니다.</p>
-    </div>
-  </div>
-    </main>
-  </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='dashboard')}"></div>
-</div>
+  </section>
+</main>
+<script th:src="@{/admin/assets/vendor/chart.umd.min.js}"></script>
+<script>
+  (function () {
+    var canvas = document.getElementById('failure-chart');
+    if (!canvas || typeof Chart === 'undefined') {
+      return;
+    }
+    var labels = canvas.dataset.labels.split(',');
+    var values = canvas.dataset.values.split(',').map(Number);
+
+    function readColor(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function applyColors(chart) {
+      var accent = readColor('--accent');
+      var muted = readColor('--muted');
+      var line = readColor('--line');
+      var dataset = chart.data.datasets[0];
+      dataset.borderColor = accent;
+      dataset.backgroundColor = readColor('--accent-soft');
+      dataset.pointBackgroundColor = accent;
+      chart.options.scales.x.ticks.color = muted;
+      chart.options.scales.y.ticks.color = muted;
+      chart.options.scales.x.grid.color = line;
+      chart.options.scales.y.grid.color = line;
+      chart.update('none');
+    }
+
+    var chart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{label: 'AI 추천 실패', data: values, fill: true, tension: 0.3, borderWidth: 2, pointRadius: 3}]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {legend: {display: false}},
+        scales: {
+          x: {ticks: {}, grid: {}},
+          y: {beginAtZero: true, ticks: {precision: 0}, grid: {}}
+        }
+      }
+    });
+    applyColors(chart);
+
+    // 테마 전환은 data-theme 속성 변경 또는 OS 설정 변경으로 일어나므로 둘 다 감지해 색을 다시 읽는다.
+    new MutationObserver(function () { applyColors(chart); })
+        .observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { applyColors(chart); });
+  })();
+</script>
 </body>
 </html>

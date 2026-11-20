@@ -62,6 +62,7 @@ public class SecurityConfig {
         .securityMatcher("/admin/**")
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(SecurityPathConstants.ADMIN_LOGIN_PATH).permitAll()
+            .requestMatchers(SecurityPathConstants.ADMIN_ASSET_PATHS).permitAll()
             .anyRequest().hasRole("ADMIN"))
         .userDetailsService(adminDetailsService)
         .formLogin(form -> form

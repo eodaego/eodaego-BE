@@ -14,7 +14,7 @@ public class AdminDashboardController {
 
   @GetMapping("/admin/dashboard")
   public String dashboard(Model model) {
-    model.addAttribute("aiHealth", adminDashboardService.getAiHealthStatus());
+    model.addAttribute("dashboard", adminDashboardService.getDashboard());
     return "admin/dashboard";
   }
 }

@@ -1,68 +1,80 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>시설 관리 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">시설 관리</h2>
-        <div class="flex gap-2">
-          <a th:href="@{/admin/facility/new}" class="btn btn-primary btn-sm">시설 등록</a>
-          <form th:action="@{/admin/facility/import}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-outline btn-sm">xlsx 임포트</button>
-          </form>
-        </div>
+<html th:replace="~{admin/fragments/layout :: page('시설 관리', 'facility', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>시설 관리</h1>
+    <div class="spacer"></div>
+    <div class="tools">
+      <a th:href="@{/admin/facility/new}" class="btn primary">시설 등록</a>
+      <form th:action="@{/admin/facility/import}" method="post" data-confirm="xlsx 파일에서 시설을 임포트합니다. 계속할까요?">
+        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="btn">xlsx 임포트</button>
+      </form>
+    </div>
+  </div>
+  <div th:replace="~{admin/fragments/crawl-result :: single(result=${crawlResult})}"></div>
+  <div class="toolbar">
+    <form id="facility-search" th:action="@{/admin/facility}" method="get">
+      <label class="search" style="min-width:220px">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" name="keyword" th:value="${keyword}" placeholder="시설명·코드 검색" aria-label="시설명·코드 검색"
+               hx-get="/admin/facility" hx-target="#facility-list" hx-push-url="true"
+               hx-trigger="input changed delay:300ms, search" hx-include="#facility-sort-state"/>
+      </label>
+    </form>
+  </div>
+  <div id="facility-list">
+    <th:block th:fragment="listRegion">
+      <div id="facility-sort-state">
+        <input type="hidden" form="facility-search" name="sort" th:value="${sort ?: ''}"/>
+        <input type="hidden" form="facility-search" name="direction" th:value="${direction ?: ''}"/>
       </div>
-      <div th:replace="~{admin/fragments/crawl-result :: single(result=${crawlResult})}"></div>
-      <div class="overflow-x-auto bg-base-100 rounded-box shadow">
-        <table class="table">
+      <div class="tools">
+        <span class="subtitle" th:text="'총 ' + ${page.totalElements} + '건'"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
           <thead>
           <tr>
-            <th>이름</th>
-            <th>카테고리</th>
-            <th>코드</th>
-            <th>유형</th>
-            <th>소개</th>
-            <th>위도</th>
-            <th>경도</th>
-            <th>수정일시</th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('이름', 'name')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('카테고리', 'category')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('코드', 'code')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('유형', 'facilityType')}"></th>
+            <th>소개</th><th>위도</th><th>경도</th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('수정일시', 'updatedAt')}"></th>
             <th></th>
           </tr>
           </thead>
           <tbody>
-          <tr th:each="facility : ${facilities}">
+          <tr th:each="facility : ${page.content}">
             <td th:text="${facility.name()}"></td>
             <td th:text="${facility.category()}"></td>
             <td th:text="${facility.code()}"></td>
             <td th:text="${facility.facilityType()}"></td>
             <td th:text="${facility.intro()}"></td>
-            <td th:text="${facility.latitude()}"></td>
-            <td th:text="${facility.longitude()}"></td>
-            <td th:text="${facility.updatedAt()}"></td>
-            <td class="flex gap-2">
-              <a th:href="@{'/admin/facility/' + ${facility.id()} + '/edit'}" class="btn btn-outline btn-xs">수정</a>
-              <form th:action="@{'/admin/facility/' + ${facility.id()} + '/delete'}" method="post">
-                <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <button type="submit" class="btn btn-outline btn-error btn-xs">삭제</button>
-              </form>
+            <td class="numeric" th:text="${facility.latitude()}"></td>
+            <td class="numeric" th:text="${facility.longitude()}"></td>
+            <td th:text="${#temporals.format(facility.updatedAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+              <div class="actions">
+                <a th:href="@{'/admin/facility/' + ${facility.id()} + '/edit'}" class="btn sm">수정</a>
+                <form th:action="@{'/admin/facility/' + ${facility.id()} + '/delete'}" method="post"
+                      th:attr="data-confirm='시설 ' + ${facility.name()} + '을(를) 삭제합니다. 되돌릴 수 없습니다.'">
+                  <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                  <button type="submit" class="btn sm danger">삭제</button>
+                </form>
+              </div>
             </td>
           </tr>
           </tbody>
         </table>
+        <div class="empty" th:if="${#lists.isEmpty(page.content)}">조건에 맞는 시설이 없습니다.</div>
       </div>
-    </main>
+      <div th:replace="~{admin/fragments/components :: pager(${page})}"></div>
+    </th:block>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='facility')}"></div>
-</div>
+</main>
 </body>
 </html>
