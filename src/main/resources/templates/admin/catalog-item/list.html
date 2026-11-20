@@ -1,70 +1,108 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>도감 관리 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">도감 관리</h2>
-        <div class="flex gap-2">
-          <form th:action="@{/admin/catalog/crawl}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-outline btn-sm">AI 서버 원천 수집</button>
-          </form>
-          <form th:action="@{/admin/catalog/items/sync}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-primary btn-sm">도감 동기화</button>
-          </form>
-        </div>
-      </div>
-      <div th:replace="~{admin/fragments/crawl-result :: catalog(result=${catalogCrawlResult})}"></div>
-      <div th:replace="~{admin/fragments/crawl-result :: single(result=${crawlResult})}"></div>
-      <form th:action="@{/admin/catalog/items}" method="get" class="mb-4">
-        <select name="category" class="select select-bordered select-sm" onchange="this.form.submit()">
-          <option value="" th:selected="${selectedCategory == null or selectedCategory == ''}">전체 카테고리</option>
-          <option value="ANIMAL" th:selected="${selectedCategory == 'ANIMAL'}">동물</option>
-          <option value="PLANT" th:selected="${selectedCategory == 'PLANT'}">식물</option>
-          <option value="PLACE" th:selected="${selectedCategory == 'PLACE'}">장소</option>
-        </select>
+<html th:replace="~{admin/fragments/layout :: page('도감 관리', 'catalog-items', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>도감 관리</h1>
+    <div class="spacer"></div>
+    <div class="tools">
+      <form th:action="@{/admin/catalog/crawl}" method="post">
+        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="btn">AI 서버 원천 수집</button>
       </form>
-      <div class="overflow-x-auto bg-base-100 rounded-box shadow">
-        <table class="table">
-          <thead>
-          <tr>
-            <th>카테고리</th>
-            <th>발번</th>
-            <th>이름</th>
-            <th>상태</th>
-            <th>어린이 설명</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="item : ${items}">
-            <td th:text="${item.category()}"></td>
-            <td th:text="${item.sequenceNumber()}"></td>
-            <td th:text="${item.name()}"></td>
-            <td th:text="${item.status()}"></td>
-            <td th:text="${#strings.isEmpty(item.childDescription())} ? '미작성' : '작성됨'"></td>
-            <td>
-              <a th:href="@{'/admin/catalog/items/' + ${item.id()} + '/edit'}" class="btn btn-outline btn-xs">수정</a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </main>
+      <form th:action="@{/admin/catalog/items/sync}" method="post">
+        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="btn primary">도감 동기화</button>
+      </form>
+    </div>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='catalog-items')}"></div>
-</div>
+  <div th:replace="~{admin/fragments/crawl-result :: catalog(result=${catalogCrawlResult})}"></div>
+  <div th:replace="~{admin/fragments/crawl-result :: single(result=${crawlResult})}"></div>
+  <div class="toolbar">
+    <form id="catalog-search" th:action="@{/admin/catalog/items}" method="get">
+      <label class="search" style="min-width:220px">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" name="keyword" th:value="${query.keyword}" placeholder="이름 검색" aria-label="이름 검색"
+               hx-get="/admin/catalog/items" hx-target="#catalog-list" hx-push-url="true"
+               hx-trigger="input changed delay:300ms, search" hx-include="#catalog-filter-state"/>
+      </label>
+    </form>
+  </div>
+  <div id="catalog-list">
+    <th:block th:fragment="listRegion"
+              th:with="categoryValue=${query.category ?: ''}, keywordValue=${query.keyword ?: ''},
+                       sortValue=${query.sort ?: ''}, directionValue=${query.direction ?: ''}">
+      <div id="catalog-filter-state">
+        <input type="hidden" form="catalog-search" name="category" th:value="${categoryValue}"/>
+        <input type="hidden" form="catalog-search" name="onlyMissingChildDescription" th:value="${query.onlyMissingChildDescription}"/>
+        <input type="hidden" form="catalog-search" name="sort" th:value="${sortValue}"/>
+        <input type="hidden" form="catalog-search" name="direction" th:value="${directionValue}"/>
+      </div>
+      <div class="tools">
+        <a th:each="chip : ${ {{'', '전체'}, {'ANIMAL', '동물'}, {'PLANT', '식물'}, {'PLACE', '장소'}} }"
+           class="chip" th:classappend="${categoryValue == chip[0]} ? 'on'" th:text="${chip[1]}"
+           th:href="@{/admin/catalog/items(category=${chip[0]}, onlyMissingChildDescription=${query.onlyMissingChildDescription}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}"
+           th:attr="hx-get=@{/admin/catalog/items(category=${chip[0]}, onlyMissingChildDescription=${query.onlyMissingChildDescription}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}"
+           hx-target="#catalog-list" hx-push-url="true"></a>
+        <a class="chip" th:classappend="${query.onlyMissingChildDescription} ? 'on'"
+           th:with="toggledHref=@{/admin/catalog/items(category=${categoryValue}, onlyMissingChildDescription=${!query.onlyMissingChildDescription}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}"
+           th:href="${toggledHref}" th:attr="hx-get=${toggledHref}"
+           hx-target="#catalog-list" hx-push-url="true">어린이 설명 미작성만</a>
+        <div class="spacer"></div>
+        <span class="subtitle" th:text="'총 ' + ${page.totalElements} + '건'"></span>
+        <a class="btn sm"
+           th:href="@{/admin/catalog/items/export(category=${categoryValue}, onlyMissingChildDescription=${query.onlyMissingChildDescription}, keyword=${keywordValue}, sort=${sortValue}, direction=${directionValue})}">CSV 내보내기</a>
+      </div>
+      <form th:action="@{/admin/catalog/items/bulk-status}" method="post" data-bulk-form="">
+        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="bulk" data-bulk-bar="">
+          <b><span data-bulk-count="">0</span>개 선택됨</b>
+          <button type="submit" name="status" value="AVAILABLE" class="btn sm">노출</button>
+          <button type="submit" name="status" value="SUSPENDED" class="btn sm"
+                  data-confirm="선택한 항목의 노출을 중지할까요? 앱 도감에서 보이지 않게 됩니다.">노출 중지</button>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" data-bulk-all="" aria-label="전체 선택"/></th>
+              <th th:replace="~{admin/fragments/components :: sortHeader('카테고리', 'category')}"></th>
+              <th th:replace="~{admin/fragments/components :: sortHeader('발번', 'sequenceNumber')}"></th>
+              <th th:replace="~{admin/fragments/components :: sortHeader('이름', 'name')}"></th>
+              <th th:replace="~{admin/fragments/components :: sortHeader('상태', 'status')}"></th>
+              <th th:replace="~{admin/fragments/components :: sortHeader('어린이 설명', 'written')}"></th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${page.content}">
+              <td>
+                <input type="checkbox" name="catalogItemIds" th:value="${item.id()}" data-bulk-row="" aria-label="선택"
+                       th:disabled="${item.status().name() == 'RETIRED'}"/>
+              </td>
+              <td th:text="${item.category().name() == 'ANIMAL' ? '동물' : (item.category().name() == 'PLANT' ? '식물' : '장소')}"></td>
+              <td class="numeric" th:text="${item.sequenceNumber()}"></td>
+              <td th:text="${item.name()}"></td>
+              <td>
+                <span class="badge"
+                      th:classappend="${item.status().name() == 'AVAILABLE'} ? 'badge-ok' : (${item.status().name() == 'SUSPENDED'} ? 'badge-warn' : 'badge-bad')"
+                      th:text="${item.status().name() == 'AVAILABLE' ? '노출' : (item.status().name() == 'SUSPENDED' ? '숨김' : '운영 종료')}"></span>
+              </td>
+              <td>
+                <span th:if="${#strings.isEmpty(#strings.trim(item.childDescription()))}" class="subtitle">미작성</span>
+                <span th:unless="${#strings.isEmpty(#strings.trim(item.childDescription()))}" class="badge badge-info">작성됨</span>
+              </td>
+              <td><a th:href="@{'/admin/catalog/items/' + ${item.id()} + '/edit'}" class="btn sm">수정</a></td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="empty" th:if="${#lists.isEmpty(page.content)}">조건에 맞는 도감 항목이 없습니다.</div>
+        </div>
+      </form>
+      <div th:replace="~{admin/fragments/components :: pager(${page})}"></div>
+    </th:block>
+  </div>
+</main>
 </body>
 </html>

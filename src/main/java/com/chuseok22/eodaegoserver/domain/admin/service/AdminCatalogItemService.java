@@ -1,36 +1,107 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
 import com.chuseok22.eodaegoserver.domain.admin.CrawlJobType;
+import com.chuseok22.eodaegoserver.domain.admin.dto.request.CatalogItemListQuery;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminActionResult;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminPageView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CatalogItemEditView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
+import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
+import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogItemService;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogSyncResult;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminCatalogItemService {
 
+  private static final List<String> CSV_HEADER = List.of("카테고리", "발번", "이름", "상태", "특징 설명", "어린이 설명");
+  private static final Comparator<CatalogItemResponse> DEFAULT_COMPARATOR =
+      Comparator.comparing(CatalogItemResponse::category).thenComparingInt(CatalogItemResponse::sequenceNumber);
+  private static final Map<String, Comparator<CatalogItemResponse>> SORT_COMPARATORS = Map.of(
+      "category", Comparator.comparing(CatalogItemResponse::category),
+      "sequenceNumber", Comparator.comparingInt(CatalogItemResponse::sequenceNumber),
+      "name", Comparator.comparing(CatalogItemResponse::name, String.CASE_INSENSITIVE_ORDER),
+      "status", Comparator.comparing(CatalogItemResponse::status),
+      "written", Comparator.comparing((CatalogItemResponse item) -> !isChildDescriptionMissing(item))
+  );
+
   private final CatalogItemService catalogItemService;
+  private final CatalogItemRepository catalogItemRepository;
   private final CrawlExecutionLogService crawlExecutionLogService;
 
-  public List<CatalogItemResponse> listItems(String category) {
-    CatalogCategory categoryFilter = parseCategory(category);
-    return catalogItemService.getAllCatalogItems().stream()
-        .filter(catalogItem -> categoryFilter == null || catalogItem.getCategory() == categoryFilter)
-        .map(CatalogItemResponse::from)
+  public AdminPageView<CatalogItemResponse> listItems(CatalogItemListQuery query) {
+    return AdminPageView.of(findFilteredSortedItems(query), query.page(), AdminListSupport.PAGE_SIZE);
+  }
+
+  // 도감 항목은 소규모 테이블이라 조건에 맞는 전체 결과를 메모리에 올려 CSV로 만든다고 가정한다.
+  public byte[] exportItemsCsv(CatalogItemListQuery query) {
+    List<List<String>> rows = findFilteredSortedItems(query).stream()
+        .map(item -> List.of(
+            item.category().name(),
+            String.valueOf(item.sequenceNumber()),
+            item.name(),
+            item.status().name(),
+            Objects.requireNonNullElse(item.feature(), ""),
+            Objects.requireNonNullElse(item.childDescription(), "")))
         .toList();
+    return AdminCsvWriter.write(CSV_HEADER, rows);
+  }
+
+  @Transactional
+  public AdminActionResult bulkChangeStatus(List<UUID> catalogItemIds, CatalogItemStatus status) {
+    if (catalogItemIds == null || catalogItemIds.isEmpty()) {
+      return new AdminActionResult(false, "상태를 변경할 항목을 선택해 주세요.");
+    }
+    if (status != CatalogItemStatus.AVAILABLE && status != CatalogItemStatus.SUSPENDED) {
+      log.warn("관리자 도감 일괄 상태 변경 거부. 허용되지 않은 상태: {}", status);
+      return new AdminActionResult(false, "노출 또는 노출 중지로만 변경할 수 있습니다.");
+    }
+    int requestedCount = (int) catalogItemIds.stream().distinct().count();
+    List<CatalogItem> changeTargets = catalogItemRepository.findAllById(catalogItemIds).stream()
+        .filter(catalogItem -> catalogItem.getStatus() != CatalogItemStatus.RETIRED)
+        .filter(catalogItem -> catalogItem.getStatus() != status)
+        .toList();
+    changeTargets.forEach(catalogItem -> catalogItem.updateStatus(status));
+    int skippedCount = requestedCount - changeTargets.size();
+    log.info("관리자 도감 일괄 상태 변경 완료. status={}, 변경 {}건, 건너뜀 {}건", status, changeTargets.size(), skippedCount);
+    String statusLabel = status == CatalogItemStatus.AVAILABLE ? "노출" : "노출 중지";
+    String skippedMessage = skippedCount > 0 ? " (운영 종료·이미 같은 상태·존재하지 않는 항목 " + skippedCount + "건 제외)" : "";
+    return new AdminActionResult(true, changeTargets.size() + "건을 " + statusLabel + " 상태로 변경했습니다." + skippedMessage);
+  }
+
+  private List<CatalogItemResponse> findFilteredSortedItems(CatalogItemListQuery query) {
+    CatalogCategory categoryFilter = parseCategory(query.category());
+    Comparator<CatalogItemResponse> comparator =
+        AdminSortResolver.resolve(SORT_COMPARATORS, query.sort(), query.direction(), DEFAULT_COMPARATOR)
+            .thenComparing(DEFAULT_COMPARATOR);
+    return catalogItemService.getAllCatalogItems().stream()
+        .map(CatalogItemResponse::from)
+        .filter(item -> categoryFilter == null || item.category() == categoryFilter)
+        .filter(item -> !query.onlyMissingChildDescription() || isChildDescriptionMissing(item))
+        .filter(AdminListSupport.keywordFilter(query.keyword(), CatalogItemResponse::name))
+        .sorted(comparator)
+        .toList();
+  }
+
+  // 대시보드 미작성 건수(CatalogItemRepository.countMissingChildDescription)와 같은 정의여야 한다. 한쪽을 바꾸면 함께 수정한다.
+  private static boolean isChildDescriptionMissing(CatalogItemResponse item) {
+    return item.childDescription() == null || item.childDescription().isBlank();
   }
 
   public CatalogItemEditView getEditView(UUID catalogItemId) {
