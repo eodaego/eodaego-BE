@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--/* page: number, totalPages, hasPrevious(), hasNext()를 가진 객체. 링크는 AdminLayoutModelAdvice의 pageUrlTemplate에서 {page}를 치환해 현재 필터를 보존한다. */-->
+<div th:fragment="pager(page)" class="pager" th:if="${page.totalPages > 0}">
+  <span th:text="${page.number + 1} + ' / ' + ${page.totalPages} + ' 페이지'"></span>
+  <div class="pager-links">
+    <a th:if="${page.hasPrevious()}" class="btn sm"
+       th:href="${#strings.replace(pageUrlTemplate, '{page}', '' + (page.number - 1))}">이전</a>
+    <span th:unless="${page.hasPrevious()}" class="btn sm" aria-disabled="true">이전</span>
+    <a th:if="${page.hasNext()}" class="btn sm"
+       th:href="${#strings.replace(pageUrlTemplate, '{page}', '' + (page.number + 1))}">다음</a>
+    <span th:unless="${page.hasNext()}" class="btn sm" aria-disabled="true">다음</span>
+  </div>
+</div>
+
+<!--/* 같은 정렬 키를 다시 누르면 방향이 뒤바뀐다. sortUrlTemplate는 page를 제거하고 sort/direction 자리를 비워 둬 필터를 보존하며 첫 페이지로 돌아간다. */-->
+<th th:fragment="sortHeader(label, key)"
+    th:with="active=${param.sort != null and param.sort[0] == key}, ascending=${param.direction != null and param.direction[0] == 'asc'}">
+  <a th:href="${#strings.replace(#strings.replace(sortUrlTemplate, '{sort}', key), '{direction}', active and ascending ? 'desc' : 'asc')}"
+     th:text="${label} + (${active} ? (${ascending} ? ' ↑' : ' ↓') : '')"></a>
+</th>
+</body>
+</html>
