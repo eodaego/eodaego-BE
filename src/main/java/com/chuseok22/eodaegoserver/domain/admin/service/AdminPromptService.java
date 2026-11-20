@@ -4,13 +4,16 @@ import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateCreate
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderCreateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateProviderUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PromptTemplateUpdateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminPageView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.AiModelListResponseView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.AiModelSummaryView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.PromptTemplateProviderView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.PromptTemplateView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,10 +30,23 @@ import org.springframework.web.client.RestClientResponseException;
 public class AdminPromptService {
 
   private static final String BASE_URI = "/api/v1/prompts";
+  private static final Map<String, Comparator<PromptTemplateView>> SORT_COMPARATORS = Map.of(
+      "name", AdminSortResolver.caseInsensitive(PromptTemplateView::name),
+      "purpose", AdminSortResolver.caseInsensitive(PromptTemplateView::purpose),
+      "active", AdminSortResolver.nullsLast(PromptTemplateView::active),
+      "updatedAt", AdminSortResolver.nullsLast(PromptTemplateView::updatedAt)
+  );
 
   private final RestClient aiServerRestClient;
 
-  public List<PromptTemplateView> findAll() {
+  public AdminPageView<PromptTemplateView> searchPrompts(String keyword, String sort, String direction, int page) {
+    return AdminListSupport.paginate(
+        findAll(),
+        AdminListSupport.keywordFilter(keyword, PromptTemplateView::name),
+        SORT_COMPARATORS, sort, direction, page);
+  }
+
+  private List<PromptTemplateView> findAll() {
     try {
       return aiServerRestClient.get()
           .uri(BASE_URI)

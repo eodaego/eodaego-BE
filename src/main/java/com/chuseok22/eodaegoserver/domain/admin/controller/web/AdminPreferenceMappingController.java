@@ -1,8 +1,10 @@
 package com.chuseok22.eodaegoserver.domain.admin.controller.web;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PreferenceCategoryMappingCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminActionResult;
 import com.chuseok22.eodaegoserver.domain.admin.service.AdminFacilityService;
 import com.chuseok22.eodaegoserver.domain.admin.service.AdminPreferenceMappingService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,11 +29,24 @@ public class AdminPreferenceMappingController {
   private final AdminFacilityService adminFacilityService;
 
   @GetMapping("/admin/recommendation/preference-mappings")
-  public String list(@RequestParam(required = false) String preferenceTag, Model model) {
-    model.addAttribute("mappings", adminPreferenceMappingService.findAll(preferenceTag));
+  public String list(
+      @RequestParam(required = false) String preferenceTag,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) String direction,
+      @RequestParam(defaultValue = "0") int page,
+      HttpServletRequest request,
+      Model model
+  ) {
     model.addAttribute("preferenceTags", PREFERENCE_TAGS);
     model.addAttribute("selectedTag", preferenceTag);
-    return "admin/preference-mappings/list";
+    model.addAttribute("keyword", keyword);
+    model.addAttribute("sort", sort);
+    model.addAttribute("direction", direction);
+    model.addAttribute("page", adminPreferenceMappingService.searchMappings(preferenceTag, keyword, sort, direction, page));
+    return HtmxRequestSupport.isPartialRequest(request)
+        ? "admin/preference-mappings/list :: listRegion"
+        : "admin/preference-mappings/list";
   }
 
   @GetMapping("/admin/recommendation/preference-mappings/new")
@@ -45,7 +61,8 @@ public class AdminPreferenceMappingController {
   public String create(
       @Valid @ModelAttribute("request") PreferenceCategoryMappingCreateRequest request,
       BindingResult bindingResult,
-      Model model
+      Model model,
+      RedirectAttributes redirectAttributes
   ) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("preferenceTags", PREFERENCE_TAGS);
@@ -53,12 +70,14 @@ public class AdminPreferenceMappingController {
       return "admin/preference-mappings/form";
     }
     adminPreferenceMappingService.create(request);
+    redirectAttributes.addFlashAttribute("actionResult", new AdminActionResult(true, "취향 매핑을 등록했습니다."));
     return "redirect:/admin/recommendation/preference-mappings";
   }
 
   @PostMapping("/admin/recommendation/preference-mappings/{mappingId}/delete")
-  public String delete(@PathVariable Integer mappingId) {
+  public String delete(@PathVariable Integer mappingId, RedirectAttributes redirectAttributes) {
     adminPreferenceMappingService.delete(mappingId);
+    redirectAttributes.addFlashAttribute("actionResult", new AdminActionResult(true, "취향 매핑을 삭제했습니다."));
     return "redirect:/admin/recommendation/preference-mappings";
   }
 }

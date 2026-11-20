@@ -1,57 +1,72 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title>놀이기구 관리 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold">놀이기구 관리</h2>
-    <a th:href="@{/admin/facility/amusement-rides/new}" class="btn btn-primary btn-sm">놀이기구 등록</a>
+<html th:replace="~{admin/fragments/layout :: page('놀이기구 관리', 'amusement-rides', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>놀이기구 관리</h1>
+    <div class="spacer"></div>
+    <a th:href="@{/admin/facility/amusement-rides/new}" class="btn primary">놀이기구 등록</a>
   </div>
-  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
-    <table class="table">
-      <thead>
-      <tr>
-        <th>이름</th>
-        <th>위치</th>
-        <th>설명</th>
-        <th>운영 상태</th>
-        <th>수정일시</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="ride : ${rides}">
-        <td th:text="${ride.name()}"></td>
-        <td th:text="${ride.location()}"></td>
-        <td th:text="${ride.description()}"></td>
-        <td>
-          <span class="badge" th:classappend="${ride.active()} ? 'badge-success' : 'badge-ghost'"
-                th:text="${ride.active()} ? '운영중' : '중지'"></span>
-        </td>
-        <td th:text="${ride.updatedAt()}"></td>
-        <td class="flex gap-2">
-          <a th:href="@{'/admin/facility/amusement-rides/' + ${ride.id()} + '/edit'}" class="btn btn-outline btn-xs">수정</a>
-          <form th:action="@{'/admin/facility/amusement-rides/' + ${ride.id()} + '/delete'}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-outline btn-error btn-xs">삭제</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+  <div class="toolbar">
+    <form id="amusement-rides-search" th:action="@{/admin/facility/amusement-rides}" method="get">
+      <label class="search" style="min-width:220px">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" name="keyword" th:value="${keyword}" placeholder="이름·위치 검색" aria-label="이름·위치 검색"
+               hx-get="/admin/facility/amusement-rides" hx-target="#amusement-rides-list" hx-push-url="true"
+               hx-trigger="input changed delay:300ms, search" hx-include="#amusement-rides-sort-state"/>
+      </label>
+    </form>
   </div>
-    </main>
+  <div id="amusement-rides-list">
+    <th:block th:fragment="listRegion">
+      <div id="amusement-rides-sort-state">
+        <input type="hidden" form="amusement-rides-search" name="sort" th:value="${sort ?: ''}"/>
+        <input type="hidden" form="amusement-rides-search" name="direction" th:value="${direction ?: ''}"/>
+      </div>
+      <div class="tools">
+        <span class="subtitle" th:text="'총 ' + ${page.totalElements} + '건'"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+          <tr>
+            <th th:replace="~{admin/fragments/components :: sortHeader('이름', 'name')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('위치', 'location')}"></th>
+            <th>설명</th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('운영 상태', 'active')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('수정일시', 'updatedAt')}"></th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="ride : ${page.content}">
+            <td th:text="${ride.name()}"></td>
+            <td th:text="${ride.location()}"></td>
+            <td class="wrap" th:text="${ride.description()}"></td>
+            <td>
+              <span class="badge" th:classappend="${ride.active()} ? 'badge-ok' : 'badge-warn'"
+                    th:text="${ride.active()} ? '운영중' : '중지'"></span>
+            </td>
+            <td th:text="${#temporals.format(ride.updatedAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+              <div class="actions">
+                <a th:href="@{'/admin/facility/amusement-rides/' + ${ride.id()} + '/edit'}" class="btn sm">수정</a>
+                <form th:action="@{'/admin/facility/amusement-rides/' + ${ride.id()} + '/delete'}" method="post"
+                      th:attr="data-confirm='놀이기구 ' + ${ride.name()} + '을(를) 삭제합니다. 되돌릴 수 없습니다.'">
+                  <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                  <button type="submit" class="btn sm danger">삭제</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="empty" th:if="${#lists.isEmpty(page.content)}">조건에 맞는 놀이기구가 없습니다.</div>
+      </div>
+      <div th:replace="~{admin/fragments/components :: pager(${page})}"></div>
+    </th:block>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='amusement-rides')}"></div>
-</div>
+</main>
 </body>
 </html>

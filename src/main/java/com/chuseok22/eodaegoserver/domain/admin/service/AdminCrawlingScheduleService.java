@@ -2,10 +2,13 @@ package com.chuseok22.eodaegoserver.domain.admin.service;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.CrawlingScheduleCreateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.CrawlingScheduleUpdateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminPageView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlingScheduleView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,10 +25,24 @@ import org.springframework.web.client.RestClientResponseException;
 public class AdminCrawlingScheduleService {
 
   private static final String BASE_URI = "/api/v1/crawling/schedules";
+  private static final Map<String, Comparator<CrawlingScheduleView>> SORT_COMPARATORS = Map.of(
+      "jobId", AdminSortResolver.caseInsensitive(CrawlingScheduleView::jobId),
+      "triggerType", AdminSortResolver.caseInsensitive(CrawlingScheduleView::triggerType),
+      "triggerConfig", AdminSortResolver.caseInsensitive(CrawlingScheduleView::triggerConfig),
+      "active", AdminSortResolver.nullsLast(CrawlingScheduleView::active),
+      "updatedAt", AdminSortResolver.nullsLast(CrawlingScheduleView::updatedAt)
+  );
 
   private final RestClient aiServerRestClient;
 
-  public List<CrawlingScheduleView> findAll() {
+  public AdminPageView<CrawlingScheduleView> searchSchedules(String keyword, String sort, String direction, int page) {
+    return AdminListSupport.paginate(
+        findAll(),
+        AdminListSupport.keywordFilter(keyword, CrawlingScheduleView::jobId),
+        SORT_COMPARATORS, sort, direction, page);
+  }
+
+  private List<CrawlingScheduleView> findAll() {
     try {
       return aiServerRestClient.get()
           .uri(BASE_URI)

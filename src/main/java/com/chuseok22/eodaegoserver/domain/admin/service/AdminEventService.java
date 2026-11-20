@@ -1,11 +1,14 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
 import com.chuseok22.eodaegoserver.domain.admin.CrawlJobType;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminPageView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.CulturalEventView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,10 +23,25 @@ import org.springframework.web.client.RestClientResponseException;
 @RequiredArgsConstructor
 public class AdminEventService {
 
+  private static final Map<String, Comparator<CulturalEventView>> SORT_COMPARATORS = Map.of(
+      "title", AdminSortResolver.caseInsensitive(CulturalEventView::title),
+      "place", AdminSortResolver.caseInsensitive(CulturalEventView::place),
+      "startDate", AdminSortResolver.nullsLast(CulturalEventView::startDate),
+      "endDate", AdminSortResolver.nullsLast(CulturalEventView::endDate),
+      "updatedAt", AdminSortResolver.nullsLast(CulturalEventView::updatedAt)
+  );
+
   private final RestClient aiServerRestClient;
   private final CrawlExecutionLogService crawlExecutionLogService;
 
-  public List<CulturalEventView> listEvents() {
+  public AdminPageView<CulturalEventView> searchEvents(String keyword, String sort, String direction, int page) {
+    return AdminListSupport.paginate(
+        listEvents(),
+        AdminListSupport.keywordFilter(keyword, CulturalEventView::title, CulturalEventView::place),
+        SORT_COMPARATORS, sort, direction, page);
+  }
+
+  private List<CulturalEventView> listEvents() {
     try {
       return aiServerRestClient.get()
           .uri("/api/v1/events")

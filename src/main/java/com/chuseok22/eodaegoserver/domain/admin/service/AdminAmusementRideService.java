@@ -2,10 +2,13 @@ package com.chuseok22.eodaegoserver.domain.admin.service;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.AmusementRideCreateRequest;
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.AmusementRideUpdateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminPageView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.AmusementRideView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,10 +25,23 @@ import org.springframework.web.client.RestClientResponseException;
 public class AdminAmusementRideService {
 
   private static final String BASE_URI = "/api/v1/facility/amusement-rides";
+  private static final Map<String, Comparator<AmusementRideView>> SORT_COMPARATORS = Map.of(
+      "name", AdminSortResolver.caseInsensitive(AmusementRideView::name),
+      "location", AdminSortResolver.caseInsensitive(AmusementRideView::location),
+      "active", Comparator.comparing(AmusementRideView::active),
+      "updatedAt", AdminSortResolver.nullsLast(AmusementRideView::updatedAt)
+  );
 
   private final RestClient aiServerRestClient;
 
-  public List<AmusementRideView> findAll() {
+  public AdminPageView<AmusementRideView> searchRides(String keyword, String sort, String direction, int page) {
+    return AdminListSupport.paginate(
+        findAll(),
+        AdminListSupport.keywordFilter(keyword, AmusementRideView::name, AmusementRideView::location),
+        SORT_COMPARATORS, sort, direction, page);
+  }
+
+  private List<AmusementRideView> findAll() {
     try {
       return aiServerRestClient.get()
           .uri(BASE_URI)

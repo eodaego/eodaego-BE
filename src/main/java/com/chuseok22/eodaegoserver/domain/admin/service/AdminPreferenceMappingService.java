@@ -1,10 +1,13 @@
 package com.chuseok22.eodaegoserver.domain.admin.service;
 
 import com.chuseok22.eodaegoserver.domain.admin.dto.request.PreferenceCategoryMappingCreateRequest;
+import com.chuseok22.eodaegoserver.domain.admin.dto.response.AdminPageView;
 import com.chuseok22.eodaegoserver.domain.admin.dto.response.PreferenceCategoryMappingView;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
 import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -21,10 +24,23 @@ import org.springframework.web.client.RestClientResponseException;
 public class AdminPreferenceMappingService {
 
   private static final String BASE_URI = "/api/v1/recommendation/preference-mappings";
+  private static final Map<String, Comparator<PreferenceCategoryMappingView>> SORT_COMPARATORS = Map.of(
+      "preferenceTag", AdminSortResolver.caseInsensitive(PreferenceCategoryMappingView::preferenceTag),
+      "category", AdminSortResolver.caseInsensitive(PreferenceCategoryMappingView::category),
+      "updatedAt", AdminSortResolver.nullsLast(PreferenceCategoryMappingView::updatedAt)
+  );
 
   private final RestClient aiServerRestClient;
 
-  public List<PreferenceCategoryMappingView> findAll(String preferenceTag) {
+  public AdminPageView<PreferenceCategoryMappingView> searchMappings(
+      String preferenceTag, String keyword, String sort, String direction, int page) {
+    return AdminListSupport.paginate(
+        findAll(preferenceTag),
+        AdminListSupport.keywordFilter(keyword, PreferenceCategoryMappingView::preferenceTag, PreferenceCategoryMappingView::category),
+        SORT_COMPARATORS, sort, direction, page);
+  }
+
+  private List<PreferenceCategoryMappingView> findAll(String preferenceTag) {
     try {
       return aiServerRestClient.get()
           .uri(uriBuilder -> (preferenceTag == null || preferenceTag.isBlank())

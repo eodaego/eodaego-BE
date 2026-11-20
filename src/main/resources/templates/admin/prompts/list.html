@@ -1,68 +1,82 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title>프롬프트 템플릿 관리 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold">프롬프트 템플릿 관리</h2>
-    <a th:href="@{/admin/prompts/new}" class="btn btn-primary btn-sm">템플릿 등록</a>
+<html th:replace="~{admin/fragments/layout :: page('프롬프트 템플릿 관리', 'prompts', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>프롬프트 템플릿 관리</h1>
+    <div class="spacer"></div>
+    <a th:href="@{/admin/prompts/new}" class="btn primary">템플릿 등록</a>
   </div>
-  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
-    <table class="table">
-      <thead>
-      <tr>
-        <th>이름</th>
-        <th>Provider</th>
-        <th>용도</th>
-        <th>활성 여부</th>
-        <th>수정일시</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="prompt : ${prompts}">
-        <td th:text="${prompt.name()}"></td>
-        <td>
-          <span th:if="${#lists.isEmpty(prompt.providers())}" class="badge badge-error badge-outline">
-            provider 없음
-          </span>
-          <span th:each="provider : ${prompt.providers()}" class="badge badge-outline mr-1"
-                th:classappend="${provider.enabled()} ? '' : 'opacity-40'"
-                th:text="${provider.provider()} + ':' + ${provider.model()}"></span>
-        </td>
-        <td th:text="${prompt.purpose()}"></td>
-        <td>
-          <span class="badge" th:classappend="${prompt.active()} ? 'badge-success' : 'badge-ghost'"
-                th:text="${prompt.active()} ? '활성' : '비활성'"></span>
-        </td>
-        <td th:text="${prompt.updatedAt()}"></td>
-        <td class="flex gap-2">
-          <form th:if="${!prompt.active()}" th:action="@{'/admin/prompts/' + ${prompt.id()} + '/activate'}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-outline btn-success btn-xs">활성화</button>
-          </form>
-          <a th:href="@{'/admin/prompts/' + ${prompt.id()} + '/edit'}" class="btn btn-outline btn-xs">수정</a>
-          <form th:action="@{'/admin/prompts/' + ${prompt.id()} + '/delete'}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-outline btn-error btn-xs">삭제</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+  <div class="toolbar">
+    <form id="prompts-search" th:action="@{/admin/prompts}" method="get">
+      <label class="search" style="min-width:220px">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" name="keyword" th:value="${keyword}" placeholder="템플릿 이름 검색" aria-label="템플릿 이름 검색"
+               hx-get="/admin/prompts" hx-target="#prompts-list" hx-push-url="true"
+               hx-trigger="input changed delay:300ms, search" hx-include="#prompts-sort-state"/>
+      </label>
+    </form>
   </div>
-    </main>
+  <div id="prompts-list">
+    <th:block th:fragment="listRegion">
+      <div id="prompts-sort-state">
+        <input type="hidden" form="prompts-search" name="sort" th:value="${sort ?: ''}"/>
+        <input type="hidden" form="prompts-search" name="direction" th:value="${direction ?: ''}"/>
+      </div>
+      <div class="tools">
+        <span class="subtitle" th:text="'총 ' + ${page.totalElements} + '건'"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+          <tr>
+            <th th:replace="~{admin/fragments/components :: sortHeader('이름', 'name')}"></th>
+            <th>Provider</th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('용도', 'purpose')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('활성 여부', 'active')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('수정일시', 'updatedAt')}"></th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="prompt : ${page.content}">
+            <td th:text="${prompt.name()}"></td>
+            <td>
+              <span th:if="${#lists.isEmpty(prompt.providers())}" class="badge badge-bad">provider 없음</span>
+              <span th:each="provider : ${prompt.providers()}" class="tag"
+                    th:classappend="${provider.enabled()} ? '' : 'off'"
+                    th:text="${provider.provider()} + ':' + ${provider.model()}"></span>
+            </td>
+            <td th:text="${prompt.purpose()}"></td>
+            <td>
+              <span class="badge" th:classappend="${prompt.active()} ? 'badge-ok' : 'badge-warn'"
+                    th:text="${prompt.active()} ? '활성' : '비활성'"></span>
+            </td>
+            <td th:text="${#temporals.format(prompt.updatedAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+              <div class="actions">
+                <form th:if="${!prompt.active()}" th:action="@{'/admin/prompts/' + ${prompt.id()} + '/activate'}" method="post"
+                      th:attr="data-confirm='프롬프트 ' + ${prompt.name()} + '을(를) 활성화합니다. 같은 용도의 다른 활성 프롬프트는 비활성화될 수 있습니다.'">
+                  <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                  <button type="submit" class="btn sm">활성화</button>
+                </form>
+                <a th:href="@{'/admin/prompts/' + ${prompt.id()} + '/edit'}" class="btn sm">수정</a>
+                <form th:action="@{'/admin/prompts/' + ${prompt.id()} + '/delete'}" method="post"
+                      th:attr="data-confirm='프롬프트 ' + ${prompt.name()} + '을(를) 삭제합니다. 되돌릴 수 없습니다.'">
+                  <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                  <button type="submit" class="btn sm danger">삭제</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="empty" th:if="${#lists.isEmpty(page.content)}">조건에 맞는 프롬프트 템플릿이 없습니다.</div>
+      </div>
+      <div th:replace="~{admin/fragments/components :: pager(${page})}"></div>
+    </th:block>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='prompts')}"></div>
-</div>
+</main>
 </body>
 </html>

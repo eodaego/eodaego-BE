@@ -1,59 +1,68 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title>취향 매핑 관리 - 어대고 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-</head>
-<body class="min-h-screen bg-base-200">
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle"/>
-  <div class="drawer-content flex flex-col">
-    <div th:replace="~{admin/fragments/layout :: mobileTopbar}"></div>
-    <main class="p-8">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold">취향 매핑 관리</h2>
-    <a th:href="@{/admin/recommendation/preference-mappings/new}" class="btn btn-primary btn-sm">매핑 등록</a>
+<html th:replace="~{admin/fragments/layout :: page('취향 매핑 관리', 'preference-mappings', ~{::main}, ~{})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<main class="page">
+  <div class="head">
+    <h1>취향 매핑 관리</h1>
+    <div class="spacer"></div>
+    <a th:href="@{/admin/recommendation/preference-mappings/new}" class="btn primary">매핑 등록</a>
   </div>
-  <form th:action="@{/admin/recommendation/preference-mappings}" method="get" class="mb-4 flex gap-2 items-end">
-    <div class="form-control">
-      <label class="label"><span class="label-text">태그 필터</span></label>
-      <select name="preferenceTag" class="select select-bordered select-sm" onchange="this.form.submit()">
-        <option value="">전체</option>
+  <div class="toolbar">
+    <form id="preference-mappings-search" th:action="@{/admin/recommendation/preference-mappings}" method="get">
+      <select name="preferenceTag" aria-label="태그 필터" onchange="this.form.submit()">
+        <option value="">전체 태그</option>
         <option th:each="tag : ${preferenceTags}" th:value="${tag}" th:text="${tag}"
                 th:selected="${tag == selectedTag}"></option>
       </select>
-    </div>
-  </form>
-  <div class="overflow-x-auto bg-base-100 rounded-box shadow">
-    <table class="table">
-      <thead>
-      <tr>
-        <th>취향 태그</th>
-        <th>카테고리</th>
-        <th>수정일시</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="mapping : ${mappings}">
-        <td th:text="${mapping.preferenceTag()}"></td>
-        <td th:text="${mapping.category()}"></td>
-        <td th:text="${mapping.updatedAt()}"></td>
-        <td>
-          <form th:action="@{'/admin/recommendation/preference-mappings/' + ${mapping.id()} + '/delete'}" method="post">
-            <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-outline btn-error btn-xs">삭제</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+      <label class="search" style="min-width:220px">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" name="keyword" th:value="${keyword}" placeholder="취향 태그·카테고리 검색" aria-label="취향 태그·카테고리 검색"
+               hx-get="/admin/recommendation/preference-mappings" hx-target="#preference-mappings-list" hx-push-url="true"
+               hx-trigger="input changed delay:300ms, search"
+               hx-include="#preference-mappings-sort-state, #preference-mappings-search [name=preferenceTag]"/>
+      </label>
+    </form>
   </div>
-    </main>
+  <div id="preference-mappings-list">
+    <th:block th:fragment="listRegion">
+      <div id="preference-mappings-sort-state">
+        <input type="hidden" form="preference-mappings-search" name="sort" th:value="${sort ?: ''}"/>
+        <input type="hidden" form="preference-mappings-search" name="direction" th:value="${direction ?: ''}"/>
+      </div>
+      <div class="tools">
+        <span class="subtitle" th:text="'총 ' + ${page.totalElements} + '건'"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+          <tr>
+            <th th:replace="~{admin/fragments/components :: sortHeader('취향 태그', 'preferenceTag')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('카테고리', 'category')}"></th>
+            <th th:replace="~{admin/fragments/components :: sortHeader('수정일시', 'updatedAt')}"></th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="mapping : ${page.content}">
+            <td th:text="${mapping.preferenceTag()}"></td>
+            <td th:text="${mapping.category()}"></td>
+            <td th:text="${#temporals.format(mapping.updatedAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+              <form th:action="@{'/admin/recommendation/preference-mappings/' + ${mapping.id()} + '/delete'}" method="post"
+                    data-confirm="이 취향 매핑을 삭제합니다. 되돌릴 수 없습니다.">
+                <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn sm danger">삭제</button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="empty" th:if="${#lists.isEmpty(page.content)}">조건에 맞는 매핑이 없습니다.</div>
+      </div>
+      <div th:replace="~{admin/fragments/components :: pager(${page})}"></div>
+    </th:block>
   </div>
-  <div th:replace="~{admin/fragments/layout :: sidebarNav(activePage='preference-mappings')}"></div>
-</div>
+</main>
 </body>
 </html>
