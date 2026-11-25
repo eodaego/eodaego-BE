@@ -57,15 +57,25 @@ public class CatalogSyncLock {
     return Optional.of(token);
   }
 
+  /**
+   * 잠금을 해제한다. 호출자의 {@code finally}에서 불리므로 예외를 밖으로 내보내지 않는다.
+   *
+   * <p>여기서 던지면 이미 끝난 동기화의 결과나 앞서 발생한 예외가 해제 실패로 바뀐다.
+   * 해제하지 못한 키는 TTL이 지나면 사라지므로, 실패는 기록만 하고 넘어간다.
+   */
   public void release(String token) {
-    Long released = redisTemplate.execute(RELEASE_SCRIPT, List.of(KEY), token);
+    try {
+      Long released = redisTemplate.execute(RELEASE_SCRIPT, List.of(KEY), token);
 
-    if (released == null || released == 0L) {
-      // TTL이 먼저 만료됐다는 뜻이다. 동기화가 TTL보다 오래 걸렸을 수 있으니 설정값을 점검해야 한다.
-      log.warn("도감 동기화 잠금 해제 실패. 이미 만료되었습니다. token={}", token);
-      return;
+      if (released == null || released == 0L) {
+        // TTL이 먼저 만료됐다는 뜻이다. 동기화가 TTL보다 오래 걸렸을 수 있으니 설정값을 점검해야 한다.
+        log.warn("도감 동기화 잠금 해제 실패. 이미 만료되었습니다. token={}", token);
+        return;
+      }
+
+      log.debug("도감 동기화 잠금 해제. token={}", token);
+    } catch (RuntimeException exception) {
+      log.warn("도감 동기화 잠금 해제 중 오류. TTL 만료를 기다린다. token={}", token, exception);
     }
-
-    log.debug("도감 동기화 잠금 해제. token={}", token);
   }
 }
