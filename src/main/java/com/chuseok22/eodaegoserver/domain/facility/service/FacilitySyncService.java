@@ -26,9 +26,14 @@ public class FacilitySyncService {
   private final FacilityAiClient facilityAiClient;
   private final Clock clock;
 
+  /** AI 서버 조회만 한다. 트랜잭션 밖에서 호출해야 한다. */
+  public List<AiFacilityResponse> fetchExternals() {
+    return facilityAiClient.fetchFacilities();
+  }
+
+  /** 조회해 둔 시설 목록을 DB에 반영한다. 호출자의 트랜잭션에 참여한다. */
   @Transactional
-  public List<Facility> sync() {
-    List<AiFacilityResponse> externals = facilityAiClient.fetchFacilities();
+  public List<Facility> apply(List<AiFacilityResponse> externals) {
     LocalDateTime lastSeenAt = LocalDateTime.now(clock);
 
     Map<Long, Facility> existingByAiFacilityId = facilityRepository.findAll().stream()
