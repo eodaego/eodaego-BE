@@ -78,6 +78,11 @@ public interface CatalogControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "도감 상세 조회 API 최초 작성",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/12"
+      ),
+      @ApiChangeLog(
+          date = "2026-11-14",
+          author = ChangeLogAuthor.KANG_JIYUN,
+          description = "feature/childDescription에 설명 파일 기본값이 반영된다. 그동안 빈 문자열이던 동물 feature가 채워지며, 관리자 수정값이 있으면 여전히 그 값이 우선한다"
       )
   })
   @Operation(

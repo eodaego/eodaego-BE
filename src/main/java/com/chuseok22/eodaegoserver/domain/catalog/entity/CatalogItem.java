@@ -60,9 +60,6 @@ public class CatalogItem extends BaseEntity {
   @Column(nullable = false)
   private CatalogCategory category;
 
-  @Column(nullable = false, columnDefinition = "TEXT")
-  private String childDescription;
-
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private CatalogItemStatus status;
@@ -73,6 +70,16 @@ public class CatalogItem extends BaseEntity {
 
   @Column(columnDefinition = "TEXT")
   private String featureOverride;
+
+  @Column(columnDefinition = "TEXT")
+  private String childDescriptionOverride;
+
+  // 설명 파일(catalog/catalog-descriptions.json)에서 채워지는 기본값. 관리자 수정 대상이 아니다.
+  @Column(columnDefinition = "TEXT")
+  private String defaultFeature;
+
+  @Column(columnDefinition = "TEXT")
+  private String defaultChildDescription;
 
   private Double latitudeOverride;
 
@@ -96,8 +103,22 @@ public class CatalogItem extends BaseEntity {
     if (featureOverride != null) {
       return featureOverride;
     }
+    if (defaultFeature != null) {
+      return defaultFeature;
+    }
     String description = facility != null ? facility.getDescription() : source.getDescription();
     return Objects.requireNonNullElse(description, "");
+  }
+
+  public String getChildDescription() {
+    if (childDescriptionOverride != null) {
+      return childDescriptionOverride;
+    }
+    return Objects.requireNonNullElse(defaultChildDescription, "");
+  }
+
+  public String getOriginalName() {
+    return facility != null ? facility.getName() : source.getName();
   }
 
   public Double getLatitude() {
@@ -119,11 +140,11 @@ public class CatalogItem extends BaseEntity {
   }
 
   public void update(
-      String nameOverride, String featureOverride, String childDescription, CatalogItemStatus status,
+      String nameOverride, String featureOverride, String childDescriptionOverride, CatalogItemStatus status,
       String imageUrlOverride, Double latitudeOverride, Double longitudeOverride) {
     this.nameOverride = nameOverride;
     this.featureOverride = featureOverride;
-    this.childDescription = childDescription;
+    this.childDescriptionOverride = childDescriptionOverride;
     this.status = status;
     this.imageUrlOverride = imageUrlOverride;
     this.latitudeOverride = latitudeOverride;
@@ -132,5 +153,10 @@ public class CatalogItem extends BaseEntity {
 
   public void updateStatus(CatalogItemStatus status) {
     this.status = status;
+  }
+
+  public void updateDefaultDescriptions(String defaultFeature, String defaultChildDescription) {
+    this.defaultFeature = defaultFeature;
+    this.defaultChildDescription = defaultChildDescription;
   }
 }

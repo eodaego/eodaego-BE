@@ -95,6 +95,7 @@ public class AdminCatalogItemController {
       model.addAttribute("item", editView.item());
       model.addAttribute("originalName", editView.originalName());
       model.addAttribute("originalFeature", editView.originalFeature());
+      model.addAttribute("originalChildDescription", editView.originalChildDescription());
       model.addAttribute("originalImageUrl", editView.originalImageUrl());
       model.addAttribute("originalLatitude", editView.originalLatitude());
       model.addAttribute("originalLongitude", editView.originalLongitude());
@@ -117,6 +118,7 @@ public class AdminCatalogItemController {
     model.addAttribute("item", editView.item());
     model.addAttribute("originalName", editView.originalName());
     model.addAttribute("originalFeature", editView.originalFeature());
+    model.addAttribute("originalChildDescription", editView.originalChildDescription());
     model.addAttribute("originalImageUrl", editView.originalImageUrl());
     model.addAttribute("originalLatitude", editView.originalLatitude());
     model.addAttribute("originalLongitude", editView.originalLongitude());

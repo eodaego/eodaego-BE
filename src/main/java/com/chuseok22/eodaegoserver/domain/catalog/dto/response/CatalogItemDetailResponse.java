@@ -21,10 +21,12 @@ public record CatalogItemDetailResponse(
     @Schema(description = "카테고리. ANIMAL(동물), PLANT(식물), PLACE(장소) 중 하나.", example = "ANIMAL")
     CatalogCategory category,
 
-    @Schema(description = "특징 설명", example = "몸길이 20cm 내외의 작은 포유류로, 나무를 잘 탄다.")
+    @Schema(description = "특징 설명. 관리자 지정 값 → 설명 파일 기본값 → AI 원본 설명 순으로 먼저 있는 값이며, 모두 없으면 빈 문자열이다.",
+        example = "몸길이 20cm 내외의 작은 포유류로, 나무를 잘 탄다.")
     String feature,
 
-    @Schema(description = "어린이 눈높이 설명", example = "다람쥐는 도토리를 좋아하는 작은 친구예요!")
+    @Schema(description = "어린이 눈높이 설명. 관리자 지정 값 → 설명 파일 기본값 순으로 먼저 있는 값이며, 모두 없으면 빈 문자열이다.",
+        example = "다람쥐는 도토리를 좋아하는 작은 친구예요!")
     String childDescription,
 
     @Schema(description = "이미지 URL", example = "https://cdn.eodaego.com/animals/squirrel.png")

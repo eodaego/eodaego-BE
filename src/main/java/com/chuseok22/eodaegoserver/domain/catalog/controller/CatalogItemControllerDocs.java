@@ -114,6 +114,11 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "시설 원본이 동식물과 분리된 전용 테이블로 옮겨졌다. 출입문·고객안내센터는 여전히 도감(PLACE)으로 등록되지 않지만, 이제 원본은 저장되어 GET /facilities로 조회된다(이전에는 원본조차 저장되지 않아 지도에서 볼 수 없었다). 응답의 updated 목록에는 더 이상 장소가 포함되지 않는다(created는 정상 포함)",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/65"
+      ),
+      @ApiChangeLog(
+          date = "2026-11-14",
+          author = ChangeLogAuthor.KANG_JIYUN,
+          description = "동기화 직후 설명 파일(catalog-descriptions.json)의 feature/childDescription 기본값을 전체 도감 항목에 반영. 신규 항목도 파일에 설명이 있으면 빈 값이 아닌 기본값으로 바로 내려간다(관리자 수정값은 덮어쓰지 않음)"
       )
   })
   @Operation(
@@ -126,9 +131,12 @@ public interface CatalogItemControllerDocs {
             분리 보관되므로, 수정해둔 필드는 몇 번을 동기화해도 그대로 유지된다.
           - 반대로 관리자가 수정하지 않은 필드는 AI 원본이 바뀌면 그대로 따라간다.
             예를 들어 이름만 수정해둔 항목은, 이름은 유지되면서 이미지·설명은 AI 최신값으로 갱신된다.
-          - 신규 등록된 항목은 childDescription이 빈 문자열("")로 생성되며 관리자가 직접 채워야 한다.
-            AI가 childDescription을 제공하지 않기 때문이다.
-          - name/feature/imageUrl/latitude/longitude는 관리자가 수정하기 전까지 AI 원본 값이 그대로 표시된다.
+          - 동기화가 끝나면 설명 파일(`src/main/resources/catalog/catalog-descriptions.json`)의
+            feature/childDescription을 카테고리 + externalId 기준으로 전체 항목의 **기본값**에 반영한다.
+            관리자 수정값은 건드리지 않는다. 같은 반영은 서버 기동 시에도 한 번 실행된다.
+          - feature는 관리자 수정값 → 설명 파일 기본값 → AI 원본 순, childDescription은 관리자 수정값 →
+            설명 파일 기본값 순으로 먼저 있는 값이 표시된다. 둘 다 없으면 빈 문자열("")이다.
+          - name/imageUrl/latitude/longitude는 관리자가 수정하기 전까지 AI 원본 값이 그대로 표시된다.
           - status는 AVAILABLE로 기본 생성되며, 재동기화로 바뀌지 않는다.
 
           **시설(PLACE) 처리는 동식물과 다르다**
@@ -171,21 +179,27 @@ public interface CatalogItemControllerDocs {
           author = ChangeLogAuthor.KIM_JAEHYEON,
           description = "childDescription 검증을 @NotBlank에서 @NotNull로 완화. 동기화는 childDescription을 빈 문자열로 생성하는데 수정 API만 빈 문자열을 거부해, 아직 설명을 작성하지 않은 항목의 이름·이미지만 고치는 것이 불가능했다. 이제 빈 문자열을 보낼 수 있다(필드 자체는 여전히 필수)",
           issueUrl = "https://github.com/eodaego/eodaego-BE/issues/62"
+      ),
+      @ApiChangeLog(
+          date = "2026-11-14",
+          author = ChangeLogAuthor.KANG_JIYUN,
+          description = "childDescription이 필수 값에서 기본값(설명 파일)을 덮어쓰는 override로 변경. null 또는 빈 문자열을 보내면 설명 파일 기본값으로 원복되며 생략도 가능하다. featureOverride가 null일 때의 기본값도 AI 원본보다 설명 파일 값이 우선한다"
       )
   })
   @Operation(
       summary = "도감 항목 통합 수정",
       description = """
-          AI 원본 대신 사용할 값(xxxOverride)과 관리자 전용 값(childDescription/status)을 한 번에 수정한다.
+          기본값 대신 사용할 값(xxxOverride, childDescription)과 관리자 전용 값(status)을 한 번에 수정한다.
           category/externalId는 등록 이후 변경할 수 없어 이 요청에 포함되지 않는다.
 
-          - **xxxOverride에 null을 보내면 그 필드는 AI 원본 값을 따른다(원복).** 값을 보내면 그 값이
-            AI 원본 대신 표시되며, 이후 동기화로 덮어쓰이지 않는다.
+          - **xxxOverride에 null을 보내면 그 필드는 기본값을 따른다(원복).** 값을 보내면 그 값이
+            기본값 대신 표시되며, 이후 동기화나 설명 파일 변경으로 덮어쓰이지 않는다.
+          - 기본값은 name/imageUrl/latitude/longitude는 AI 원본, feature는 설명 파일 값(없으면 AI 원본)이다.
           - 예를 들어 nameOverride만 채우고 imageUrlOverride를 null로 두면, 이름은 지정한 값으로 고정되고
             이미지는 AI가 바꿀 때마다 최신값을 따라간다.
-          - childDescription과 status는 AI가 제공하지 않는 관리자 전용 값이라 원복 개념이 없고 필드 자체는 필수다.
-            다만 childDescription은 아직 작성 전이면 빈 문자열("")을 보내면 된다. 동기화로 생성된 항목도
-            빈 문자열로 시작하므로, 설명을 쓰지 않은 상태에서 이름·이미지만 수정할 수 있다.
+          - childDescription도 override처럼 동작한다. null 또는 빈 문자열("")을 보내거나 생략하면
+            설명 파일의 기본 어린이 설명을 따르고(없으면 빈 문자열), 값을 보내면 그 값이 표시된다.
+          - status는 AI가 제공하지 않는 관리자 전용 값이라 원복 개념이 없고 필드 자체는 필수다.
           - 이 API는 전체 교체 방식이다. 생략한 xxxOverride는 "유지"가 아니라 "null로 설정(원복)"으로
             처리되므로, 유지하려는 override 값도 함께 보내야 한다.
           - Authorization: Bearer {accessToken} 헤더가 반드시 필요하다.
@@ -194,7 +208,7 @@ public interface CatalogItemControllerDocs {
   )
   @ApiResponses({
       @ApiResponse(responseCode = "204", description = "수정 성공"),
-      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(childDescription 누락, status 누락 등). errorCode: INVALID_REQUEST",
+      @ApiResponse(responseCode = "400", description = "요청 값 검증 실패(status 누락 등). errorCode: INVALID_REQUEST",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "401", description = "Authorization 헤더가 없거나 accessToken이 유효하지 않음. errorCode: UNAUTHORIZED",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
