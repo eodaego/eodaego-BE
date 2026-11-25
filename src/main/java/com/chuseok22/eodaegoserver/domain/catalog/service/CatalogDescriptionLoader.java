@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
@@ -67,16 +69,23 @@ public class CatalogDescriptionLoader {
       }
     }
 
+    // 병합된 값으로는 중복을 판정할 수 없다. 설명이 공백인 항목은 normalize가 null로 바꾸므로
+    // 뒤따르는 중복이 그대로 통과한다. 어린이 설명 파일 안에서 본 키를 따로 모아 판정한다.
+    Set<String> childKeys = new HashSet<>();
+
     for (CatalogDescriptionEntry entry : childEntries) {
-      CatalogDescriptionEntry existing = merged.get(keyOf(entry));
-      if (existing == null) {
-        merged.put(keyOf(entry), entry);
-        continue;
-      }
-      if (existing.childDescription() != null) {
+      String key = keyOf(entry);
+      if (!childKeys.add(key)) {
         throw duplicateEntry(CHILD_DESCRIPTIONS_PATH, entry);
       }
-      merged.put(keyOf(entry), new CatalogDescriptionEntry(
+
+      CatalogDescriptionEntry existing = merged.get(key);
+      if (existing == null) {
+        merged.put(key, entry);
+        continue;
+      }
+
+      merged.put(key, new CatalogDescriptionEntry(
           existing.category(),
           existing.externalId(),
           existing.name() != null ? existing.name() : entry.name(),
