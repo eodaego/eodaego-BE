@@ -112,9 +112,9 @@ public class AdminCatalogItemService {
     boolean isPlace = catalogItem.getFacility() != null;
 
     String originalName = catalogItem.getOriginalName();
-    String aiFeature = isPlace ? catalogItem.getFacility().getDescription() : catalogItem.getSource().getDescription();
-    String originalFeature = Objects.requireNonNullElse(
-        Objects.requireNonNullElse(catalogItem.getDefaultFeature(), aiFeature), "");
+    String aiFeature = Objects.requireNonNullElse(
+        isPlace ? catalogItem.getFacility().getDescription() : catalogItem.getSource().getDescription(), "");
+    String originalFeature = Objects.requireNonNullElse(catalogItem.getDefaultFeature(), aiFeature);
     String originalChildDescription = Objects.requireNonNullElse(catalogItem.getDefaultChildDescription(), "");
     String originalImageUrl = isPlace ? null : catalogItem.getSource().getImageUrl();
     Double originalLatitude = isPlace ? catalogItem.getFacility().getLatitude() : null;
