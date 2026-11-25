@@ -25,10 +25,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
+// 설명 기본값만 갱신할 때 관리자 override 컬럼까지 스테일 값으로 덮어쓰지 않도록 변경된 컬럼만 UPDATE한다.
+@DynamicUpdate
 @Table(
     uniqueConstraints = {
         @UniqueConstraint(
