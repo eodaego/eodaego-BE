@@ -131,7 +131,8 @@ public class CourseRecommendationService {
     Course course = Course.builder()
         .title(aiCourse.title())
         .tagLabels(aiCourse.tagLabels())
-        .interestTypes(interestTypes)
+        // interestTypes는 건너뛰기(null)를 허용하지만 @Builder.Default는 명시적 null을 막지 못하므로 빈 목록으로 저장하고, 코스마다 별도 리스트를 둬 엔티티 간 컬렉션 공유를 피한다.
+        .interestTypes(interestTypes == null ? new ArrayList<>() : new ArrayList<>(interestTypes))
         .estimatedDurationMinutes(aiCourse.estimatedDurationMinutes())
         .entrance(entrance)
         .exit(exit)
