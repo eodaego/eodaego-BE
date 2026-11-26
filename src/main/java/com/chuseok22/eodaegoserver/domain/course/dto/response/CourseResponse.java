@@ -16,7 +16,7 @@ public record CourseResponse(
     @Schema(description = "코스 제목", example = "동물 만나러 가는 길")
     String title,
 
-    @Schema(description = "코스 관심 태그 목록", example = "[\"ANIMAL\", \"NATURE\"]")
+    @Schema(description = "코스 관심 태그 목록. 추천 요청에서 interestTypes를 건너뛰었으면(null 또는 생략) 빈 배열([])로 반환하며 null은 반환하지 않는다.", example = "[\"ANIMAL\", \"NATURE\"]")
     List<InterestType> interestTypes,
 
     @Schema(description = "코스 특징을 요약하는 짧은 태그 목록. AI가 코스마다 1~3개 생성한다.", example = "[\"동물듬뿍\", \"산책하기 좋은 코스\"]")
