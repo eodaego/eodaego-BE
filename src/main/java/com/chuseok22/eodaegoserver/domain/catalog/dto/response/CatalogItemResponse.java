@@ -20,11 +20,11 @@ public record CatalogItemResponse(
     @Schema(description = "이름. 관리자가 지정한 값이 있으면 그 값, 없으면 AI 원본 이름.", example = "사자")
     String name,
 
-    @Schema(description = "특징 설명. 관리자가 지정한 값이 있으면 그 값, 없으면 AI 원본 설명(없으면 빈 문자열).",
+    @Schema(description = "특징 설명. 관리자가 지정한 값 → 설명 파일 기본값 → AI 원본 설명 순으로 먼저 있는 값(모두 없으면 빈 문자열).",
         example = "무리를 지어 사는 대형 고양잇과 동물이다.")
     String feature,
 
-    @Schema(description = "어린이 눈높이 설명. AI가 제공하지 않아 관리자가 직접 작성한다.",
+    @Schema(description = "어린이 눈높이 설명. 관리자가 지정한 값이 있으면 그 값, 없으면 설명 파일 기본값(없으면 빈 문자열). AI는 제공하지 않는다.",
         example = "사자는 갈기가 멋진 초원의 왕이에요!")
     String childDescription,
 

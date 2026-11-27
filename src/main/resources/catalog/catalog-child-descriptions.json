@@ -1,0 +1,2006 @@
+[
+  {
+    "category": "ANIMAL",
+    "externalId": 1,
+    "name": "유라시아수달",
+    "childDescription": "강과 호수에서 헤엄치며 사는 동물이에요. 발가락 사이에 물갈퀴가 있어서 물고기를 잘 잡아요. 우리나라에도 살지만 수가 줄어 보호하고 있어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 2,
+    "name": "바위너구리",
+    "childDescription": "이름은 너구리지만 코끼리와 더 가까운 친척이에요. 발바닥이 말랑말랑하고 촉촉해서 가파른 바위도 미끄러지지 않고 올라가요. 아침에는 바위 위에서 햇볕을 쬐며 몸을 데워요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 3,
+    "name": "코먼마모셋",
+    "childDescription": "손바닥만 한 아주 작은 원숭이예요. 귀 옆에 흰 털 뭉치가 붙어 있고 꼬리에는 고리 무늬가 있어요. 아빠와 형제들이 함께 새끼를 업고 키워요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 4,
+    "name": "알락꼬리여우원숭이",
+    "childDescription": "마다가스카르섬에만 사는 원숭이예요. 검은색과 흰색 고리가 번갈아 있는 긴 꼬리가 특징이에요. 아침이면 팔을 활짝 벌리고 앉아 햇볕을 쬐어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 5,
+    "name": "트리포큐파인",
+    "childDescription": "나무 위에서 사는 가시투성이 동물이에요. 꼬리로 나뭇가지를 감아 쥘 수 있어서 나무를 잘 타요. 무서울 때는 가시를 바짝 세워 몸을 지켜요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 6,
+    "name": "벌거숭이두더지쥐",
+    "childDescription": "땅속에 굴을 파고 사는 쥐예요. 털이 거의 없어서 분홍색 주름진 피부가 그대로 보여요. 입 밖으로 나온 앞니로 흙을 파내고, 꿀벌처럼 여왕 한 마리만 새끼를 낳아요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 7,
+    "name": "검은등자칼",
+    "childDescription": "개와 비슷하게 생긴 동물이에요. 등에 검은 털이 안장처럼 덮여 있어서 검은등자칼이라고 불러요. 한번 짝을 지으면 오랫동안 함께 지내요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 8,
+    "name": "스라소니",
+    "childDescription": "귀 끝에 검은 붓털이 뾰족하게 솟은 고양이과 동물이에요. 발이 넓고 털이 수북해서 눈 위를 걸어도 푹 빠지지 않아요. 혼자 다니며 토끼나 노루를 사냥해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 9,
+    "name": "붉은여우",
+    "childDescription": "붉은 털과 끝이 하얀 꼬리를 가진 여우예요. 귀가 아주 밝아서 눈이나 풀 속에 숨은 쥐의 소리를 듣고 폴짝 뛰어올라 덮쳐요. 우리나라에서는 거의 사라져 다시 늘리는 일을 하고 있어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 10,
+    "name": "미니말",
+    "childDescription": "사람이 작은 말끼리 짝지어 만든 아주 작은 말이에요. 다 자라도 어깨높이가 1미터가 안 돼요. 성격이 온순하고 똑똑해서 사람과 함께 지내기도 해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 11,
+    "name": "은색기번",
+    "childDescription": "온몸이 은빛 회색 털로 덮인 긴팔원숭이예요. 긴 팔로 나뭇가지를 번갈아 잡으며 옮겨 다니고 땅에는 거의 내려오지 않아요. 아침마다 큰 소리로 노래하듯 울어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 12,
+    "name": "알파카",
+    "childDescription": "높은 산에서 사람과 함께 지내 온 동물이에요. 털이 부드럽고 따뜻해서 옷을 만드는 데 써요. 기분이 나쁘면 침을 뱉기도 해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 13,
+    "name": "노랑뺨기번",
+    "childDescription": "수컷은 검은 털에 뺨만 노랗고, 암컷은 온몸이 황금빛이라 모습이 아주 달라요. 새끼는 밝은 색으로 태어나 자라면서 검게 변해요. 암수가 함께 노래하듯 울어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 14,
+    "name": "과나코",
+    "childDescription": "높은 산과 사막에 사는 야생 낙타 친척이에요. 등은 연한 갈색이고 배는 하얘요. 공기가 희박한 높은 산에서도 숨을 잘 쉴 수 있어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 15,
+    "name": "남아메리카물개",
+    "childDescription": "바위가 많은 바닷가에 사는 물개예요. 뒷지느러미를 앞으로 접을 수 있어서 땅 위에서는 네 발로 걸어 다녀요. 촘촘한 털이 차가운 바다에서 몸을 따뜻하게 지켜 줘요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 16,
+    "name": "다람쥐원숭이",
+    "childDescription": "눈 주위가 하얗고 주둥이가 까매서 가면을 쓴 것처럼 보여요. 수십 마리가 큰 무리를 지어 나무 위를 바쁘게 옮겨 다녀요. 긴 꼬리로 균형을 잡아요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 17,
+    "name": "당나귀",
+    "childDescription": "오래전부터 사람을 도와 짐을 날라 온 동물이에요. 말보다 몸집이 작고 귀가 길어요. 놀라면 도망치기보다 멈춰 서서 주변을 살펴요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 18,
+    "name": "돼지꼬리원숭이",
+    "childDescription": "꼬리가 짧고 돼지 꼬리처럼 위로 동그랗게 말려 있어요. 주로 땅 위에서 무리를 지어 지내요. 열매와 씨앗, 곤충을 먹어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 19,
+    "name": "망토원숭이",
+    "childDescription": "다 자란 수컷은 어깨와 등에 은빛 털이 망토처럼 길게 자라요. 암컷은 몸집이 작고 갈색이에요. 밤이 되면 절벽에 모여서 잠을 자요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 20,
+    "name": "미어캣",
+    "childDescription": "무리가 먹이를 찾는 동안 한 마리가 뒷발로 서서 망을 봐요. 위험한 동물이 나타나면 소리를 내어 친구들에게 알려요. 눈 주위의 검은 털이 햇빛 눈부심을 줄여 줘요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 21,
+    "name": "반달가슴곰",
+    "childDescription": "가슴에 하얀 반달 모양 무늬가 있는 곰이에요. 나무를 잘 타고 도토리와 열매를 즐겨 먹어요. 겨울에는 굴에서 겨울잠을 자고, 우리나라 지리산에서 다시 늘리고 있어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 22,
+    "name": "사자",
+    "childDescription": "고양이과 가운데 유일하게 무리를 지어 사는 동물이에요. 다 자란 수컷은 머리와 목에 갈기가 있어요. 사냥은 주로 암컷들이 힘을 합쳐서 해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 23,
+    "name": "아누비스개코원숭이",
+    "childDescription": "주둥이가 개처럼 길게 튀어나온 원숭이예요. 수십 마리에서 백 마리가 넘는 큰 무리를 지어 살아요. 서로 털을 골라 주며 사이좋게 지내요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 24,
+    "name": "그랜트얼룩말",
+    "childDescription": "굵고 뚜렷한 검은 줄무늬가 있는 얼룩말이에요. 줄무늬 모양이 저마다 조금씩 달라서 서로를 알아보는 데 도움이 돼요. 무리를 지어 다니며 풀을 뜯어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 25,
+    "name": "일본원숭이",
+    "childDescription": "사람을 빼면 가장 북쪽 지역에 사는 원숭이예요. 얼굴과 엉덩이가 붉고 털이 두꺼워요. 추운 겨울에 온천에 들어가 몸을 녹이기도 해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 26,
+    "name": "작은발톱수달",
+    "childDescription": "수달 가운데 몸집이 가장 작아요. 앞발을 사람 손처럼 섬세하게 써서 돌 밑이나 진흙을 더듬어 게와 조개를 잡아요. 가족끼리 모여 살며 여러 가지 소리로 이야기해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 27,
+    "name": "점박이물범",
+    "childDescription": "회색 몸에 검은 점무늬가 흩어져 있는 물범이에요. 뒷다리를 앞으로 굽히지 못해서 땅에서는 배를 끌며 움직여요. 봄부터 가을까지는 우리나라 백령도 바다에서 지내요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 28,
+    "name": "재규어",
+    "childDescription": "아메리카 대륙에서 가장 큰 고양이과 동물이에요. 꽃무늬 안에 작은 점이 들어 있어서 표범과 구별할 수 있어요. 턱 힘이 아주 세고 물을 좋아해 헤엄도 잘 쳐요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 29,
+    "name": "점박이하이에나",
+    "childDescription": "앞다리가 뒷다리보다 길어서 등이 비스듬히 기울어 보여요. 남의 먹이를 빼앗는다고 알려졌지만 사실은 대부분 무리가 직접 사냥해서 먹어요. 웃음소리처럼 들리는 울음소리를 내요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 30,
+    "name": "붉은캥거루",
+    "childDescription": "캥거루 가운데 몸집이 가장 커요. 튼튼한 뒷다리로 한 번에 8미터 가까이 껑충 뛰기도 해요. 암컷은 배에 있는 주머니에서 새끼를 길러요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 31,
+    "name": "아시아코끼리",
+    "childDescription": "아프리카코끼리보다 몸집과 귀가 작고 등이 둥글게 솟아 있어요. 코끝에 손가락 같은 돌기가 있어서 작은 물건도 집을 수 있어요. 하루에 100킬로그램이 넘는 풀과 나뭇잎을 먹어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 32,
+    "name": "토끼",
+    "childDescription": "긴 귀로 작은 소리도 잘 듣고 몸의 열도 내보내요. 눈이 머리 옆쪽에 있어서 넓은 곳을 한눈에 살필 수 있어요. 앞니가 평생 자라기 때문에 건초처럼 거친 먹이를 씹어야 해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 33,
+    "name": "아프리카포큐파인",
+    "childDescription": "몸 뒤쪽이 길고 단단한 흑백 줄무늬 가시로 덮여 있어요. 위험하면 가시를 세우고 속이 빈 꼬리 가시를 흔들어 소리를 내며 경고해요. 가시를 쏘지는 못하고 몸을 뒤로 부딪쳐요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 34,
+    "name": "퓨마",
+    "childDescription": "무늬가 없는 황갈색 털을 가진 큰 고양이과 동물이에요. 새끼 때는 몸에 점무늬가 있다가 자라면서 사라져요. 몸집은 크지만 사자처럼 포효하지 못하고 고양이처럼 가르랑거려요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 35,
+    "name": "벵갈호랑이",
+    "childDescription": "주황색 몸에 검은 줄무늬가 있는 호랑이예요. 줄무늬 모양은 호랑이마다 모두 달라요. 고양이과인데도 물을 좋아해서 헤엄을 잘 쳐요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 36,
+    "name": "흑따오기",
+    "childDescription": "아래로 길게 휘어진 검은 부리가 특징인 새예요. 이 부리로 얕은 물과 진흙을 더듬어 물고기와 개구리를 잡아요. 무리를 지어 나무 위에 둥지를 틀어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 37,
+    "name": "분홍펠리컨",
+    "childDescription": "날개를 펴면 3미터나 되는 커다란 물새예요. 아래 부리에 크게 늘어나는 주머니가 있어서 물고기를 물과 함께 퍼 담은 뒤 물만 흘려보내요. 여러 마리가 반원으로 늘어서서 물고기를 몰기도 해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 38,
+    "name": "두루미",
+    "childDescription": "서 있는 키가 어른 키만큼 큰 새예요. 머리 꼭대기에 붉은 피부가 드러나 있어요. 겨울이면 우리나라를 찾아와 겨울을 보내고, 암수가 날개를 펴고 뛰어오르며 춤추듯 구애해요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 39,
+    "name": "자카스펭귄",
+    "childDescription": "아프리카 남쪽 바닷가에 사는 펭귄이에요. 당나귀 울음과 비슷한 소리를 내요. 배에 있는 검은 점무늬가 펭귄마다 달라요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 40,
+    "name": "해오라기",
+    "childDescription": "몸이 통통하고 목이 짧은 새로, 눈이 빨개요. 다른 백로와 달리 해 질 무렵부터 밤에 활동해요. 물가에 가만히 서 있다가 물고기를 재빨리 낚아채요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 41,
+    "name": "홍부리황새",
+    "childDescription": "붉은 부리와 붉은 다리를 가진 커다란 새예요. 지붕이나 굴뚝 위에 큰 둥지를 틀어요. 울음소리를 거의 내지 못하는 대신 부리를 부딪쳐 딱딱 소리를 내요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 42,
+    "name": "턱수염도마뱀",
+    "childDescription": "목 아래에 가시 같은 비늘이 있어서 턱수염을 기른 것처럼 보여요. 위협을 느끼면 그 부분을 부풀리고 검게 바꿔요. 앞발을 들어 천천히 돌리며 다른 친구에게 신호를 보내요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 43,
+    "name": "리키에너스",
+    "childDescription": "세계에서 가장 큰 도마뱀붙이예요. 나무껍질과 비슷한 얼룩무늬가 있어서 나무에 붙어 있으면 잘 보이지 않아요. 발바닥의 아주 작은 털 덕분에 매끄러운 곳에도 착 달라붙어요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 44,
+    "name": "블루텅스킨크",
+    "childDescription": "이름처럼 혀가 선명한 파란색인 도마뱀이에요. 위협을 받으면 입을 크게 벌려 파란 혀를 내밀고 쉿 소리를 내요. 알이 아니라 새끼를 바로 낳아요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 45,
+    "name": "콘스네이크",
+    "childDescription": "독이 없는 주황빛 뱀이에요. 배에 있는 흑백 체크무늬가 옥수수 낟알을 닮아서 이런 이름이 붙었다고 해요. 먹이를 몸으로 감아 조여서 잡아요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 46,
+    "name": "볼파이톤",
+    "childDescription": "무서우면 머리를 몸 가운데에 숨기고 공처럼 동그랗게 몸을 말아요. 독은 없고 먹이를 몸으로 감아 조여서 잡아요. 입술 주변의 작은 구멍으로 어두운 곳에서도 따뜻한 먹이를 찾아내요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 47,
+    "name": "팬케이크거북",
+    "childDescription": "등딱지가 이름처럼 납작하고 말랑말랑해요. 위험하면 등딱지 속에 숨는 대신 재빨리 바위틈으로 들어가 몸을 끼워 넣어요. 몸이 가벼워서 바위도 잘 올라가요."
+  },
+  {
+    "category": "ANIMAL",
+    "externalId": 48,
+    "name": "레오파드거북",
+    "childDescription": "노란빛 등딱지에 검은 반점이 있어서 표범처럼 보여요. 땅을 파지 않고 덤불 밑이나 다른 동물이 버린 굴에서 쉬어요. 수십 년을 살 만큼 오래 살아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 1,
+    "name": "가막살나무",
+    "childDescription": "봄에 작고 하얀 꽃이 가지 끝에 모여 피어요. 가을이 되면 동그란 열매가 빨갛게 익어요. 추위와 그늘, 매연에도 잘 견디는 튼튼한 나무예요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 2,
+    "name": "가이쯔까향나무",
+    "childDescription": "잎과 가지가 빽빽해서 가위로 모양을 다듬어도 잘 자라요. 담장처럼 줄지어 심어 안쪽을 가려 주는 데 많이 써요. 매연에도 강해서 길가에서도 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 3,
+    "name": "감나무",
+    "childDescription": "가을이면 주황빛으로 익는 감이 열리는 나무예요. 단감과 떫은 감으로 나뉘지만 잘 익으면 둘 다 달아져요. 나무가 단단해서 가구나 바둑판을 만드는 데도 써요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 4,
+    "name": "개나리",
+    "childDescription": "가지 끝이 아래로 축 늘어지며 자라는 나무예요. 추위와 병충해에 잘 견뎌서 울타리로 많이 심어요. 씨앗 말고도 가지를 잘라 꽂으면 뿌리가 내려 새로 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 5,
+    "name": "갯버들",
+    "childDescription": "산골짜기나 물가에서 자라는 작은 버드나무예요. 이른 봄, 잎이 나기도 전에 꽃이 먼저 피어요. 뿌리 근처에서 가지가 여러 갈래로 갈라져 휘어지며 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 6,
+    "name": "구기자나무",
+    "childDescription": "여름에 자주색 꽃이 피는 나무예요. 가을이면 길쭉하고 빨간 열매가 익어요. 마을 근처 둑이나 냇가에서 흔히 볼 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 7,
+    "name": "구상나무",
+    "childDescription": "우리나라에서만 자라는 특별한 나무예요. 한라산이나 지리산처럼 높은 산에서 살아요. 잎 뒷면에 하얀 줄 두 개가 나 있고, 가을이면 원통 모양 솔방울이 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 8,
+    "name": "꼬리조팝나무",
+    "childDescription": "여름에 분홍색 꽃이 길쭉한 송이로 모여 피어요. 다른 조팝나무와 달리 꽃이 분홍색이라 쉽게 구별할 수 있어요. 추위에는 강하지만 메마른 땅에서는 잘 자라지 못해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 9,
+    "name": "낙상홍",
+    "childDescription": "잎이 다 떨어진 뒤에도 빨간 열매가 가지에 다닥다닥 붙어 있어요. 그 모습 때문에 낙상홍이라는 이름이 붙었어요. 열매 빛깔이 고와서 꽃꽂이나 분재에 많이 써요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 10,
+    "name": "낙우송",
+    "childDescription": "아주 크게 자라는 나무로 잎이 깃털처럼 생겼어요. 가을에는 잎이 잔가지째 통째로 떨어져요. 물기가 많은 땅에서는 뿌리가 땅 위로 솟아올라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 11,
+    "name": "눈주목",
+    "childDescription": "위로 곧게 자라지 않고 옆으로 넓게 퍼지는 나무예요. 밑동에서 줄기가 여러 개 나와요. 가을에는 붉은 컵처럼 생긴 열매가 달려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 12,
+    "name": "눈향나무",
+    "childDescription": "땅을 기듯이 낮게 옆으로 퍼지며 자라는 나무예요. 어릴 때는 바늘 모양 잎이 나고 자라면 비늘 모양 잎이 달려요. 가을에는 동그란 열매가 검푸르게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 13,
+    "name": "느릅나무",
+    "childDescription": "키가 아주 크고 전체 모양이 둥근 나무예요. 봄에 잎보다 꽃이 먼저 피어요. 산속 계곡이나 하천 가까이에서 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 14,
+    "name": "느티나무",
+    "childDescription": "가지가 넓게 퍼져 커다란 그늘을 만드는 나무예요. 가을이면 잎이 붉거나 노랗게 물들어요. 빨리 자라고 추위에 강해서 마을과 공원에 많이 심어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 15,
+    "name": "능소화",
+    "childDescription": "줄기에 달라붙는 뿌리가 있어서 담벼락을 타고 높이 올라가요. 한여름부터 늦여름까지 주황빛 나팔 모양 꽃이 피어요. 옛날에는 양반집에만 심을 수 있었다는 이야기가 전해져요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 16,
+    "name": "능수벚나무",
+    "childDescription": "가지가 아래로 길게 늘어지는 벚나무예요. 4월에 연분홍 꽃이 피어요. 6월이 되면 작고 검붉은 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 17,
+    "name": "단풍나무",
+    "childDescription": "잎이 손바닥처럼 다섯에서 일곱 갈래로 깊게 갈라져 있어요. 가을에 익는 열매에는 날개가 두 개 달려 있어요. 날개가 거의 수평으로 활짝 벌어진 모양이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 18,
+    "name": "담쟁이덩굴",
+    "childDescription": "덩굴손에 빨판 같은 것이 있어서 담벼락이나 바위에 착 달라붙어요. 한번 붙으면 잘 떨어지지 않아요. 가을이면 잎이 빨갛게 물들어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 19,
+    "name": "당단풍",
+    "childDescription": "잎이 아홉에서 열한 갈래로 갈라지는 단풍나무예요. 보통 단풍나무보다 갈래가 더 많아요. 산속 골짜기나 북쪽 비탈에서 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 20,
+    "name": "대추나무",
+    "childDescription": "여름에 연한 초록색 꽃이 작게 피어요. 가을에 익는 대추는 먹기도 하고 약으로도 써요. 나무가 단단해서 그릇이나 도구를 만드는 데도 썼어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 21,
+    "name": "독일가문비",
+    "childDescription": "유럽에서 온 아주 큰 나무예요. 작은 가지가 아래로 축 처지고 솔방울도 길쭉하게 아래로 매달려요. 어린 나무는 크리스마스트리로 많이 써요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 22,
+    "name": "등나무",
+    "childDescription": "여름에 시원한 그늘을 만들어 주려고 많이 심는 덩굴나무예요. 줄기가 다른 것을 오른쪽으로 감으면서 올라가요. 5월에 연보라색 꽃이 포도송이처럼 아래로 늘어져 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 23,
+    "name": "리기다소나무",
+    "childDescription": "줄기 몸통에서도 짧은 가지와 잎이 삐죽삐죽 나와서 다른 소나무와 쉽게 구별돼요. 바늘잎이 세 개씩 묶여 나요. 메마른 땅에서도 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 24,
+    "name": "말채나무",
+    "childDescription": "계곡 근처에서 자라는 나무예요. 나무껍질이 그물처럼 갈라져 있어요. 늦봄에 하얀 꽃이 모여 피고 가을에 까만 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 25,
+    "name": "매실나무",
+    "childDescription": "이른 봄에 하얗거나 연분홍색 꽃이 향기롭게 피어요. 이 꽃을 매화라고 불러요. 6월에 열리는 매실은 너무 시어서 그냥 먹지 않고 장아찌나 차로 만들어 먹어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 26,
+    "name": "매자나무",
+    "childDescription": "가지 마디마다 날카로운 가시가 한두 개씩 있어요. 5월에 노란 꽃이 늘어지며 피고 가을에는 빨간 열매가 익어요. 잎도 가을이면 붉게 물들어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 27,
+    "name": "메타세콰이어",
+    "childDescription": "곧고 높게 자라는 나무로 공원 길가에 줄지어 많이 심어요. 잎이 두 줄로 마주 보며 달려요. 가을에는 잎이 붉은 갈색으로 물들어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 28,
+    "name": "명자나무",
+    "childDescription": "봄에 붉은 꽃이 가지마다 모여 피는 나무예요. 가지 끝이 가시로 변하기도 해요. 여름이면 길쭉하고 노란 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 29,
+    "name": "모과나무",
+    "childDescription": "나무껍질이 조각조각 벗겨져서 얼룩무늬가 생겨요. 5월에 연분홍 꽃이 피어요. 가을에 노랗게 익는 모과는 향기가 아주 좋지만 몹시 시어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 30,
+    "name": "목련",
+    "childDescription": "잎이 나기 전에 커다란 하얀 꽃이 먼저 피어요. 가을에 익는 열매는 닭 볏처럼 울퉁불퉁하게 생겼어요. 열매가 벌어지면 주황색 씨가 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 31,
+    "name": "무궁화",
+    "childDescription": "7월부터 10월까지 오랫동안 꽃이 피는 나무예요. 꽃 가운데에 진한 색 무늬가 있어요. 새로 자란 가지의 잎겨드랑이에서 꽃이 하나씩 피어나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 32,
+    "name": "박태기나무",
+    "childDescription": "이른 봄, 잎이 나기 전에 가지에 꽃이 다닥다닥 붙어서 피어요. 꽃자루가 거의 없어서 가지에 바로 붙은 것처럼 보여요. 잎은 하트 모양이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 33,
+    "name": "반송",
+    "childDescription": "밑동에서 줄기가 여러 갈래로 갈라져 우산처럼 둥근 모양이 되는 소나무예요. 바늘잎이 두 개씩 묶여 나요. 물이 잘 빠지는 모래땅에서 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 34,
+    "name": "배나무",
+    "childDescription": "봄에 하얀 꽃이 피고 가을에 배가 열려요. 배를 먹을 때 오돌토돌 씹히는 것은 돌세포라는 작은 알갱이예요. 씨앗은 까만색이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 35,
+    "name": "백당나무",
+    "childDescription": "꽃송이 바깥쪽에는 크고 하얀 장식 꽃이, 가운데에는 작은 꽃이 모여 피어요. 바깥쪽 꽃은 씨를 맺지 않아요. 가을에는 빨간 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 36,
+    "name": "백철쭉",
+    "childDescription": "5월에 하얀 꽃이 가지마다 서너 송이씩 피어요. 꽃 위쪽에는 붉은 갈색 점무늬가 찍혀 있어요. 예쁘지만 먹으면 안 되는 꽃이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 37,
+    "name": "버즘나무",
+    "childDescription": "나무껍질이 큰 조각으로 떨어져 나가 얼룩덜룩한 무늬가 생겨요. 동그란 방울 같은 열매가 긴 자루에 매달려요. 길가에 가로수로 많이 심어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 38,
+    "name": "병꽃나무",
+    "childDescription": "5월에 깔때기처럼 생긴 꽃이 피어요. 처음에는 연한 노란색이다가 점점 붉게 변해요. 그래서 한 나무에서 노란 꽃과 붉은 꽃을 함께 볼 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 39,
+    "name": "보리수나무",
+    "childDescription": "잎 뒷면이 은빛 가루를 뿌린 것처럼 하얗게 보여요. 가지에는 가시가 있어요. 가을에 빨갛게 익는 열매는 먹을 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 40,
+    "name": "복자기",
+    "childDescription": "작은 잎 세 장이 한 자리에 짝을 지어 달리는 단풍나무예요. 나무껍질이 세로로 얇게 벗겨져 너덜너덜해 보여요. 가을에 날개 달린 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 41,
+    "name": "뽕나무",
+    "childDescription": "잎을 자르면 하얀 즙이 나와요. 6월에 익는 열매를 오디라고 하는데 빨갛다가 까맣게 변해요. 오디를 먹으면 방귀가 뽕뽕 나온다고 해서 뽕나무라는 이름이 붙었대요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 42,
+    "name": "사과나무",
+    "childDescription": "봄에 하얀 꽃이 여러 송이 모여 피어요. 8월에서 9월 사이에 사과가 익어요. 어린 가지는 자줏빛을 띠어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 43,
+    "name": "사시나무",
+    "childDescription": "봄에 잎보다 꽃이 먼저 피는 나무예요. 5월이면 열매가 터지면서 씨앗이 바람에 날아가요. 나무껍질은 푸르스름한 회색이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 44,
+    "name": "사철나무",
+    "childDescription": "겨울에도 잎이 떨어지지 않고 사철 푸른 나무예요. 잎이 두껍고 윤기가 반짝반짝 나요. 가을에 붉게 익은 열매가 네 갈래로 갈라지면 주황색 씨가 보여요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 45,
+    "name": "산딸나무",
+    "childDescription": "가지가 층층이 수평으로 뻗어 자라요. 꽃잎처럼 보이는 하얀 조각 네 장 가운데에 작은 꽃들이 동그랗게 모여 피어요. 가을에 익는 열매가 딸기를 닮아서 산딸나무라고 불러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 46,
+    "name": "산목련",
+    "childDescription": "하얀 꽃이 아래를 향해 고개를 숙이고 피어요. 꽃 가운데 수술이 붉은색이에요. 북한에서는 목란이라고 부르며 나라꽃으로 여겨요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 47,
+    "name": "산수유",
+    "childDescription": "이른 봄, 잎이 나기 전에 노란 꽃이 작게 모여 피어요. 가을에 빨갛게 익은 열매는 겨울까지 가지에 매달려 있어요. 이 열매는 약으로 써요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 48,
+    "name": "산철쭉",
+    "childDescription": "봄에 진분홍색 꽃이 가지 끝에 두세 송이씩 피어요. 위쪽 꽃잎 안에는 진한 점무늬가 찍혀 있어요. 어린 가지에 끈끈한 갈색 털이 나 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 49,
+    "name": "살구나무",
+    "childDescription": "4월에 잎보다 먼저 연분홍 꽃이 피어요. 7월이면 솜털이 보송보송한 노란 살구가 익어요. 말린 살구에서는 철분을 얻을 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 50,
+    "name": "상수리나무",
+    "childDescription": "가을에 도토리가 열리는 큰 나무예요. 이 도토리로 묵을 만들어 먹어요. 잎 가장자리의 톱니 끝이 하얘서 잎에 흰 테두리가 있는 것처럼 보여요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 51,
+    "name": "서양측백",
+    "childDescription": "북아메리카에서 온 나무로 전체 모양이 좁고 뾰족한 삼각형이에요. 잎이 비늘처럼 납작하게 겹쳐져 있어요. 모양이 고와서 정원에 많이 심어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 52,
+    "name": "섬잣나무",
+    "childDescription": "울릉도에서 자라던 소나무 종류예요. 바늘잎이 다섯 개씩 묶여 나요. 잣나무보다 잎 길이가 절반쯤으로 짧아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 53,
+    "name": "소나무",
+    "childDescription": "나무껍질이 거북이 등처럼 조각조각 갈라져 있어요. 바늘잎이 두 개씩 짝지어 나요. 가을이면 솔방울이 익어 날개 달린 씨가 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 54,
+    "name": "수수꽃다리",
+    "childDescription": "봄에 연한 자주색 꽃이 송이송이 모여 피어요. 잎은 둘씩 마주 보며 달리고 가장자리가 매끈해요. 황해도와 함경도 쪽 산에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 55,
+    "name": "싸리나무",
+    "childDescription": "작은 잎 세 장이 한 자리에 모여 달려요. 한여름에 붉은 자줏빛 꽃이 줄줄이 피어요. 가을에 익는 꼬투리 안에는 씨가 하나씩 들어 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 56,
+    "name": "앵도나무",
+    "childDescription": "봄에 하얗거나 연분홍색 꽃이 한두 송이씩 모여 피어요. 6월이면 작고 동그란 앵두가 빨갛게 익어요. 열매에 잔털이 나 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 57,
+    "name": "영산홍",
+    "childDescription": "봄에 붉은 자주색 꽃이 가지 끝에 피어요. 꽃 안쪽 위에 진한 점무늬가 있어요. 겨울에도 잎이 다 떨어지지 않고 조금 남아 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 58,
+    "name": "옥향나무",
+    "childDescription": "줄기가 비스듬히 눕거나 구불구불 옆으로 퍼지며 자라요. 잎 표면에 흰 줄이 두 개 있어서 향나무보다 하얗게 보여요. 어린나무의 바늘잎은 찔러도 아프지 않아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 59,
+    "name": "왕벚나무",
+    "childDescription": "4월에 잎보다 먼저 꽃이 피는 벚나무예요. 꽃이 서너 송이씩 모여 달려요. 제주도 한라산에서 저절로 자라는 우리나라 나무예요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 60,
+    "name": "은행나무",
+    "childDescription": "잎이 부채처럼 생겼고 가운데가 둘로 갈라져 있어요. 가을에 노랗게 익는 열매는 껍질에서 고약한 냄새가 나요. 매연에 강해서 길가 가로수로 많이 심어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 61,
+    "name": "음나무",
+    "childDescription": "줄기에 뾰족한 가시가 잔뜩 나 있어요. 나이가 들면 가시가 점점 무뎌져요. 잎은 손바닥처럼 여러 갈래로 갈라지고 봄에 돋는 새순은 나물로 먹어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 62,
+    "name": "이태리포플러",
+    "childDescription": "아주 빠르고 크게 자라는 나무예요. 잎이 삼각형이고 잎자루가 납작해서 바람이 불면 잎이 팔랑팔랑 흔들려요. 어린잎은 붉은빛이 돌다가 초록색으로 변해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 63,
+    "name": "이팝나무",
+    "childDescription": "5월에서 6월에 가지 끝마다 하얀 꽃이 소복하게 피어요. 잎은 둘씩 마주 보며 달려요. 가을에는 열매가 검푸른 색으로 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 64,
+    "name": "일본목련",
+    "childDescription": "잎이 어른 팔뚝만큼 아주 큰 나무예요. 5월에서 6월에 커다란 꽃이 가지 끝에 한 송이씩 피어요. 가을에는 길쭉한 열매가 붉은 자주색으로 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 65,
+    "name": "자귀나무",
+    "childDescription": "밤이 되면 마주 보던 잎이 서로 포개져 접혀요. 여름에 피는 꽃은 분홍색 실 같은 수술이 길게 뻗어 나와요. 가을에는 콩깍지처럼 생긴 열매가 달려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 66,
+    "name": "자두나무",
+    "childDescription": "봄에 잎보다 먼저 하얀 꽃이 가지에 가득 피어요. 여름에 익는 자두 겉에는 흰 가루가 묻어 있어요. 오얏나무라고도 불러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 67,
+    "name": "자산홍",
+    "childDescription": "5월에 연분홍 꽃이 가지 끝에 서너 송이씩 모여 피어요. 위쪽 꽃잎에 적갈색 점무늬가 있어요. 철쭉 종류라서 먹으면 안 돼요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 68,
+    "name": "잣나무",
+    "childDescription": "바늘잎이 다섯 개씩 묶여 나는 나무예요. 솔방울이 소나무 것보다 훨씬 커요. 그 안에 우리가 먹는 잣이 들어 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 69,
+    "name": "장미",
+    "childDescription": "햇빛을 아주 좋아하는 꽃나무예요. 오래전부터 여러 종류를 섞어 길러서 꽃 모양과 색이 매우 다양해요. 너무 더우면 꽃이 작아지고 추우면 잎을 떨구고 쉬어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 70,
+    "name": "전나무",
+    "childDescription": "가지가 옆으로 수평으로 뻗어서 전체가 뾰족한 원뿔 모양이 돼요. 잎 뒷면에 하얀 줄이 두 개 있어요. 추운 곳에서 잘 자라고 덥고 메마른 곳에서는 잘 못 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 71,
+    "name": "조릿대",
+    "childDescription": "줄기가 가늘고 속이 텅 비어 있는 작은 대나무예요. 꽃이 아주 드물게 피는데 꽃이 피고 나면 땅 위 줄기가 죽어요. 그늘진 산속에서 무리 지어 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 72,
+    "name": "조팝나무",
+    "childDescription": "봄에 가지마다 하얀 꽃이 촘촘하게 붙어서 피어요. 그 모습이 튀긴 좁쌀을 붙여 놓은 것 같다고 해서 조팝나무라는 이름이 붙었어요. 밑동에서 줄기가 여러 개 나와 큰 포기를 이뤄요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 73,
+    "name": "좀작살나무",
+    "childDescription": "어린 가지가 동그랗지 않고 네모나요. 여름에 연보라색 꽃이 잎겨드랑이에 모여 피어요. 가을에는 보랏빛 구슬 같은 열매가 달려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 74,
+    "name": "쥐똥나무",
+    "childDescription": "5월에서 6월에 하얀 꽃이 송이로 모여 피어요. 가을에는 까맣고 작은 열매가 익어요. 산기슭이나 계곡에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 75,
+    "name": "진달래",
+    "childDescription": "4월에 잎보다 먼저 진분홍 꽃이 가지 끝에 모여 피어요. 꽃을 먹을 수 있어서 참꽃이라고도 불러요. 우리나라 산에서 무리 지어 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 76,
+    "name": "찔레나무",
+    "childDescription": "줄기와 가지에 가시가 돋아 있어요. 5월에 하얀 꽃이 여러 송이 모여 피어요. 가을에는 작고 동그란 열매가 빨갛게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 77,
+    "name": "철쭉",
+    "childDescription": "5월에 잎과 꽃이 함께 피어요. 꽃이 크고 연한 분홍색이에요. 잎보다 꽃이 먼저 피는 진달래와는 이 점이 달라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 78,
+    "name": "칠엽수",
+    "childDescription": "작은 잎 다섯에서 일곱 장이 손바닥을 펼친 것처럼 한자리에 모여 달려요. 초여름에 하얀 꽃이 커다란 송이로 피어요. 가을에 익는 씨앗은 밤처럼 생겼어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 79,
+    "name": "튤립나무",
+    "childDescription": "꽃이 튤립을 닮아서 튤립나무라고 불러요. 잎 끝이 가위로 자른 듯 반듯해요. 가을에 촛대처럼 생긴 열매가 익으면 날개 달린 씨가 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 80,
+    "name": "팽나무",
+    "childDescription": "가지가 넓게 퍼져 커다란 우산 같은 모양이 돼요. 가을에 작고 둥근 열매가 주황빛으로 익어요. 뿌리가 튼튼해서 센 바닷바람에도 잘 견뎌요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 81,
+    "name": "해당화",
+    "childDescription": "바닷가 모래밭에서 자라는 꽃나무예요. 줄기에 가시와 털이 빽빽해요. 잎에 주름이 자글자글하고 여름에 진분홍 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 82,
+    "name": "홍단풍",
+    "childDescription": "봄부터 가을까지 잎이 계속 붉은 단풍나무예요. 잎은 일곱에서 아홉 갈래로 깊게 갈라져요. 공해와 추위에 강해서 어디서나 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 83,
+    "name": "황금편백",
+    "childDescription": "잎이 황금빛을 띠는 작은 나무예요. 다 자라도 키가 1미터쯤밖에 되지 않아요. 편백나무를 사람이 개량해서 만든 품종이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 84,
+    "name": "황매화",
+    "childDescription": "봄에 노란 꽃이 잎과 함께 피어요. 꽃잎이 다섯 장이에요. 어린 가지가 초록색이라 겨울에도 푸릇해 보여요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 85,
+    "name": "황철쭉",
+    "childDescription": "봄에 주황빛 꽃이 옆을 향해 네다섯 송이씩 피어요. 꽃에 점무늬가 있어요. 독이 있어서 절대 먹으면 안 돼요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 86,
+    "name": "회양목",
+    "childDescription": "줄기가 동그랗지 않고 네모난 나무예요. 잎이 작고 두꺼우며 반질반질해요. 봄에 연노란색 꽃이 잎겨드랑이에 몇 개씩 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 87,
+    "name": "회화나무",
+    "childDescription": "한여름에 연노란색 꽃이 커다란 송이로 피어요. 가을에 열리는 꼬투리가 염주처럼 잘록잘록하게 생겼어요. 줄기가 곧게 자라는 큰 나무예요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 88,
+    "name": "흰말채나무",
+    "childDescription": "산속 물가에서 자라는 나무예요. 나무껍질이 붉은색이고 줄기 속은 하얘요. 늦봄에 연노란빛이 도는 흰 꽃이 우산 모양으로 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 89,
+    "name": "관음죽",
+    "childDescription": "야자나무 종류 가운데 가장 작아요. 잎이 손바닥처럼 다섯에서 일곱 갈래로 갈라져요. 처음에는 줄기가 하나지만 자라면서 땅속줄기에서 새싹이 여러 개 올라와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 90,
+    "name": "구아바",
+    "childDescription": "잎을 손으로 누르면 진한 향기가 나요. 하얀 꽃이 피고 나면 향기로운 열매가 열려요. 과즙이 많고 달아서 비타민이 풍부해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 91,
+    "name": "군자란",
+    "childDescription": "이름에 난이 붙었지만 난초와는 관계가 없어요. 길고 푸른 잎이 좌우로 두 장씩 번갈아 펼쳐져요. 씨를 심으면 꽃이 필 때까지 4년에서 5년이나 걸려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 92,
+    "name": "귤나무",
+    "childDescription": "6월에 하얀 꽃이 피고 가을에 귤이 익어요. 껍질이 잘 벗겨지고 가운데 심이 비어 있어요. 우리나라에서는 제주도에서 많이 길러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 93,
+    "name": "기누라",
+    "childDescription": "꽃보다 잎이 예뻐서 기르는 식물이에요. 빛이 모자라면 잎 색이 흐려지고 모양도 엉성해져요. 꽃에서는 좋은 향기가 나지 않아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 94,
+    "name": "꽃베고니아",
+    "childDescription": "잎의 좌우 모양이 서로 달라서 한쪽으로 치우쳐 보여요. 분홍색, 노란색, 흰색 꽃이 피어요. 잎을 떼어 땅에 꽂아 두면 뿌리와 줄기가 새로 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 95,
+    "name": "나비난초",
+    "childDescription": "깊은 산속 축축한 바위틈에서 자라는 작은 난초예요. 여름에 자주색 꽃이 한쪽으로 치우쳐 줄지어 피어요. 꽃 뒤쪽에 꿀을 담는 주머니가 길게 달려 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 96,
+    "name": "남천",
+    "childDescription": "여름에 하얀 꽃이 송이로 피고 가을에 빨간 열매가 동그랗게 익어요. 겨울이 되면 잎이 붉게 물들어요. 그늘과 매연에 강해서 기르기 쉬워요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 97,
+    "name": "네펜데스 알라타",
+    "childDescription": "잎 끝에 길쭉한 주머니가 달려 있는 벌레잡이 식물이에요. 주머니 뚜껑과 입구에서 꿀을 내어 벌레를 불러들여요. 미끄러져 빠진 벌레는 주머니 속 소화액에 녹아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 98,
+    "name": "돈나무",
+    "childDescription": "잎이 두껍고 반질반질하며 가장자리가 살짝 뒤로 말려 있어요. 꽃은 하얗게 피었다가 점점 노란색으로 변해요. 가을에 열매가 세 갈래로 갈라지면 빨간 씨가 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 99,
+    "name": "드라세나와네키",
+    "childDescription": "짙은 초록 잎 가운데에 우윳빛 줄무늬가 길게 나 있어요. 줄기가 대나무처럼 생겼어요. 잎이 떨어진 자리가 마디처럼 남아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 100,
+    "name": "러브체인",
+    "childDescription": "가느다란 줄기가 아래로 길게 늘어지는 식물이에요. 잎이 작은 하트 모양이고 앞면에 회백색 그물무늬가 있어요. 물을 자주 주지 않아도 잘 견뎌요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 101,
+    "name": "레몬",
+    "childDescription": "히말라야에서 온 나무예요. 새로 돋는 잎은 붉은색이었다가 점점 초록색으로 변해요. 봄부터 가을까지 잎겨드랑이에서 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 102,
+    "name": "마란타",
+    "childDescription": "낮에는 잎이 옆으로 활짝 퍼졌다가 밤이 되면 위로 모여요. 잎에 갈색 무늬가 있어요. 잎 끝이 잘 마르니까 분무기로 물을 자주 뿌려 주면 좋아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 103,
+    "name": "만년청",
+    "childDescription": "두껍고 윤기 나는 잎이 뿌리에서 다발로 모여 나요. 초여름에 작은 꽃이 이삭처럼 빽빽하게 달려요. 8월이면 동그란 열매가 빨갛게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 104,
+    "name": "망고",
+    "childDescription": "열대 지방에서 자라는 커다란 과일나무예요. 열매는 익으면 노란색이나 붉은빛을 띠고 즙이 많아요. 안에는 길쭉하고 큰 씨가 하나 들어 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 105,
+    "name": "메디아소철",
+    "childDescription": "오스트레일리아에서 온 식물로 깃털처럼 생긴 긴 잎이 달려요. 소철보다 잎이 더 길고 성글게 붙어요. 식물 전체에 독이 있어서 먹으면 안 돼요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 106,
+    "name": "목성제라늄",
+    "childDescription": "남아프리카에서 온 꽃식물이에요. 꽃봉오리는 아래로 처져 있다가 필 때 위를 향해요. 잎에서 좋은 향기가 나서 향주머니나 차로 쓰기도 해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 107,
+    "name": "몬스테라",
+    "childDescription": "커다란 잎에 구멍이 뻥뻥 뚫려 있어요. 이 구멍 덕분에 세찬 비바람을 견디고 아래쪽 잎에도 햇빛이 닿아요. 줄기 마디에서 뿌리가 나와 다른 물체를 타고 올라가요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 108,
+    "name": "문주란",
+    "childDescription": "따뜻한 바닷가 모래땅에서 자라는 식물이에요. 여름에 향기로운 하얀 꽃이 우산 모양으로 모여 피어요. 제주 토끼섬의 자생지는 천연기념물로 보호하고 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 109,
+    "name": "물상추",
+    "childDescription": "물 위에 둥둥 떠서 자라는 식물이에요. 잎이 장미꽃처럼 둥글게 모여나요. 하얀 뿌리가 물속으로 길게 늘어져 어린 물고기의 숨을 곳이 되어 줘요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 110,
+    "name": "바나나",
+    "childDescription": "나무처럼 보이지만 사실은 아주 큰 풀이에요. 줄기처럼 보이는 것은 잎자루가 겹겹이 싸인 거예요. 한 번 열매를 맺으면 그 줄기는 베어 내고 새 줄기가 다시 올라와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 111,
+    "name": "박쥐란",
+    "childDescription": "나무에 붙어서 자라는 고사리 종류예요. 잎이 두 가지인데 하나는 아래에서 뿌리줄기를 감싸 물을 머금어요. 위로 자라는 잎은 두세 갈래로 갈라지고 뒷면에 홀씨주머니가 달려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 112,
+    "name": "부겐빌레아",
+    "childDescription": "꽃처럼 보이는 화려한 자줏빛 부분은 사실 꽃을 감싸는 잎이에요. 진짜 꽃은 그 안에 아주 작게 숨어 있어요. 줄기에는 곧은 가시가 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 113,
+    "name": "비로야자",
+    "childDescription": "줄기가 하나로 곧게 올라가는 야자예요. 잎이 손바닥 모양으로 펼쳐지고 끝이 길게 늘어져요. 어린나무의 잎자루에는 억센 가시가 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 114,
+    "name": "산세베리아",
+    "childDescription": "건조한 곳에서도 아주 잘 견디는 식물이에요. 반년쯤 물을 주지 않아도 죽지 않아요. 꽃이 피면 별 모양 꽃잎이 뒤로 돌돌 말려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 115,
+    "name": "산호수",
+    "childDescription": "키가 10센티미터도 되지 않는 아주 작은 나무예요. 잎이 줄기를 빙 둘러 돌려나요. 6월에 하얀 꽃이 피고 가을에 빨간 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 116,
+    "name": "설하",
+    "childDescription": "온몸에 붉은 갈색 털이 빽빽하게 나 있어요. 잎 앞면에는 연한 무늬가 있고 뒷면은 붉은 자주색이에요. 기는줄기가 뻗어 나가 그 끝에서 새싹이 돋아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 117,
+    "name": "소철",
+    "childDescription": "줄기에 가지가 없고 꼭대기에서만 잎이 사방으로 펼쳐져요. 줄기는 떨어진 잎자루 자국으로 덮여 있어요. 쇠약할 때 철분을 주면 되살아난다는 이야기에서 소철이라는 이름이 붙었대요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 118,
+    "name": "쉐프렐라 아르보리콜라",
+    "childDescription": "작은 잎 일고여덟 장이 손바닥처럼 둥글게 모여 달려요. 잎이 짙은 초록색이고 반질반질해요. 줄기에서 가느다란 뿌리가 많이 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 119,
+    "name": "싱고니움",
+    "childDescription": "어릴 때는 잎이 화살촉 모양이다가 자라면서 세 갈래로 갈라져요. 잎에 은색이나 흰색 무늬가 있어요. 줄기 마디에서 뿌리가 나와 다른 물체를 타고 올라가요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 120,
+    "name": "아로카시아",
+    "childDescription": "잎이 크고 둥글어서 눈에 잘 띄는 식물이에요. 덥고 습한 곳을 좋아해요. 겨울에도 따뜻하게 해 주어야 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 121,
+    "name": "아왜나무",
+    "childDescription": "잎이 두껍고 반질반질 윤이 나요. 6월에 흰 꽃이 큰 송이로 피어요. 가을에 빨갛게 익은 열매는 쭈글쭈글해지면서 까맣게 변해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 122,
+    "name": "야향목",
+    "childDescription": "밤이 되면 꽃이 피어서 강한 향기를 뿜는 나무예요. 꽃은 희끄무레한 연둣빛이에요. 추위에 약해서 따뜻한 곳에서 길러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 123,
+    "name": "오죽",
+    "childDescription": "처음에는 줄기가 초록색이지만 이듬해부터 점점 검게 변하는 대나무예요. 줄기 속은 텅 비어 있어요. 빛깔이 멋져서 관상용으로 심고 공예품 재료로도 써요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 124,
+    "name": "워싱턴야자",
+    "childDescription": "아주 높이 자라는 야자나무예요. 잎이 손바닥 모양으로 깊게 갈라지고 갈래마다 실 같은 섬유가 늘어져요. 마른 잎이 떨어지지 않고 줄기에 오래 붙어 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 125,
+    "name": "유카",
+    "childDescription": "딱딱하고 긴 잎이 밑동에서 모여나 사방으로 뻗어요. 여름부터 가을까지 노란빛이 도는 흰 꽃이 아래를 향해 피어요. 북아메리카에서 온 식물이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 126,
+    "name": "인도고무나무",
+    "childDescription": "잎이나 줄기를 자르면 하얀 즙이 나와요. 잎이 크고 두꺼우며 반질반질해요. 새로 돋는 잎은 붉은 턱잎에 싸여 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 127,
+    "name": "자란",
+    "childDescription": "잎에 세로 주름이 뚜렷한 난초예요. 5월에서 6월에 붉은 자주색 꽃이 줄기 끝에 예닐곱 송이 달려요. 줄기 밑에는 둥근 알뿌리가 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 128,
+    "name": "쟈스민",
+    "childDescription": "꽃에서 아주 진한 향기가 나는 나무예요. 이 향기를 모아 향료를 만들어요. 꽃으로 재스민차를 만들기도 해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 129,
+    "name": "제브리나",
+    "childDescription": "줄기가 옆으로 길게 뻗으며 마디마다 뿌리를 내려요. 매달아 기르는 화분에 잘 어울려요. 빛을 얼마나 받느냐에 따라 잎 색이 달라져요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 130,
+    "name": "종려죽",
+    "childDescription": "잎은 종려나무를 닮고 줄기는 대나무를 닮아서 종려죽이라고 불러요. 잎이 손바닥 모양으로 여러 갈래 갈라져요. 줄기는 갈색 섬유로 싸여 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 131,
+    "name": "청목",
+    "childDescription": "새로 난 가지가 초록색이라 청목이라고 불러요. 잎이 두껍고 윤기가 나며 가장자리에 굵은 톱니가 있어요. 가을에 빨갛게 익은 열매가 겨울 내내 달려 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 132,
+    "name": "치자나무",
+    "childDescription": "6월에서 7월에 우윳빛 꽃이 피는데 향기가 아주 달콤해요. 가을에 익는 주황빛 열매에는 세로로 모서리가 여섯 개 있어요. 이 열매로 옷감을 노랗게 물들였어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 133,
+    "name": "커피나무",
+    "childDescription": "하얀 꽃이 피고 나면 그 자리에 열매가 열려요. 이 열매를 커피체리라고 해요. 열매 안에는 커피콩 두 알이 서로 마주 보고 들어 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 134,
+    "name": "콜룸네아",
+    "childDescription": "나무나 바위에 붙어서 자라는 식물이에요. 빨간색이나 노란색 꽃이 피는데 모양이 물고기를 닮았어요. 그래서 금붕어 식물이라고도 불러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 135,
+    "name": "크로톤",
+    "childDescription": "잎에 흰색, 빨간색, 노란색 줄무늬와 점이 알록달록하게 나 있어요. 잎 모양이 포기마다 아주 달라요. 햇빛을 충분히 받아야 색이 더 선명해져요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 136,
+    "name": "테이블야자",
+    "childDescription": "대나무처럼 가느다란 줄기가 여러 대 모여 자라요. 잎자루가 떨어진 자리가 툭 튀어나와 마디처럼 보여요. 어두운 실내에서도 잘 자라서 집에서 기르기 쉬워요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 137,
+    "name": "파인애플",
+    "childDescription": "땅 위에 길고 두꺼운 잎이 다발로 모여나고 그 가운데에서 열매가 자라요. 우리가 먹는 부분은 작은 꽃들이 한 덩어리로 합쳐진 거예요. 익으면 주황빛 노란색이 되고 향기가 나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 138,
+    "name": "파키스타키스",
+    "childDescription": "줄기 끝에 진한 노란색 조각이 네 줄로 겹쳐 이삭 모양을 이뤄요. 그 사이로 입술처럼 생긴 작은 꽃이 피어요. 봄부터 가을까지 꽃을 볼 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 139,
+    "name": "팔손이",
+    "childDescription": "커다란 잎이 손바닥처럼 일고아홉 갈래로 갈라져요. 그래서 팔손이라고 불러요. 가을에서 초겨울에 하얀 꽃이 커다란 송이로 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 140,
+    "name": "페페로미아",
+    "childDescription": "잎이 도톰하고 반질반질한 작은 식물이에요. 밤에 산소를 내뿜어서 침실에 두면 좋아요. 어두운 곳에서도 비교적 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 141,
+    "name": "포인세치아",
+    "childDescription": "크리스마스 무렵에 윗잎이 새빨갛게 물들어서 크리스마스 꽃이라고도 불러요. 추위에 약해서 따뜻한 곳에 두어야 해요. 잎에서 나오는 하얀 즙은 피부나 눈에 닿으면 따가우니 조심해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 142,
+    "name": "행운목",
+    "childDescription": "길고 칼처럼 생긴 잎이 줄기 끝에 모여 달려요. 짙은 초록 잎 가운데에 흰 세로무늬가 있어요. 줄기가 나무처럼 단단하고 곧게 서요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 143,
+    "name": "호랑가시나무",
+    "childDescription": "잎 모서리가 뾰족한 가시로 튀어나와 있어요. 봄에 희끄무레한 연둣빛 꽃이 모여 피어요. 가을에 빨갛게 익은 열매는 겨울 내내 가지에 달려 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 144,
+    "name": "홍죽",
+    "childDescription": "천년죽이라고도 부르는 식물이에요. 길고 두꺼운 잎이 줄기 끝에 모여나요. 작은 꽃이 송이로 모여 피는데 흰색이거나 자주색이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 145,
+    "name": "홍콩야자",
+    "childDescription": "잎이 많아서 공기 중으로 물기를 많이 내뿜어요. 실내 공기를 촉촉하게 하고 나쁜 가스를 없애 주는 데 도움이 돼요. 직사광선을 피해 밝은 그늘에서 길러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 146,
+    "name": "황야자",
+    "childDescription": "줄기와 잎자루가 노란빛을 띠어서 황야자라고 불러요. 깃털 모양 잎이 부드러운 곡선을 그리며 늘어져요. 공기 중으로 물기를 많이 내뿜어 실내에서 기르면 좋아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 147,
+    "name": "히비스커스",
+    "childDescription": "넓은 깔때기 모양의 큼직한 꽃이 피어요. 수술이 하나의 기둥처럼 합쳐져 꽃 가운데에서 길게 뻗어 나와요. 따뜻하면 일 년 내내 꽃을 볼 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 148,
+    "name": "거취옥",
+    "childDescription": "처음에는 동그랗다가 점점 위로 길어지는 선인장이에요. 짙은 초록 몸에 어두운 붉은색 가시가 나 있어요. 여름에 노란 꽃이 피는데 꽃잎 바깥쪽에 보라색 줄이 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 149,
+    "name": "고검산",
+    "childDescription": "두툼한 잎이 장미꽃처럼 둥글게 모여나요. 줄기가 따로 없어요. 잎이 진한 초록색으로 반짝이고 가장자리에 가시가 돋아 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 150,
+    "name": "공작선인장",
+    "childDescription": "납작하고 길쭉한 줄기가 아래로 늘어지는 선인장이에요. 줄기 가장자리가 물결 모양으로 구불구불해요. 커다란 붉은 꽃이 한 송이당 사흘 동안 피어 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 151,
+    "name": "귀면각",
+    "childDescription": "서부 영화에 나오는 길쭉한 기둥 모양 선인장이에요. 선인장 가운데 아주 크게 자라고 튼튼해요. 하얀색이나 분홍색 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 152,
+    "name": "금접",
+    "childDescription": "잎 끝에 작은 새끼 식물이 두세 개씩 달려요. 이 새끼를 떼어 심으면 새로 자라요. 잎에 얼룩덜룩한 무늬가 있고 자라면 주황색 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 153,
+    "name": "금호",
+    "childDescription": "커다란 공처럼 둥근 선인장이에요. 몸에 굵고 단단한 가시가 촘촘히 나 있어요. 꼭대기에 솜털이 있고 연노란색 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 154,
+    "name": "금황환",
+    "childDescription": "초록색 몸에 세로줄이 스무 개 넘게 나 있어요. 노란 가시가 여러 개씩 모여 돋아요. 꽃이 피려면 5년에서 10년은 자라야 해서 꽃을 보기가 어려워요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 155,
+    "name": "꽃기린",
+    "childDescription": "꽃잎처럼 보이는 두 장의 붉은 조각은 사실 꽃을 받치는 잎이에요. 진짜 꽃은 그 사이에 아주 작게 피어요. 줄기에 억센 회색 가시가 돋아 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 156,
+    "name": "덕리란",
+    "childDescription": "줄기 아랫부분이 둥글게 부풀어 있어요. 이 부분에 물을 저장해 두었다가 꺼내 써요. 멕시코에서 온 식물이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 157,
+    "name": "란봉옥",
+    "childDescription": "다른 선인장보다 세로줄이 적어서 대여섯 개뿐이에요. 봄에 꼭대기에서 노란색 꽃이 피어요. 햇빛을 좋아하고 따뜻한 곳에서 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 158,
+    "name": "로비비아",
+    "childDescription": "볼리비아에서 온 선인장이에요. 몸통 옆쪽 골 사이에서 꽃이 피어요. 꽃이 화려하고 향기도 나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 159,
+    "name": "바위솔",
+    "childDescription": "산속 바위 위에 붙어서 자라는 식물이에요. 뿌리에서 난 잎이 방석처럼 납작하게 퍼져요. 가을에 하얀 꽃이 이삭 모양으로 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 160,
+    "name": "백각기린",
+    "childDescription": "여러 개의 줄기가 밑동에서 갈라져 위로 자라요. 줄기에 모서리가 네 개 있어서 네모나 보여요. 가시가 한 쌍씩 짝을 지어 나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 161,
+    "name": "백룡환",
+    "childDescription": "작고 동그란 선인장이에요. 골프공만 할 때부터 벌써 꽃이 피기 시작해요. 진분홍 꽃이 꼭대기를 빙 둘러 고리 모양으로 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 162,
+    "name": "벽탑",
+    "childDescription": "아주 높이 자라는 선인장이에요. 자라면서 가지가 여러 개로 갈라져요. 지름이 25센티미터나 되는 커다란 흰 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 163,
+    "name": "변경초",
+    "childDescription": "잎이 줄기를 빙 둘러 돌려나요. 긴 꽃대가 쭉 올라와 그 끝에 주홍색 꽃이 두세 송이 피어요. 아프리카 동쪽 지방에서 온 식물이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 164,
+    "name": "보검",
+    "childDescription": "줄기가 손바닥처럼 넓적해서 손바닥선인장이라고도 불러요. 노란 꽃을 살짝 건드리면 오므라들어요. 열매를 자르면 속이 새빨개요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 165,
+    "name": "비모란",
+    "childDescription": "몸 색깔이 빨강, 노랑, 주황처럼 아주 화려한 선인장이에요. 초록색 색소가 거의 없어서 스스로 양분을 만들지 못해요. 그래서 다른 선인장 위에 붙여서 길러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 166,
+    "name": "비화옥",
+    "childDescription": "처음에는 공처럼 둥글다가 점점 위로 길어져요. 가시가 대여섯 개씩 나는데 끝은 희고 뿌리 쪽은 붉은 갈색이에요. 꼭대기나 몸통 가운데에서 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 167,
+    "name": "석화기린",
+    "childDescription": "볕이 잘 드는 따뜻한 곳을 좋아하는 식물이에요. 햇빛을 충분히 받아야 웃자라지 않고 튼튼해져요. 추위를 견디지 못해 겨울에는 안으로 들여야 해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 168,
+    "name": "선녀무",
+    "childDescription": "잎 전체가 보드라운 털로 덮여 있어요. 칼랑코에 종류 가운데 가장 크게 자라요. 꽃은 연노란색인데 안쪽은 자주색이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 169,
+    "name": "성운금",
+    "childDescription": "몸에 옅은 노란색 무늬가 구름이 걸린 것처럼 퍼져 있어요. 그늘에서 기르면 무늬 색이 달라져요. 무늬가 고울수록 뿌리까지 붉은빛을 띠어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 170,
+    "name": "알로에 베라",
+    "childDescription": "두껍고 딱딱한 잎이 장미꽃처럼 둥글게 모여 서 있어요. 잎에 하얀 점무늬가 있어요. 밤에 산소를 내뿜어서 침실에 두면 좋아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 171,
+    "name": "암석사자",
+    "childDescription": "자란 모습이 용암이 흘러내려 굳은 바위를 닮아서 이런 이름이 붙었어요. 우리나라에서는 금강산선인장이라고도 불러요. 15센티미터나 되는 커다란 흰 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 172,
+    "name": "연성각",
+    "childDescription": "가시가 아주 단단한 선인장이에요. 꽃이 하늘을 향해 위로 피어요. 꽃과 열매에도 가시가 덮여 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 173,
+    "name": "엽선",
+    "childDescription": "줄기가 군데군데 잘록해서 마디처럼 보여요. 노란 꽃이 여러 송이 피어요. 가늘지만 아주 날카로운 가시가 있어서 만질 때 조심해야 해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 174,
+    "name": "와룡",
+    "childDescription": "땅에 축 늘어진 채로 자라는 선인장이에요. 꽃이 밤에 피어요. 흰색이나 분홍색 꽃이 길쭉한 통 모양으로 피어나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 175,
+    "name": "용설란",
+    "childDescription": "잎이 용의 혀처럼 생겼다고 해서 용설란이라고 불러요. 10년 넘게 자라야 꽃줄기가 쑥 올라와 꽃이 피어요. 꽃이 피고 나면 그 줄기는 죽어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 176,
+    "name": "용신목",
+    "childDescription": "위쪽에서 촛대 모양으로 가지가 갈라지는 선인장이에요. 줄기에 세로줄이 대여섯 개 있어요. 햇빛을 아주 많이 받아야 하얀 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 177,
+    "name": "월궁전",
+    "childDescription": "동그란 몸에 하얀 돌기가 돋아 있고 그 속에서 가늘고 긴 가시가 나와요. 봄부터 여름 사이에 붉은 꽃이 피어요. 꽃은 낮에 피었다가 밤이 되면 져요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 178,
+    "name": "은세계",
+    "childDescription": "납작한 마디가 이어지며 나무처럼 크게 자라는 선인장이에요. 하얀 수염 같은 가시가 몸을 감싸듯 수북하게 돋아 있어요. 여름에 커다란 노란 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 179,
+    "name": "자태해월",
+    "childDescription": "꽃대 하나에 꽃이 백 송이 넘게 달려요. 둥근 알뿌리가 땅 위로 드러나 있어요. 잎은 1미터 가까이 길게 자라기도 해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 180,
+    "name": "장군",
+    "childDescription": "키가 4미터쯤 되는 큰 선인장이에요. 줄기 전체에 가시가 돋아 있어요. 물이 너무 모자라면 줄기에 주름이 생겨요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 181,
+    "name": "제금",
+    "childDescription": "가지가 여러 갈래로 보기 좋게 갈라지는 식물이에요. 줄기에 대리석 같은 무늬가 도드라져 있어요. 그늘이 반쯤 드는 곳을 좋아해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 182,
+    "name": "청산호",
+    "childDescription": "햇빛을 아주 좋아해서 볕이 강한 곳에서 잘 자라요. 조건이 좋으면 9미터까지도 자라요. 줄기를 자르면 나오는 즙이 피부나 눈에 들어가면 발진이 생기니 조심해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 183,
+    "name": "춘의",
+    "childDescription": "온몸에 하얀 털이 많아서 털옷을 입은 것처럼 보여요. 이 털이 사막의 추위와 뜨거운 햇빛으로부터 몸을 지켜 줘요. 그 모습 때문에 춘의라는 이름이 붙었어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 184,
+    "name": "파치포디움",
+    "childDescription": "줄기 아랫부분이 항아리처럼 불룩해요. 그 안에 물을 저장해 두었다가 메마른 때에 꺼내 써요. 이름은 그리스어로 두꺼운 발이라는 뜻이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 185,
+    "name": "황대문자",
+    "childDescription": "밑동에서 갈라진 원통 모양 줄기가 곧게 서 있어요. 몸 색깔이 노란빛이 도는 연한 초록색이에요. 가시가 나는 자리는 처음에 노랗다가 점점 하얘져요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 186,
+    "name": "노박덩굴",
+    "childDescription": "다른 나무를 타고 올라가는 덩굴나무예요. 봄에 연둣빛 노란 꽃이 모여 피어요. 가을에 노랗게 익은 열매가 세 갈래로 갈라지면 주황빛 씨가 드러나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 187,
+    "name": "느릅나무",
+    "childDescription": "키가 아주 크고 전체 모양이 둥근 나무예요. 봄에 잎보다 꽃이 먼저 피어요. 산속 계곡이나 하천 가까이에서 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 188,
+    "name": "느티나무",
+    "childDescription": "가지가 넓게 퍼져 커다란 그늘을 만드는 나무예요. 가을이면 잎이 붉거나 노랗게 물들어요. 빨리 자라고 추위에 강해서 마을과 공원에 많이 심어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 189,
+    "name": "능소화",
+    "childDescription": "줄기에 달라붙는 뿌리가 있어서 담벼락을 타고 높이 올라가요. 한여름부터 늦여름까지 주황빛 나팔 모양 꽃이 피어요. 옛날에는 양반집에만 심을 수 있었다는 이야기가 전해져요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 190,
+    "name": "다래나무",
+    "childDescription": "다른 나무를 감고 올라가는 덩굴 식물이에요. 5월에 하얀 꽃이 모여 피어요. 가을에 익는 열매는 그냥 먹기도 하고 잼이나 주스로 만들어 먹어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 191,
+    "name": "단풍나무",
+    "childDescription": "잎이 손바닥처럼 다섯에서 일곱 갈래로 깊게 갈라져 있어요. 가을에 익는 열매에는 날개가 두 개 달려 있어요. 날개가 거의 수평으로 활짝 벌어진 모양이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 192,
+    "name": "대추나무",
+    "childDescription": "여름에 연한 초록색 꽃이 작게 피어요. 가을에 익는 대추는 먹기도 하고 약으로도 써요. 추위와 가뭄에 강해서 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 193,
+    "name": "동백나무",
+    "childDescription": "겨울부터 봄 사이에 붉은 꽃이 한 송이씩 피어요. 꽃 가운데에 노란 수술이 백 개 가까이 모여 있어요. 잎은 두껍고 반질반질 윤이 나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 194,
+    "name": "등나무",
+    "childDescription": "여름에 시원한 그늘을 만들어 주려고 많이 심는 덩굴나무예요. 줄기가 다른 것을 오른쪽으로 감으면서 올라가요. 5월에 연보라색 꽃이 포도송이처럼 아래로 늘어져 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 195,
+    "name": "때죽나무",
+    "childDescription": "5월에서 6월에 하얀 꽃이 아래를 향해 조롱조롱 매달려 피어요. 여름에는 푸른 열매가 열려요. 가을이 되면 열매가 희끄무레하게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 196,
+    "name": "매자나무",
+    "childDescription": "가지 마디마다 날카로운 가시가 있어요. 5월에 노란 꽃이 아래로 늘어지며 피고 가을에는 빨간 열매가 익어요. 잎도 가을이면 붉게 물들어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 197,
+    "name": "매화나무",
+    "childDescription": "4월에 잎보다 먼저 향기로운 꽃이 피어요. 꽃을 매화, 열매를 매실이라고 불러요. 7월에 노랗게 익는 매실은 솜털이 있고 신맛이 아주 강해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 198,
+    "name": "명자나무",
+    "childDescription": "봄에 붉은 꽃이 가지마다 모여 피는 나무예요. 가지 끝이 가시로 변하기도 해요. 여름이면 길쭉하고 노란 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 199,
+    "name": "모과나무",
+    "childDescription": "나무껍질이 조각조각 벗겨져서 얼룩무늬가 생겨요. 5월에 연분홍 꽃이 피어요. 가을에 노랗게 익는 모과는 향기가 아주 좋지만 몹시 시어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 200,
+    "name": "무궁화",
+    "childDescription": "여름부터 가을까지 꽃이 피어요. 분홍빛 꽃잎 안쪽에 진한 붉은 무늬가 있어요. 가을에 열매가 벌어지면 털이 달린 씨가 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 201,
+    "name": "물푸레나무",
+    "childDescription": "작은 잎 대여섯 장이 깃털처럼 마주 보며 달려요. 5월에 자잘한 꽃이 송이로 모여 피어요. 가을에 익는 열매는 길쭉하고 납작해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 202,
+    "name": "배롱나무",
+    "childDescription": "나무껍질이 얇게 벗겨지면서 매끈해지고 흰 무늬가 생겨요. 여름부터 늦가을까지 붉은 자주색 꽃이 오래도록 피어 있어요. 줄기가 구불구불하게 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 203,
+    "name": "사철나무",
+    "childDescription": "겨울에도 잎이 떨어지지 않고 사철 푸른 나무예요. 잎이 두껍고 윤기가 반짝반짝 나요. 가을에 붉게 익은 열매가 네 갈래로 갈라지면 주황색 씨가 보여요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 204,
+    "name": "산수유",
+    "childDescription": "가을에 빨갛게 익는 열매를 산수유라고 불러요. 맛을 보면 떫고 신맛이 강해요. 서리가 내린 뒤에 거두어 차나 약으로 써요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 205,
+    "name": "살구나무",
+    "childDescription": "4월에 잎보다 먼저 연분홍 꽃이 피어요. 7월이면 솜털이 보송보송한 노란 살구가 익어요. 중국에서 온 과일나무예요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 206,
+    "name": "서부해당화",
+    "childDescription": "분홍색 꽃이 길고 붉은 꽃자루에 매달려 아래를 향해 피어요. 꽃과 잎이 함께 나와요. 열매는 콩알만 하고 동그랗게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 207,
+    "name": "서어나무",
+    "childDescription": "나무줄기가 울퉁불퉁해서 팔 근육처럼 보여요. 봄에 잎보다 꽃이 먼저 피어요. 매연에 약해서 도시 한가운데에서는 자라지 못해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 208,
+    "name": "소사나무",
+    "childDescription": "잎이 5센티미터도 되지 않을 만큼 작아요. 봄에 잎보다 꽃이 먼저 피고 꽃이삭이 아래로 늘어져요. 산이나 바닷가 근처에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 209,
+    "name": "애기사과",
+    "childDescription": "봄에 연분홍색으로 피기 시작한 꽃이 점점 하얗게 변해요. 열매는 지름이 1~2센티미터로 아주 작아요. 여름에 푸르던 열매가 가을이면 빨갛게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 210,
+    "name": "영산홍",
+    "childDescription": "봄에 붉은 자주색 꽃이 가지 끝에 피어요. 잎이 약간 두껍고 윤기가 나요. 가지가 잘 갈라져서 잔가지가 많아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 211,
+    "name": "오엽송",
+    "childDescription": "바늘잎이 다섯 개씩 묶여 나서 오엽송이라고 불러요. 해발 1000미터가 넘는 높은 산에서 자라는 큰 나무예요. 솔방울 속 씨앗은 날개가 없고 먹을 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 212,
+    "name": "은행나무",
+    "childDescription": "잎이 부채처럼 생겼고 가운데가 둘로 갈라져 있어요. 가을에 노랗게 익는 열매는 껍질에서 고약한 냄새가 나요. 볕을 좋아하고 추위와 가뭄에 강해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 213,
+    "name": "적송",
+    "childDescription": "줄기 껍질이 붉은빛을 띠는 소나무예요. 봄에 날리는 노란 꽃가루를 송홧가루라고 해요. 이 가루로 다식이라는 과자를 만들어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 214,
+    "name": "주목",
+    "childDescription": "높은 산에서 자라는 우리나라 특산 나무예요. 가을에 붉은 열매가 익는데 컵처럼 가운데가 뚫려 있어 안에 든 씨가 보여요. 나무껍질이 붉은 갈색으로 띠처럼 벗겨져요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 215,
+    "name": "쥐똥나무",
+    "childDescription": "5월에서 6월에 하얀 꽃이 송이로 모여 피어요. 가을에는 까맣고 작은 열매가 익어요. 산기슭이나 계곡에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 216,
+    "name": "팽나무",
+    "childDescription": "가지가 넓게 퍼져 커다란 우산 같은 모양이 돼요. 가을에 작고 둥근 열매가 주황빛으로 익어요. 뿌리가 튼튼해서 센 바닷바람에도 잘 견뎌요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 217,
+    "name": "향나무",
+    "childDescription": "나무에서 좋은 향기가 나서 향나무라고 불러요. 어린 가지에는 바늘 모양 잎이, 오래된 가지에는 비늘 모양 잎이 달려요. 가을에 동그란 열매가 까맣게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 218,
+    "name": "홍자단",
+    "childDescription": "6월에 연분홍색 작은 꽃이 피어요. 가을이면 잎이 붉게 물들고 루비처럼 빨간 열매가 달려요. 햇빛을 충분히 받아야 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 219,
+    "name": "화살나무",
+    "childDescription": "가지에 코르크로 된 납작한 날개가 두세 줄 붙어 있어요. 그 모습이 화살 깃을 닮아서 화살나무라고 불러요. 가을이면 잎이 아주 붉게 물들어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 220,
+    "name": "회양목",
+    "childDescription": "줄기가 동그랗지 않고 네모난 나무예요. 잎이 작고 두꺼우며 반질반질해요. 봄에 연노란색 꽃이 잎겨드랑이에 몇 개씩 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 221,
+    "name": "흑송",
+    "childDescription": "나무껍질이 검은 갈색이고 깊고 거칠게 갈라져요. 겨울눈이 하얀 것이 특징이에요. 바닷가 낮은 곳에서 잘 자라지만 추위에는 약해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 222,
+    "name": "고비",
+    "childDescription": "축축하고 그늘진 산에서 자라는 고사리 종류예요. 잎이 두 가지인데 하나는 양분을 만들고 다른 하나는 홀씨를 만들어요. 어린순은 삶아서 나물로 먹어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 223,
+    "name": "고사리",
+    "childDescription": "잎이 둥그스름한 삼각형 모양으로 넓게 펼쳐져요. 뿌리줄기가 땅속으로 1미터나 뻗어요. 어린순은 나물로 먹고, 땅이 오염된 곳에서는 자라지 못해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 224,
+    "name": "고추나물",
+    "childDescription": "여름에 노란 꽃이 가지 끝에 많이 모여 피어요. 잎에 까만 점이 콕콕 박혀 있어요. 잎자루가 없이 잎이 줄기를 감싸고 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 225,
+    "name": "골무꽃",
+    "childDescription": "줄기가 네모나고 긴 털이 많아요. 봄에 자주색 꽃이 한쪽 방향으로 줄지어 피어요. 꽃 윗부분은 투구처럼 생겼고 아랫부분에는 자주색 점이 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 226,
+    "name": "곰취",
+    "childDescription": "잎이 콩팥 모양으로 아주 커서 길이가 80센티미터가 넘는 것도 있어요. 여름부터 가을까지 노란 꽃이 줄기 위쪽에 줄줄이 달려요. 깊은 산속 축축한 곳에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 227,
+    "name": "괭이밥",
+    "childDescription": "고양이가 잘 뜯어 먹는다고 해서 괭이밥이라는 이름이 붙었어요. 하트 모양 잎이 세 장씩 붙어 있어요. 날이 흐리거나 밤이 되면 잎과 꽃이 오므라들어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 228,
+    "name": "구절초",
+    "childDescription": "가을에 하얗거나 연분홍색 꽃이 줄기 끝에 한 송이씩 피어요. 꽃 하나가 지름 8센티미터로 큼직해요. 땅속줄기가 옆으로 길게 뻗으며 무리를 이뤄요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 229,
+    "name": "금낭화",
+    "childDescription": "휘어진 줄기에 연분홍 꽃이 한 줄로 조롱조롱 매달려요. 꽃이 납작한 주머니처럼 생겼어요. 봄에서 초여름 사이에 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 230,
+    "name": "기린초",
+    "childDescription": "산속 바위 위에서 자라는 통통한 잎을 가진 식물이에요. 초여름에 노란 꽃이 모여 피어요. 열매가 다섯 개씩 모여 별 모양을 이뤄요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 231,
+    "name": "까치수영",
+    "childDescription": "흰 꽃이 꼬리처럼 옆으로 휘어진 꽃대에 촘촘히 달려요. 줄기 전체에 부드러운 털이 나 있어요. 축축한 풀밭에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 232,
+    "name": "꽃무릇",
+    "childDescription": "가을에 잎이 하나도 없는 줄기 끝에서 빨간 꽃이 피어요. 꽃이 지고 난 다음에야 잎이 돋아나요. 그래서 꽃과 잎이 서로 만나지 못해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 233,
+    "name": "꽃범의꼬리",
+    "childDescription": "줄기가 네모나고 곧게 자라요. 여름에 입술처럼 생긴 꽃이 긴 이삭 모양으로 줄지어 피어요. 분홍색, 보라색, 흰색 꽃이 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 234,
+    "name": "꽈리",
+    "childDescription": "여름에 연노란색 꽃이 잎겨드랑이에 하나씩 피어요. 가을에 익는 빨간 열매는 꽃받침이 주머니처럼 감싸고 있어요. 마을 근처 길가나 빈터에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 235,
+    "name": "노루오줌",
+    "childDescription": "여름에 붉은 자주색 작은 꽃이 커다란 깃털 모양 송이를 이뤄요. 줄기에 갈색 털이 길게 나 있어요. 전국의 산에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 236,
+    "name": "더덕",
+    "childDescription": "다른 것을 감고 올라가는 덩굴 식물이에요. 줄기를 자르면 하얀 즙이 나와요. 늦여름에 종 모양 꽃이 아래를 보고 피는데 안쪽에 갈색 점무늬가 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 237,
+    "name": "도라지",
+    "childDescription": "여름에 하늘색이나 흰색 꽃이 위를 보고 피어요. 꽃이 종처럼 생겼고 끝이 다섯 갈래로 갈라져요. 줄기를 자르면 하얀 즙이 나와요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 238,
+    "name": "돌나물",
+    "childDescription": "줄기가 땅을 기면서 마디마다 뿌리를 내려요. 잎이 세 장씩 돌려나요. 봄에 노란 꽃이 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 239,
+    "name": "돌단풍",
+    "childDescription": "잎이 단풍잎처럼 손바닥 모양으로 갈라져요. 물가 바위틈에 뿌리를 내리고 자라요. 5월에 희고 연분홍빛이 도는 꽃이 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 240,
+    "name": "둥글레",
+    "childDescription": "줄기가 모가 져 있고 잎이 달리는 위쪽이 아래로 살짝 처져요. 초여름에 종 모양 꽃이 잎겨드랑이마다 매달려요. 꽃은 아랫부분이 하얗고 끝은 초록색이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 241,
+    "name": "땅채송화",
+    "childDescription": "바닷가 바위 위에서 자라는 작은 식물이에요. 잎이 통통하고 짧아요. 초여름에 노란 꽃이 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 242,
+    "name": "말나리",
+    "childDescription": "잎이 줄기를 빙 둘러 네댓 장씩 돌려나요. 7월에 주황색 꽃이 옆을 보고 피어요. 꽃잎이 뒤로 젖혀지고 안쪽에 갈색 점이 박혀 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 243,
+    "name": "머위",
+    "childDescription": "이른 봄에 잎보다 꽃줄기가 먼저 올라와요. 뒤이어 나오는 잎은 콩팥처럼 동그랗고 아주 커요. 그늘지고 축축한 곳에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 244,
+    "name": "물레나물",
+    "childDescription": "여름에 노란 꽃이 가지 끝에 하나씩 위를 보고 피어요. 꽃잎 다섯 장이 한쪽으로 굽어서 바람개비처럼 보여요. 줄기가 네모나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 245,
+    "name": "민들레",
+    "childDescription": "줄기 없이 잎이 땅바닥에 둥글게 퍼져요. 봄에 노란 꽃이 꽃대 끝에 한 송이씩 피어요. 볕이 잘 드는 들판에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 246,
+    "name": "바위취",
+    "childDescription": "꽃잎 다섯 장 가운데 위쪽 세 장은 짧고 아래쪽 두 장은 길어요. 잎 앞면에 흰 무늬가 있고 뒷면은 붉은 자주색이에요. 그늘지고 축축한 곳에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 247,
+    "name": "박하",
+    "childDescription": "잎에 향기를 내는 기름샘이 있어요. 줄기가 네모나게 생겼어요. 여름에 연한 자주색 꽃이 잎겨드랑이를 빙 둘러 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 248,
+    "name": "벌개미취",
+    "childDescription": "우리나라에서만 자라는 특산 식물이에요. 여름부터 가을까지 연보라색 꽃이 가지 끝에 하나씩 피어요. 볕이 잘 들고 축축한 풀밭을 좋아해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 249,
+    "name": "복수초",
+    "childDescription": "이른 봄에 노란 꽃이 줄기 끝에 한 송이씩 피어요. 꽃잎이 스무 장이 넘어서 활짝 벌어지면 해님처럼 보여요. 잎은 아주 잘게 갈라져 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 250,
+    "name": "붓꽃",
+    "childDescription": "꽃봉오리가 붓을 닮아서 붓꽃이라는 이름이 붙었어요. 보랏빛 꽃 안쪽에 노란 바탕과 보라색 줄무늬가 있어요. 잎이 칼처럼 길고 납작해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 251,
+    "name": "비비추",
+    "childDescription": "잎이 뿌리에서 다발로 모여 나고 가장자리가 구불구불해요. 긴 꽃대에 연보라색 꽃이 한쪽으로 치우쳐 줄지어 피어요. 산속 그늘진 곳에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 252,
+    "name": "뻐꾹나리",
+    "childDescription": "우리나라에서만 자라는 특산 식물이에요. 7월에 자줏빛 반점이 박힌 꽃이 피어요. 수술대가 납작하고 윗부분이 동그랗게 말려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 253,
+    "name": "산부추",
+    "childDescription": "가늘고 긴 잎의 단면이 삼각형이에요. 늦여름에 붉은 보라색 꽃이 공처럼 동그랗게 모여 피어요. 산속 숲과 풀밭에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 254,
+    "name": "삼지구엽초",
+    "childDescription": "가지가 세 개로 갈라지고 가지마다 잎이 석 장씩 달려서 삼지구엽초라고 불러요. 봄에 연노란색 꽃이 아래를 보고 피어요. 꽃에 길쭉한 꿀주머니가 달려 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 255,
+    "name": "상사화",
+    "childDescription": "여름에 연분홍 자줏빛 꽃이 우산 모양으로 모여 피어요. 꽃이 필 때쯤이면 잎은 이미 말라 없어져요. 꽃과 잎이 서로 만나지 못한다고 해서 상사화라고 불러요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 256,
+    "name": "섬기린초",
+    "childDescription": "우리나라 울릉도와 설악산에서만 자라요. 잎이 도톰하고 통통해요. 7월에 노란 꽃이 스무 송이 넘게 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 257,
+    "name": "섬초롱꽃",
+    "childDescription": "울릉도에서만 자라는 우리나라 특산 식물이에요. 종처럼 생긴 꽃이 아래를 보고 줄지어 매달려요. 연보라색 꽃에 진한 점무늬가 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 258,
+    "name": "수선화",
+    "childDescription": "가을에 알뿌리를 심으면 이른 봄에 꽃이 피어요. 추위에 강해서 겨울을 잘 견뎌요. 알뿌리 속에는 양분을 저장하는 비늘 조각이 겹겹이 들어 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 259,
+    "name": "술패랭이꽃",
+    "childDescription": "연분홍 꽃잎 가장자리가 술처럼 가늘게 갈라져 있어요. 꽃잎 안쪽에는 털이 나 있어요. 메마르고 척박한 땅에서도 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 260,
+    "name": "쑥부쟁이",
+    "childDescription": "여름부터 가을까지 연보라색 꽃이 피어요. 꽃 가운데 부분은 노란색이에요. 처음 돋아나는 줄기가 붉은빛을 띠어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 261,
+    "name": "애기기린초",
+    "childDescription": "겨울에도 줄기 아랫부분이 살아남아 봄에 다시 싹이 나요. 새 둥지처럼 둥글게 모여 자라요. 여름에 노란 꽃이 줄기 끝에 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 262,
+    "name": "앵초",
+    "childDescription": "봄에 붉은 자주색 꽃이 우산 모양으로 모여 피어요. 잎에 쪼글쪼글한 주름이 있고 털이 덮여 있어요. 물가나 축축한 풀밭에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 263,
+    "name": "양지꽃",
+    "childDescription": "봄에 노란 꽃이 줄기 끝에 열 송이쯤 모여 피어요. 잎과 줄기 전체에 털이 나 있어요. 볕이 잘 드는 풀밭에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 264,
+    "name": "엉겅퀴",
+    "childDescription": "잎 가장자리에 날카로운 가시가 돋아 있어요. 여름에 보라색 꽃이 가지 끝에 한 송이씩 피어요. 씨앗에 하얀 솜털이 달려 바람에 날아가요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 265,
+    "name": "옥잠화",
+    "childDescription": "늦여름에 하얀 꽃이 피는데 향기가 아주 좋아요. 꽃봉오리가 옥으로 만든 비녀를 닮아서 옥비녀꽃이라고도 불러요. 잎이 넓고 둥글며 잎맥이 뚜렷해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 266,
+    "name": "용머리",
+    "childDescription": "깊은 산속 숲에서 자라요. 자줏빛 꽃 끝이 입술처럼 벌어지고 안에 자주색 점이 있어요. 잎 가장자리가 뒤로 도르르 말려요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 267,
+    "name": "우산나물",
+    "childDescription": "잎이 둥글게 일곱에서 아홉 갈래로 깊게 갈라져요. 갈라진 조각이 다시 두 갈래로 나뉘어요. 숲속 반그늘진 곳에서 무리 지어 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 268,
+    "name": "원추리",
+    "childDescription": "여름에 나팔 모양 노란 꽃이 피어요. 꽃 한 송이는 아침에 피었다가 저녁이면 져요. 대신 새 꽃이 계속 이어서 피어나요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 269,
+    "name": "으름덩굴",
+    "childDescription": "작은 잎 다섯 장이 손바닥처럼 모여 달리는 덩굴나무예요. 봄에 자줏빛 갈색 꽃이 피는데 암꽃이 수꽃보다 크고 수가 적어요. 가을에 길쭉한 열매가 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 270,
+    "name": "은방울꽃",
+    "childDescription": "5월에 작은 종 모양 흰 꽃이 열 송이쯤 아래를 보고 조롱조롱 매달려요. 꽃이 은방울을 닮아서 은방울꽃이라고 불러요. 7월에 열매가 빨갛게 익어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 271,
+    "name": "인동",
+    "childDescription": "꽃이 흰색으로 피었다가 노란색으로 변해요. 그래서 금은화라고도 불러요. 한 그루에 흰 꽃과 노란 꽃이 같이 있는 것처럼 보여요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 272,
+    "name": "제비꽃",
+    "childDescription": "봄에 보라색 꽃이 꽃대 끝에 한 송이씩 옆을 보고 피어요. 아래쪽 꽃잎 안쪽에 하얀 바탕과 자주색 줄무늬가 있어요. 들판에서 흔히 볼 수 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 273,
+    "name": "종지나물",
+    "childDescription": "광복 이후 미국에서 들어온 식물이에요. 잎이 종지나 하트처럼 생겼어요. 봄에 보라색 꽃이 피는데 가끔 흰 꽃이 피기도 해요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 274,
+    "name": "질경이",
+    "childDescription": "잎이 방석처럼 땅에 납작하게 퍼져요. 여름에 긴 꽃대가 올라와 자잘한 흰 꽃이 이삭처럼 달려요. 사람이 많이 다니는 길가에서도 잘 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 275,
+    "name": "참나리",
+    "childDescription": "주황색 꽃에 검은 자줏빛 점이 가득 박혀 있어요. 꽃잎이 뒤로 완전히 말려 젖혀져요. 잎겨드랑이에 까만 구슬 같은 살눈이 달리는데 이것이 땅에 떨어져 새로 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 276,
+    "name": "참취",
+    "childDescription": "가을에 자잘한 흰 꽃이 가지 끝에 여러 송이 피어요. 잎을 나물로 먹는데 이것을 취나물이라고 해요. 전국의 산에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 277,
+    "name": "창포",
+    "childDescription": "연못가나 도랑에서 자라는 식물이에요. 잎과 뿌리줄기에서 독특한 향기가 나요. 잎이 칼처럼 길쭉하고 밑부분이 서로 겹쳐 감싸요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 278,
+    "name": "처녀치마",
+    "childDescription": "잎이 땅 위에 방석처럼 둥글게 펼쳐져요. 봄에 자주색 꽃이 피는데 시간이 지나면 푸르스름하게 변해요. 그늘지고 축축한 산에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 279,
+    "name": "층꽃",
+    "childDescription": "꽃이 줄기를 따라 층층이 달려서 층꽃이라고 불러요. 꽃잎 가장자리가 실처럼 가늘게 갈라져요. 겨울에는 윗부분이 죽고 아랫부분만 남아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 280,
+    "name": "큰꿩의비름",
+    "childDescription": "도톰한 잎이 마주 보거나 줄기를 빙 둘러 달려요. 늦여름에 붉은 자주색 작은 꽃이 아주 빽빽하게 모여 피어요. 줄기는 희끗한 초록색이에요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 281,
+    "name": "털머위",
+    "childDescription": "잎이 콩팥처럼 동그랗고 앞면이 반질반질해요. 잎 뒷면에는 희끗한 털이 빽빽해요. 가을에 노란 꽃이 피고 겨울에도 잎이 지지 않아요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 282,
+    "name": "톱풀",
+    "childDescription": "잎 가장자리가 톱날처럼 규칙적으로 갈라져 있어요. 그래서 톱풀이라고 불러요. 여름부터 가을까지 자잘한 흰 꽃이 모여 피어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 283,
+    "name": "패랭이꽃",
+    "childDescription": "여름에 붉은 꽃이 줄기 끝에 한 송이씩 피어요. 꽃잎 다섯 장은 끝이 얕게 갈라지고 가운데에 무늬가 있어요. 풀밭이나 강가 모래땅에서 자라요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 284,
+    "name": "하늘매발톱",
+    "childDescription": "높은 산에서 자라는 꽃이에요. 여름에 밝은 하늘색 꽃이 아래를 보고 피어요. 꽃 뒤쪽에 둥근 꿀주머니가 있고 끝이 안쪽으로 말려 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 285,
+    "name": "할미꽃",
+    "childDescription": "봄에 붉은 자주색 꽃이 고개를 숙이고 피어요. 식물 전체에 흰 털이 보송보송하게 나 있어요. 열매에도 깃털 같은 것이 남아 있어요."
+  },
+  {
+    "category": "PLANT",
+    "externalId": 286,
+    "name": "해국",
+    "childDescription": "바닷가 절벽이나 바위틈에서 자라는 국화예요. 잎이 두껍고 털이 많아서 만지면 보들보들해요. 가을까지 연보라색 꽃이 오래 피어 있어요."
+  }
+]

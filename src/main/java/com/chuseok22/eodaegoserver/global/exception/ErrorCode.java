@@ -42,6 +42,8 @@ public enum ErrorCode {
 
   CATALOG_ITEM_ALREADY_COLLECTED(HttpStatus.CONFLICT, "이미 수집한 도감 항목입니다."),
 
+  CATALOG_SYNC_ALREADY_RUNNING(HttpStatus.CONFLICT, "도감 동기화가 이미 실행 중입니다."),
+
   // COURSE
 
   COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 코스입니다."),

@@ -9,12 +9,14 @@ import com.chuseok22.eodaegoserver.domain.admin.dto.response.CrawlResultView;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogCategory;
 import com.chuseok22.eodaegoserver.domain.catalog.CatalogItemStatus;
 import com.chuseok22.eodaegoserver.global.exception.CustomException;
+import com.chuseok22.eodaegoserver.global.exception.ErrorCode;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.request.CatalogItemUpdateRequest;
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.entity.CatalogItem;
 import com.chuseok22.eodaegoserver.domain.catalog.repository.CatalogItemRepository;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogItemService;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogSyncResult;
+import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogSyncService;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ public class AdminCatalogItemService {
 
   private final CatalogItemService catalogItemService;
   private final CatalogItemRepository catalogItemRepository;
+  private final CatalogSyncService catalogSyncService;
   private final CrawlExecutionLogService crawlExecutionLogService;
 
   public AdminPageView<CatalogItemResponse> listItems(CatalogItemListQuery query) {
@@ -108,9 +111,11 @@ public class AdminCatalogItemService {
     CatalogItem catalogItem = catalogItemService.getCatalogItem(catalogItemId);
     boolean isPlace = catalogItem.getFacility() != null;
 
-    String originalName = isPlace ? catalogItem.getFacility().getName() : catalogItem.getSource().getName();
-    String originalFeature = Objects.requireNonNullElse(
+    String originalName = catalogItem.getOriginalName();
+    String aiFeature = Objects.requireNonNullElse(
         isPlace ? catalogItem.getFacility().getDescription() : catalogItem.getSource().getDescription(), "");
+    String originalFeature = Objects.requireNonNullElse(catalogItem.getDefaultFeature(), aiFeature);
+    String originalChildDescription = Objects.requireNonNullElse(catalogItem.getDefaultChildDescription(), "");
     String originalImageUrl = isPlace ? null : catalogItem.getSource().getImageUrl();
     Double originalLatitude = isPlace ? catalogItem.getFacility().getLatitude() : null;
     Double originalLongitude = isPlace ? catalogItem.getFacility().getLongitude() : null;
@@ -118,7 +123,7 @@ public class AdminCatalogItemService {
     CatalogItemUpdateRequest request = new CatalogItemUpdateRequest(
         catalogItem.getNameOverride(),
         catalogItem.getFeatureOverride(),
-        catalogItem.getChildDescription(),
+        catalogItem.getChildDescriptionOverride(),
         catalogItem.getStatus(),
         catalogItem.getImageUrlOverride(),
         catalogItem.getLatitudeOverride(),
@@ -127,7 +132,7 @@ public class AdminCatalogItemService {
 
     return new CatalogItemEditView(
         CatalogItemResponse.from(catalogItem),
-        originalName, originalFeature, originalImageUrl, originalLatitude, originalLongitude,
+        originalName, originalFeature, originalChildDescription, originalImageUrl, originalLatitude, originalLongitude,
         request
     );
   }
@@ -139,12 +144,18 @@ public class AdminCatalogItemService {
 
   public CrawlResultView triggerSync() {
     try {
-      CatalogSyncResult result = catalogItemService.syncFromAiServer();
+      CatalogSyncResult result = catalogSyncService.syncFromAiServer();
       int totalCount = result.created().size() + result.updated().size();
       log.info("관리자 도감 동기화 트리거 완료. 생성 {}건, 갱신 {}건", result.created().size(), result.updated().size());
       crawlExecutionLogService.record(CrawlJobType.CATALOG_SYNC, true, totalCount, "동기화 완료");
       return new CrawlResultView(true, totalCount, "동기화 완료");
     } catch (CustomException e) {
+      // 크롤링 트리거와 같은 방식으로, 중복 실행은 실패가 아니라 안내로 돌려준다.
+      if (e.getErrorCode() == ErrorCode.CATALOG_SYNC_ALREADY_RUNNING) {
+        log.info("[AdminCatalogItemService] 이미 실행 중인 도감 동기화");
+        crawlExecutionLogService.record(CrawlJobType.CATALOG_SYNC, false, 0, "이미 실행 중입니다");
+        return new CrawlResultView(false, 0, "이미 실행 중입니다");
+      }
       log.warn("관리자 도감 동기화 트리거 실패: {}", e.getMessage());
       crawlExecutionLogService.record(CrawlJobType.CATALOG_SYNC, false, 0, e.getErrorCode().getMessage());
       throw e;

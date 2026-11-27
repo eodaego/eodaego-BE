@@ -6,6 +6,7 @@ import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogItemRespon
 import com.chuseok22.eodaegoserver.domain.catalog.dto.response.CatalogSyncResponse;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogItemService;
 import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogSyncResult;
+import com.chuseok22.eodaegoserver.domain.catalog.service.CatalogSyncService;
 import com.chuseok22.logging.annotation.LogMonitoring;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CatalogItemController implements CatalogItemControllerDocs {
 
   private final CatalogItemService catalogItemService;
+  private final CatalogSyncService catalogSyncService;
 
   @Override
   @LogMonitoring
@@ -50,7 +52,7 @@ public class CatalogItemController implements CatalogItemControllerDocs {
   @PostMapping(path = "/sync", version = "1")
   public ResponseEntity<CatalogSyncResponse> syncCatalogItems() {
 
-    CatalogSyncResult result = catalogItemService.syncFromAiServer();
+    CatalogSyncResult result = catalogSyncService.syncFromAiServer();
 
     List<CatalogItemResponse> created = result.created().stream()
         .map(CatalogItemResponse::from)

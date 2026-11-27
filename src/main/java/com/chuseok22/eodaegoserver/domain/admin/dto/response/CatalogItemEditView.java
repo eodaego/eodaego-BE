@@ -7,6 +7,7 @@ public record CatalogItemEditView(
     CatalogItemResponse item,
     String originalName,
     String originalFeature,
+    String originalChildDescription,
     String originalImageUrl,
     Double originalLatitude,
     Double originalLongitude,

@@ -14,14 +14,12 @@ public record CatalogItemUpdateRequest(
         example = "사자")
     String nameOverride,
 
-    @Schema(description = "AI 원본 설명 대신 사용할 특징 설명. null이면 AI 원본 설명을 그대로 쓴다(원복).",
+    @Schema(description = "기본 특징 설명 대신 사용할 특징 설명. null이면 기본값(설명 파일 값, 없으면 AI 원본 설명)을 그대로 쓴다(원복).",
         example = "무리를 지어 사는 대형 고양잇과 동물이다.")
     String featureOverride,
 
-    @Schema(description = "어린이 눈높이 설명. AI가 제공하지 않는 값이라 관리자가 직접 작성한다. "
-        + "아직 작성하지 않았다면 빈 문자열(\"\")을 보낸다. 동기화로 생성된 항목도 빈 문자열로 시작한다.",
+    @Schema(description = "기본 어린이 눈높이 설명 대신 사용할 설명. null 또는 빈 문자열(\"\")이면 기본값(설명 파일 값, 없으면 빈 문자열)을 그대로 쓴다(원복).",
         example = "사자는 갈기가 멋진 초원의 왕이에요!")
-    @NotNull
     String childDescription,
 
     @Schema(description = "공개 상태. AVAILABLE(수집 가능), SUSPENDED(임시 중단), RETIRED(운영 종료)만 허용된다.",
